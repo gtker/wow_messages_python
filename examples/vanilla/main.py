@@ -5,14 +5,17 @@ import wow_srp
 import wow_login_messages.wow_login_messages.util as login_util
 import wow_login_messages.wow_login_messages.version3 as login
 
+session_keys = {}
+
 
 async def login_path(
     reader: asyncio.StreamReader,
     writer: asyncio.StreamWriter,
     request: login.CMD_AUTH_LOGON_CHALLENGE_Client,
 ):
+    account_name = request.account_name
     server = wow_srp.SrpVerifier.from_username_and_password(
-        request.account_name, request.account_name
+        account_name, request.account_name
     ).into_proof()
 
     response = login.CMD_AUTH_LOGON_CHALLENGE_Server(
@@ -36,6 +39,8 @@ async def login_path(
         print("invalid password")
         raise Exception("invalid password")
 
+    session_keys[account_name] = server.session_key()
+
     response = login.CMD_AUTH_LOGON_PROOF_Server(login.LoginResult.SUCCESS, proof, 0)
     response.write(writer)
 
@@ -53,7 +58,7 @@ async def login_path(
                 login.RealmFlag.NONE,
                 "A",
                 "localhost",
-                login.Population.RED_FULL,
+                400.0,
                 0,
                 login.RealmCategory.ONE,
                 0,
@@ -64,21 +69,25 @@ async def login_path(
     response.write(writer)
 
 
-async def client_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
-    request = await login_util.expect_login_or_reconnect(reader)
-    match request:
-        case None:
-            print("invalid starting opcode")
-            return
-        case login.CMD_AUTH_LOGON_CHALLENGE_Client():
-            print(request)
-            await login_path(reader, writer, request)
+async def login_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+    try:
+        request = await login_util.expect_login_or_reconnect(reader)
+        match request:
+            case None:
+                print("invalid starting opcode")
+                return
+            case login.CMD_AUTH_LOGON_CHALLENGE_Client():
+                print(request)
+                await login_path(reader, writer, request)
+    except Exception as e:
+        print(e)
+        exit(1)
 
 
 async def run_server():
-    server = await asyncio.start_server(client_connection, "localhost", 3724)
-    async with server:
-        await server.serve_forever()
+    login_server = await asyncio.start_server(login_connection, "localhost", 3724)
+    async with login_server:
+        await asyncio.gather(login_server.serve_forever())
 
 
 asyncio.run(run_server())
