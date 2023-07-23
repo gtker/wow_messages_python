@@ -15,8 +15,7 @@ from wow_login_messages.wow_login_messages.version3 import (
 
 
 async def read_opcode_server(reader: asyncio.StreamReader):
-    opcode = await reader.readexactly(1)
-    opcode = int.from_bytes(opcode, "little")
+    opcode = int.from_bytes(await reader.readexactly(1), "little")
     if opcode == CMD_AUTH_LOGON_CHALLENGE_opcode:
         return await CMD_AUTH_LOGON_CHALLENGE_Client.read(reader)
     elif opcode == CMD_AUTH_LOGON_PROOF_opcode:

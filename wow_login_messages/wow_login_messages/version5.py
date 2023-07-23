@@ -73,10 +73,10 @@ class Realm:
         flag = RealmFlag(int.from_bytes(await reader.readexactly(1), 'little'))
 
         # name: DataTypeCstring(data_type_tag='CString')
-        name = (await reader.readuntil(b'\x00')).decode('utf-u8')
+        name = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip(b'\x00')
 
         # address: DataTypeCstring(data_type_tag='CString')
-        address = (await reader.readuntil(b'\x00')).decode('utf-u8')
+        address = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip(b'\x00')
 
         # population: DataTypePopulation(data_type_tag='Population')
         population = float.from_bytes(await reader.readexactly(4), 'little')
@@ -91,16 +91,16 @@ class Realm:
         realm_id = int.from_bytes(await reader.readexactly(1), 'little')
 
         return Realm(
-            realm_type,
-            locked,
-            flag,
-            name,
-            address,
-            population,
-            number_of_characters_on_realm,
-            category,
-            realm_id,
-            )
+            realm_type=realm_type,
+            locked=locked,
+            flag=flag,
+            name=name,
+            address=address,
+            population=population,
+            number_of_characters_on_realm=number_of_characters_on_realm,
+            category=category,
+            realm_id=realm_id,
+        )
 
     def write(self, fmt, data):
         # realm_type: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmType', upcast=False))
@@ -179,9 +179,9 @@ class Realm:
 @dataclasses.dataclass
 class CMD_AUTH_LOGON_PROOF_Server:
     result: LoginResult
-    server_proof: typing.Optional[typing.List[int]]
-    hardware_survey_id: typing.Optional[int]
-    unknown: typing.Optional[int]
+    server_proof: typing.Optional[typing.List[int]] = None
+    hardware_survey_id: typing.Optional[int] = None
+    unknown: typing.Optional[int] = None
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
@@ -204,11 +204,11 @@ class CMD_AUTH_LOGON_PROOF_Server:
             unknown = int.from_bytes(await reader.readexactly(2), 'little')
 
         return CMD_AUTH_LOGON_PROOF_Server(
-            result,
-            server_proof,
-            hardware_survey_id,
-            unknown,
-            )
+            result=result,
+            server_proof=server_proof,
+            hardware_survey_id=hardware_survey_id,
+            unknown=unknown,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode
@@ -248,8 +248,8 @@ class CMD_AUTH_RECONNECT_PROOF_Server:
         _padding = int.from_bytes(await reader.readexactly(2), 'little')
 
         return CMD_AUTH_RECONNECT_PROOF_Server(
-            result,
-            )
+            result=result,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode
@@ -291,8 +291,8 @@ class CMD_REALM_LIST_Server:
         _footer_padding = int.from_bytes(await reader.readexactly(2), 'little')
 
         return CMD_REALM_LIST_Server(
-            realms,
-            )
+            realms=realms,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode

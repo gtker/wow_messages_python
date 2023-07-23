@@ -100,10 +100,10 @@ class Realm:
         flag = RealmFlag(int.from_bytes(await reader.readexactly(1), 'little'))
 
         # name: DataTypeCstring(data_type_tag='CString')
-        name = (await reader.readuntil(b'\x00')).decode('utf-u8')
+        name = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip(b'\x00')
 
         # address: DataTypeCstring(data_type_tag='CString')
-        address = (await reader.readuntil(b'\x00')).decode('utf-u8')
+        address = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip(b'\x00')
 
         # population: DataTypePopulation(data_type_tag='Population')
         population = float.from_bytes(await reader.readexactly(4), 'little')
@@ -118,15 +118,15 @@ class Realm:
         realm_id = int.from_bytes(await reader.readexactly(1), 'little')
 
         return Realm(
-            realm_type,
-            flag,
-            name,
-            address,
-            population,
-            number_of_characters_on_realm,
-            category,
-            realm_id,
-            )
+            realm_type=realm_type,
+            flag=flag,
+            name=name,
+            address=address,
+            population=population,
+            number_of_characters_on_realm=number_of_characters_on_realm,
+            category=category,
+            realm_id=realm_id,
+        )
 
     def write(self, fmt, data):
         # realm_type: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='RealmType', upcast=True))
@@ -221,11 +221,11 @@ class TelemetryKey:
             cd_key_proof.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
         return TelemetryKey(
-            unknown1,
-            unknown2,
-            unknown3,
-            cd_key_proof,
-            )
+            unknown1=unknown1,
+            unknown2=unknown2,
+            unknown3=unknown3,
+            cd_key_proof=cd_key_proof,
+        )
 
     def write(self, fmt, data):
         # unknown1: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
@@ -269,11 +269,11 @@ class TelemetryKey:
 @dataclasses.dataclass
 class CMD_AUTH_LOGON_CHALLENGE_Server:
     result: LoginResult
-    server_public_key: typing.Optional[typing.List[int]]
-    generator: typing.Optional[typing.List[int]]
-    large_safe_prime: typing.Optional[typing.List[int]]
-    salt: typing.Optional[typing.List[int]]
-    crc_salt: typing.Optional[typing.List[int]]
+    server_public_key: typing.Optional[typing.List[int]] = None
+    generator: typing.Optional[typing.List[int]] = None
+    large_safe_prime: typing.Optional[typing.List[int]] = None
+    salt: typing.Optional[typing.List[int]] = None
+    crc_salt: typing.Optional[typing.List[int]] = None
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
@@ -323,13 +323,13 @@ class CMD_AUTH_LOGON_CHALLENGE_Server:
                 crc_salt.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
         return CMD_AUTH_LOGON_CHALLENGE_Server(
-            result,
-            server_public_key,
-            generator,
-            large_safe_prime,
-            salt,
-            crc_salt,
-            )
+            result=result,
+            server_public_key=server_public_key,
+            generator=generator,
+            large_safe_prime=large_safe_prime,
+            salt=salt,
+            crc_salt=crc_salt,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode
@@ -409,11 +409,11 @@ class CMD_AUTH_LOGON_PROOF_Client:
             telemetry_keys.append(await TelemetryKey.read(reader))
 
         return CMD_AUTH_LOGON_PROOF_Client(
-            client_public_key,
-            client_proof,
-            crc_hash,
-            telemetry_keys,
-            )
+            client_public_key=client_public_key,
+            client_proof=client_proof,
+            crc_hash=crc_hash,
+            telemetry_keys=telemetry_keys,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode
@@ -446,8 +446,8 @@ class CMD_AUTH_LOGON_PROOF_Client:
 @dataclasses.dataclass
 class CMD_AUTH_LOGON_PROOF_Server:
     result: LoginResult
-    server_proof: typing.Optional[typing.List[int]]
-    hardware_survey_id: typing.Optional[int]
+    server_proof: typing.Optional[typing.List[int]] = None
+    hardware_survey_id: typing.Optional[int] = None
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
@@ -466,10 +466,10 @@ class CMD_AUTH_LOGON_PROOF_Server:
             hardware_survey_id = int.from_bytes(await reader.readexactly(4), 'little')
 
         return CMD_AUTH_LOGON_PROOF_Server(
-            result,
-            server_proof,
-            hardware_survey_id,
-            )
+            result=result,
+            server_proof=server_proof,
+            hardware_survey_id=hardware_survey_id,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode
@@ -495,8 +495,8 @@ class CMD_AUTH_LOGON_PROOF_Server:
 @dataclasses.dataclass
 class CMD_AUTH_RECONNECT_CHALLENGE_Server:
     result: LoginResult
-    challenge_data: typing.Optional[typing.List[int]]
-    checksum_salt: typing.Optional[typing.List[int]]
+    challenge_data: typing.Optional[typing.List[int]] = None
+    checksum_salt: typing.Optional[typing.List[int]] = None
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
@@ -517,10 +517,10 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Server:
                 checksum_salt.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
         return CMD_AUTH_RECONNECT_CHALLENGE_Server(
-            result,
-            challenge_data,
-            checksum_salt,
-            )
+            result=result,
+            challenge_data=challenge_data,
+            checksum_salt=checksum_salt,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode
@@ -570,10 +570,10 @@ class CMD_AUTH_RECONNECT_PROOF_Client:
         _key_count = int.from_bytes(await reader.readexactly(1), 'little')
 
         return CMD_AUTH_RECONNECT_PROOF_Client(
-            proof_data,
-            client_proof,
-            client_checksum,
-            )
+            proof_data=proof_data,
+            client_proof=client_proof,
+            client_checksum=client_checksum,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode
@@ -609,8 +609,8 @@ class CMD_AUTH_RECONNECT_PROOF_Server:
         result = LoginResult(int.from_bytes(await reader.readexactly(1), 'little'))
 
         return CMD_AUTH_RECONNECT_PROOF_Server(
-            result,
-            )
+            result=result,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode
@@ -633,7 +633,7 @@ class CMD_REALM_LIST_Client:
         _padding = int.from_bytes(await reader.readexactly(4), 'little')
 
         return CMD_REALM_LIST_Client(
-            )
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode
@@ -671,8 +671,8 @@ class CMD_REALM_LIST_Server:
         _footer_padding = int.from_bytes(await reader.readexactly(2), 'little')
 
         return CMD_REALM_LIST_Server(
-            realms,
-            )
+            realms=realms,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode

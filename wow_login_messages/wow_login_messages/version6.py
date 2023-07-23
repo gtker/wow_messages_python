@@ -76,8 +76,8 @@ class CMD_REALM_LIST_Server:
         _footer_padding = int.from_bytes(await reader.readexactly(2), 'little')
 
         return CMD_REALM_LIST_Server(
-            realms,
-            )
+            realms=realms,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode

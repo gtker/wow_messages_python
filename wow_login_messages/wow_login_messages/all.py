@@ -74,11 +74,11 @@ class Version:
         build = int.from_bytes(await reader.readexactly(2), 'little')
 
         return Version(
-            major,
-            minor,
-            patch,
-            build,
-            )
+            major=major,
+            minor=minor,
+            patch=patch,
+            build=build,
+        )
 
     def write(self, fmt, data):
         # major: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
@@ -162,15 +162,15 @@ class CMD_AUTH_LOGON_CHALLENGE_Client:
         account_name = (await reader.readexactly(account_name)).decode('utf-8')
 
         return CMD_AUTH_LOGON_CHALLENGE_Client(
-            protocol_version,
-            version,
-            platform,
-            os,
-            locale,
-            utc_timezone_offset,
-            client_ip_address,
-            account_name,
-            )
+            protocol_version=protocol_version,
+            version=version,
+            platform=platform,
+            os=os,
+            locale=locale,
+            utc_timezone_offset=utc_timezone_offset,
+            client_ip_address=client_ip_address,
+            account_name=account_name,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode
@@ -300,15 +300,15 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Client:
         account_name = (await reader.readexactly(account_name)).decode('utf-8')
 
         return CMD_AUTH_RECONNECT_CHALLENGE_Client(
-            protocol_version,
-            version,
-            platform,
-            os,
-            locale,
-            utc_timezone_offset,
-            client_ip_address,
-            account_name,
-            )
+            protocol_version=protocol_version,
+            version=version,
+            platform=platform,
+            os=os,
+            locale=locale,
+            utc_timezone_offset=utc_timezone_offset,
+            client_ip_address=client_ip_address,
+            account_name=account_name,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode

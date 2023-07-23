@@ -44,7 +44,9 @@ def print_read_struct_member(s: Writer, d: model.Definition):
             s.wln(f"{d.name} = (await reader.readexactly({d.name})).decode('utf-8')")
 
         case model.DataTypeCstring():
-            s.wln(f"{d.name} = (await reader.readuntil(b'\\x00')).decode('utf-u8')")
+            s.wln(
+                f"{d.name} = (await reader.readuntil(b'\\x00')).decode('utf-8').rstrip(b'\\x00')"
+            )
 
         case model.DataTypeIPAddress():
             s.wln(f"{d.name} = int.from_bytes(await reader.readexactly(4), 'big')")
@@ -161,9 +163,9 @@ def print_read(s: Writer, container: Container):
             or d.constant_value is not None
         ):
             continue
-        s.wln(f"{d.name},")
-    s.wln(")")
+        s.wln(f"{d.name}={d.name},")
     s.dec_indent()  # return container name
+    s.wln(")")
 
     s.dec_indent()  # read
     s.newline()

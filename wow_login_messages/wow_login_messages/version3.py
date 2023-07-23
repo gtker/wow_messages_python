@@ -58,14 +58,14 @@ class SecurityFlag(enum.Enum):
 @dataclasses.dataclass
 class CMD_AUTH_LOGON_CHALLENGE_Server:
     result: LoginResult
-    server_public_key: typing.Optional[typing.List[int]]
-    generator: typing.Optional[typing.List[int]]
-    large_safe_prime: typing.Optional[typing.List[int]]
-    salt: typing.Optional[typing.List[int]]
-    crc_salt: typing.Optional[typing.List[int]]
-    security_flag: typing.Optional[SecurityFlag]
-    pin_grid_seed: typing.Optional[int]
-    pin_salt: typing.Optional[typing.List[int]]
+    server_public_key: typing.Optional[typing.List[int]] = None
+    generator: typing.Optional[typing.List[int]] = None
+    large_safe_prime: typing.Optional[typing.List[int]] = None
+    salt: typing.Optional[typing.List[int]] = None
+    crc_salt: typing.Optional[typing.List[int]] = None
+    security_flag: typing.Optional[SecurityFlag] = None
+    pin_grid_seed: typing.Optional[int] = None
+    pin_salt: typing.Optional[typing.List[int]] = None
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
@@ -130,16 +130,16 @@ class CMD_AUTH_LOGON_CHALLENGE_Server:
                     pin_salt.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
         return CMD_AUTH_LOGON_CHALLENGE_Server(
-            result,
-            server_public_key,
-            generator,
-            large_safe_prime,
-            salt,
-            crc_salt,
-            security_flag,
-            pin_grid_seed,
-            pin_salt,
-            )
+            result=result,
+            server_public_key=server_public_key,
+            generator=generator,
+            large_safe_prime=large_safe_prime,
+            salt=salt,
+            crc_salt=crc_salt,
+            security_flag=security_flag,
+            pin_grid_seed=pin_grid_seed,
+            pin_salt=pin_salt,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode
@@ -206,8 +206,8 @@ class CMD_AUTH_LOGON_PROOF_Client:
     crc_hash: typing.List[int]
     telemetry_keys: typing.List[TelemetryKey]
     security_flag: SecurityFlag
-    pin_salt: typing.Optional[typing.List[int]]
-    pin_hash: typing.Optional[typing.List[int]]
+    pin_salt: typing.Optional[typing.List[int]] = None
+    pin_hash: typing.Optional[typing.List[int]] = None
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
@@ -251,14 +251,14 @@ class CMD_AUTH_LOGON_PROOF_Client:
                 pin_hash.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
         return CMD_AUTH_LOGON_PROOF_Client(
-            client_public_key,
-            client_proof,
-            crc_hash,
-            telemetry_keys,
-            security_flag,
-            pin_salt,
-            pin_hash,
-            )
+            client_public_key=client_public_key,
+            client_proof=client_proof,
+            crc_hash=crc_hash,
+            telemetry_keys=telemetry_keys,
+            security_flag=security_flag,
+            pin_salt=pin_salt,
+            pin_hash=pin_hash,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode
@@ -324,10 +324,10 @@ class CMD_SURVEY_RESULT:
             data.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
         return CMD_SURVEY_RESULT(
-            survey_id,
-            error,
-            data,
-            )
+            survey_id=survey_id,
+            error=error,
+            data=data,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode
@@ -398,8 +398,8 @@ class CMD_XFER_DATA:
             data.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
         return CMD_XFER_DATA(
-            data,
-            )
+            data=data,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode
@@ -442,8 +442,8 @@ class CMD_XFER_RESUME:
         offset = int.from_bytes(await reader.readexactly(8), 'little')
 
         return CMD_XFER_RESUME(
-            offset,
-            )
+            offset=offset,
+        )
 
     def write(self, writer: asyncio.StreamWriter):
         fmt = '<B' # opcode

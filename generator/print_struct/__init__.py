@@ -51,7 +51,9 @@ def print_member_definition(s: Writer, member: model.StructMember, optional: boo
                 return
 
             if optional:
-                s.wln(f"{name}: typing.Optional[{type_to_python_str(data_type)}]")
+                s.wln(
+                    f"{name}: typing.Optional[{type_to_python_str(data_type)}] = None"
+                )
             else:
                 s.wln(f"{name}: {type_to_python_str(data_type)}")
 
