@@ -434,6 +434,7 @@ class DataType:
             "MonsterMoveSpline": DataTypeMonsterMoveSpline,
             "NamedGuid": DataTypeNamedGUID,
             "PackedGuid": DataTypePackedGUID,
+            "Population": DataTypePopulation,
             "Seconds": DataTypeSeconds,
             "SizedCString": DataTypeSizedCstring,
             "String": DataTypeString,
@@ -817,6 +818,19 @@ class DataTypePackedGUID(DataType):
         return data
 
 @dataclass
+class DataTypePopulation(DataType):
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'DataTypePopulation':
+        return cls(
+            "Population",
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "data_type_tag": "Population" }
+        return data
+
+@dataclass
 class DataTypeSeconds(DataType):
 
     @classmethod
@@ -934,24 +948,6 @@ class DefinerObjectsUsedIn:
         return data
 
 @dataclass
-class DefinerSelfValue:
-    name: 'str'
-    tags: 'MemberTags'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'DefinerSelfValue':
-        return cls(
-            _from_json_data(str, data.get("name")),
-            _from_json_data(MemberTags, data.get("tags")),
-        )
-
-    def to_json_data(self) -> Any:
-        data: Dict[str, Any] = {}
-        data["name"] = _to_json_data(self.name)
-        data["tags"] = _to_json_data(self.tags)
-        return data
-
-@dataclass
 class Definer:
     definer_type: 'DefinerType'
     enumerators: 'List[Enumerator]'
@@ -960,7 +956,6 @@ class Definer:
     integer_type: 'IntegerType'
     name: 'str'
     objects_used_in: 'List[DefinerObjectsUsedIn]'
-    self_value: 'Optional[DefinerSelfValue]'
     tags: 'ObjectTags'
 
     @classmethod
@@ -973,7 +968,6 @@ class Definer:
             _from_json_data(IntegerType, data.get("integer_type")),
             _from_json_data(str, data.get("name")),
             _from_json_data(List[DefinerObjectsUsedIn], data.get("objects_used_in")),
-            _from_json_data(Optional[DefinerSelfValue], data.get("self_value")),
             _from_json_data(ObjectTags, data.get("tags")),
         )
 
@@ -986,7 +980,6 @@ class Definer:
         data["integer_type"] = _to_json_data(self.integer_type)
         data["name"] = _to_json_data(self.name)
         data["objects_used_in"] = _to_json_data(self.objects_used_in)
-        data["self_value"] = _to_json_data(self.self_value)
         data["tags"] = _to_json_data(self.tags)
         return data
 
@@ -1692,6 +1685,7 @@ class TestCaseValue:
             "Integer": TestCaseValueInteger,
             "IpAddress": TestCaseValueIPAddress,
             "Milliseconds": TestCaseValueMilliseconds,
+            "Population": TestCaseValuePopulation,
             "Seconds": TestCaseValueSeconds,
             "String": TestCaseValueString,
             "SubObject": TestCaseValueSubObject,
@@ -1912,6 +1906,22 @@ class TestCaseValueMilliseconds(TestCaseValue):
 
     def to_json_data(self) -> Any:
         data = { "test_value_tag": "Milliseconds" }
+        data["content"] = _to_json_data(self.content)
+        return data
+
+@dataclass
+class TestCaseValuePopulation(TestCaseValue):
+    content: 'float'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'TestCaseValuePopulation':
+        return cls(
+            "Population",
+            _from_json_data(float, data.get("content")),
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "test_value_tag": "Population" }
         data["content"] = _to_json_data(self.content)
         return data
 

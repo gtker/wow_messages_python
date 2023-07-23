@@ -91,6 +91,8 @@ def type_to_python_str(ty: model.DataType) -> str:
             return "UpdateMask"
         case model.DataTypeVariableItemRandomProperty():
             return "VariableItemRandomProperty"
+        case model.DataTypePopulation():
+            return "float"
         case v:
             raise Exception("{v}")
 

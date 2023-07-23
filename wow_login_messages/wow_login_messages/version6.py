@@ -8,7 +8,6 @@ from all import Locale
 from version2 import LoginResult
 from all import Os
 from all import Platform
-from version2 import Population
 from all import ProtocolVersion
 from version2 import RealmCategory
 from version2 import RealmType
@@ -33,7 +32,6 @@ __all__ = [
     "LoginResult",
     "Os",
     "Platform",
-    "Population",
     "ProtocolVersion",
     "RealmCategory",
     "RealmType",

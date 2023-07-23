@@ -64,6 +64,10 @@ def print_write_struct_member(s: Writer, d: model.Definition):
             s.wln("fmt += 'I'")
             s.wln(f"data.append(self.{d.name})")
 
+        case model.DataTypePopulation():
+            s.wln("fmt += 'f'")
+            s.wln(f"data.append(self.{d.name})")
+
         case model.DataTypeString():
             s.wln(f"fmt += f'B{{len(self.{d.name})}}s'")
             s.wln(f"data.append(len(self.{d.name}))")

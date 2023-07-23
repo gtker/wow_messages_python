@@ -54,6 +54,8 @@ def print_size_inner(s: Writer, m: model.StructMember):
                         raise Exception("Not constant sized struct in size")
                 case model.DataTypeIPAddress():
                     s.wln("size += 4")
+                case model.DataTypePopulation():
+                    s.wln("size += 4")
                 case model.DataTypeString():
                     s.wln(f"size += len(self.{d.name})")
                 case model.DataTypeCstring():

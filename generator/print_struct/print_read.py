@@ -79,6 +79,8 @@ def print_read_struct_member(s: Writer, d: model.Definition):
             content=model.DataTypeStructContent(type_name=type_name)
         ):
             s.wln(f"{d.name} = await {type_name}.read(reader)")
+        case model.DataTypePopulation():
+            s.wln(f"{d.name} = float.from_bytes(await reader.readexactly(4), 'little')")
         case v:
             raise Exception(f"{v}")
 

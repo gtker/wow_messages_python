@@ -8,7 +8,6 @@ from all import Locale
 from version2 import LoginResult
 from all import Os
 from all import Platform
-from version2 import Population
 from all import ProtocolVersion
 from version2 import RealmCategory
 from version2 import RealmType
@@ -30,7 +29,6 @@ __all__ = [
     "LoginResult",
     "Os",
     "Platform",
-    "Population",
     "ProtocolVersion",
     "RealmCategory",
     "RealmType",
@@ -58,7 +56,7 @@ class Realm:
     flag: RealmFlag
     name: str
     address: str
-    population: Population
+    population: float
     number_of_characters_on_realm: int
     category: RealmCategory
     realm_id: int
@@ -80,8 +78,8 @@ class Realm:
         # address: DataTypeCstring(data_type_tag='CString')
         address = (await reader.readuntil(b'\x00')).decode('utf-u8')
 
-        # population: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Population', upcast=False))
-        population = Population(int.from_bytes(await reader.readexactly(4), 'little'))
+        # population: DataTypePopulation(data_type_tag='Population')
+        population = float.from_bytes(await reader.readexactly(4), 'little')
 
         # number_of_characters_on_realm: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
         number_of_characters_on_realm = int.from_bytes(await reader.readexactly(1), 'little')
@@ -127,9 +125,9 @@ class Realm:
         data.append(self.address.encode('utf-8'))
         data.append(0)
 
-        # population: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Population', upcast=False))
-        fmt += 'I'
-        data.append(self.population.value)
+        # population: DataTypePopulation(data_type_tag='Population')
+        fmt += 'f'
+        data.append(self.population)
 
         # number_of_characters_on_realm: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
         fmt += 'B'
@@ -163,7 +161,7 @@ class Realm:
         # address: DataTypeCstring(data_type_tag='CString')
         size += len(self.address) + 1
 
-        # population: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Population', upcast=False))
+        # population: DataTypePopulation(data_type_tag='Population')
         size += 4
 
         # number_of_characters_on_realm: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
