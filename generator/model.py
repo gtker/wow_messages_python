@@ -187,18 +187,18 @@ class ArrayTypeGUID(ArrayType):
 
 @dataclass
 class ArrayTypeInteger(ArrayType):
-    inner_type: 'IntegerType'
+    content: 'IntegerType'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'ArrayTypeInteger':
         return cls(
             "Integer",
-            _from_json_data(IntegerType, data.get("inner_type")),
+            _from_json_data(IntegerType, data.get("content")),
         )
 
     def to_json_data(self) -> Any:
         data = { "array_type_tag": "Integer" }
-        data["inner_type"] = _to_json_data(self.inner_type)
+        data["content"] = _to_json_data(self.content)
         return data
 
 @dataclass
@@ -215,19 +215,37 @@ class ArrayTypePackedGUID(ArrayType):
         return data
 
 @dataclass
+class ArrayTypeStructContent:
+    sizes: 'Sizes'
+    type_name: 'str'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'ArrayTypeStructContent':
+        return cls(
+            _from_json_data(Sizes, data.get("sizes")),
+            _from_json_data(str, data.get("type_name")),
+        )
+
+    def to_json_data(self) -> Any:
+        data: Dict[str, Any] = {}
+        data["sizes"] = _to_json_data(self.sizes)
+        data["type_name"] = _to_json_data(self.type_name)
+        return data
+
+@dataclass
 class ArrayTypeStruct(ArrayType):
-    inner_type: 'str'
+    content: 'ArrayTypeStructContent'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'ArrayTypeStruct':
         return cls(
             "Struct",
-            _from_json_data(str, data.get("inner_type")),
+            _from_json_data(ArrayTypeStructContent, data.get("content")),
         )
 
     def to_json_data(self) -> Any:
         data = { "array_type_tag": "Struct" }
-        data["inner_type"] = _to_json_data(self.inner_type)
+        data["content"] = _to_json_data(self.content)
         return data
 
 @dataclass
@@ -360,7 +378,6 @@ class Conditional:
 
 @dataclass
 class Container:
-    features: 'Features'
     file_info: 'FileInfo'
     has_manual_size_field: 'bool'
     manual_size_subtraction: 'Optional[int]'
@@ -375,7 +392,6 @@ class Container:
     @classmethod
     def from_json_data(cls, data: Any) -> 'Container':
         return cls(
-            _from_json_data(Features, data.get("features")),
             _from_json_data(FileInfo, data.get("file_info")),
             _from_json_data(bool, data.get("has_manual_size_field")),
             _from_json_data(Optional[int], data.get("manual_size_subtraction")),
@@ -390,7 +406,6 @@ class Container:
 
     def to_json_data(self) -> Any:
         data: Dict[str, Any] = {}
-        data["features"] = _to_json_data(self.features)
         data["file_info"] = _to_json_data(self.file_info)
         data["has_manual_size_field"] = _to_json_data(self.has_manual_size_field)
         data["manual_size_subtraction"] = _to_json_data(self.manual_size_subtraction)
@@ -951,7 +966,6 @@ class DefinerObjectsUsedIn:
 class Definer:
     definer_type: 'DefinerType'
     enumerators: 'List[Enumerator]'
-    features: 'Features'
     file_info: 'FileInfo'
     integer_type: 'IntegerType'
     name: 'str'
@@ -963,7 +977,6 @@ class Definer:
         return cls(
             _from_json_data(DefinerType, data.get("definer_type")),
             _from_json_data(List[Enumerator], data.get("enumerators")),
-            _from_json_data(Features, data.get("features")),
             _from_json_data(FileInfo, data.get("file_info")),
             _from_json_data(IntegerType, data.get("integer_type")),
             _from_json_data(str, data.get("name")),
@@ -975,7 +988,6 @@ class Definer:
         data: Dict[str, Any] = {}
         data["definer_type"] = _to_json_data(self.definer_type)
         data["enumerators"] = _to_json_data(self.enumerators)
-        data["features"] = _to_json_data(self.features)
         data["file_info"] = _to_json_data(self.file_info)
         data["integer_type"] = _to_json_data(self.integer_type)
         data["name"] = _to_json_data(self.name)
@@ -1064,17 +1076,6 @@ class Enums:
     @classmethod
     def from_json_data(cls, data: Any) -> 'Enums':
         return cls(_from_json_data(List[Definer], data))
-
-    def to_json_data(self) -> Any:
-        return _to_json_data(self.value)
-
-@dataclass
-class Features:
-    value: 'List[str]'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'Features':
-        return cls(_from_json_data(List[str], data))
 
     def to_json_data(self) -> Any:
         return _to_json_data(self.value)

@@ -5,7 +5,7 @@ import wow_srp
 import wow_login_messages.wow_login_messages.util as login_util
 import wow_login_messages.wow_login_messages.version3 as login
 import wow_world_messages.wow_world_messages.vanilla as world
-from wow_world_messages.wow_world_messages.util import (
+from wow_world_messages.wow_world_messages.vanilla import (
     expect_client_opcode_unencrypted,
     read_client_opcodes_encrypted,
 )
@@ -19,6 +19,7 @@ async def login_path(
     request: login.CMD_AUTH_LOGON_CHALLENGE_Client,
 ):
     account_name = request.account_name
+    print(account_name)
     server = wow_srp.SrpVerifier.from_username_and_password(
         account_name, request.account_name
     ).into_proof()
@@ -62,7 +63,7 @@ async def login_path(
                 login.RealmType.PLAYER_VS_ENVIRONMENT,
                 login.RealmFlag.NONE,
                 "A",
-                "localhost:8085",
+                "127.0.0.1:8085",
                 400.0,
                 0,
                 login.RealmCategory.ONE,
@@ -75,6 +76,7 @@ async def login_path(
 
 
 async def login_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+    print("connect")
     try:
         request = await login_util.expect_login_or_reconnect(reader)
         match request:
@@ -114,6 +116,58 @@ async def world_path(reader: asyncio.StreamReader, writer: asyncio.StreamWriter)
     opcode = await read_client_opcodes_encrypted(reader, crypto)
     print(opcode)
 
+    c = world.SMSG_CHAR_ENUM(
+        characters=[
+            world.Character(1,
+                            "TestChar",
+                            world.Race.HUMAN,
+                            world.Class.WARRIOR,
+                            world.Gender.MALE,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            1,
+                            world.Area.NORTHSHIRE_ABBEY,
+                            world.Map.EASTERN_KINGDOMS,
+                            world.Vector3d(0.0, 0.0, 0.0),
+                            0,
+                            world.CharacterFlags.NONE,
+                            False,
+                            0,
+                            0,
+                            world.CreatureFamily.NONE,
+                            [
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                            ]
+            )
+        ]
+    )
+    print(c)
+    c.write_encrypted(writer, crypto)
+
+    opcode = await read_client_opcodes_encrypted(reader, crypto)
+    print(opcode)
+
 
 async def world_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
     try:
@@ -124,8 +178,8 @@ async def world_connection(reader: asyncio.StreamReader, writer: asyncio.StreamW
 
 
 async def run_server():
-    login_server = await asyncio.start_server(login_connection, "localhost", 3724)
-    world_server = await asyncio.start_server(world_connection, "localhost", 8085)
+    login_server = await asyncio.start_server(login_connection, "127.0.0.1", 3724)
+    world_server = await asyncio.start_server(world_connection, "127.0.0.1", 8085)
     async with login_server:
         await asyncio.gather(login_server.serve_forever(), world_server.serve_forever())
 

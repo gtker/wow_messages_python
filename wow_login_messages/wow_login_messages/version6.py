@@ -14,8 +14,8 @@ from version2 import RealmType
 from version3 import SecurityFlag
 from version2 import RealmFlag
 from version5 import Realm
-from version2 import TelemetryKey
 from all import Version
+from version2 import TelemetryKey
 from all import CMD_AUTH_LOGON_CHALLENGE_Client
 from version3 import CMD_AUTH_LOGON_CHALLENGE_Server
 from version3 import CMD_AUTH_LOGON_PROOF_Client
@@ -38,8 +38,8 @@ __all__ = [
     "SecurityFlag",
     "RealmFlag",
     "Realm",
-    "TelemetryKey",
     "Version",
+    "TelemetryKey",
     "CMD_AUTH_LOGON_CHALLENGE_Client",
     "CMD_AUTH_LOGON_CHALLENGE_Server",
     "CMD_AUTH_LOGON_PROOF_Client",
@@ -67,7 +67,7 @@ class CMD_REALM_LIST_Server:
         # number_of_realms: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
         number_of_realms = int.from_bytes(await reader.readexactly(2), 'little')
 
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', inner_type='Realm'), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
+        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=522, minimum_size=12), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
         realms = []
         for _ in range(0, number_of_realms):
             realms.append(await Realm.read(reader))
@@ -95,7 +95,7 @@ class CMD_REALM_LIST_Server:
         fmt += 'H'
         data.append(len(self.realms))
 
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', inner_type='Realm'), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
+        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=522, minimum_size=12), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
         for i in self.realms:
             fmt, data = i.write(fmt, data)
 
@@ -106,7 +106,7 @@ class CMD_REALM_LIST_Server:
         data = struct.pack(fmt, *data)
         writer.write(data)
 
-    def _size(self):
+    def _size(self) -> int:
         size = 0
 
         # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
@@ -118,7 +118,7 @@ class CMD_REALM_LIST_Server:
         # number_of_realms: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
         size += 2
 
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', inner_type='Realm'), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
+        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=522, minimum_size=12), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
         for i in self.realms:
             size += i._size()
 

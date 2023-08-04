@@ -48,6 +48,29 @@ def type_to_python_str(ty: model.DataType) -> str:
             inner_type = array_type_to_python_str(inner_type)
             return f"typing.List[{inner_type}]"
 
+        case model.DataTypeGold():
+            return "int"
+        case model.DataTypeGUID():
+            return "int"
+        case model.DataTypeIPAddress():
+            return "int"
+        case model.DataTypeLevel():
+            return "int"
+        case model.DataTypeLevel16():
+            return "int"
+        case model.DataTypeLevel32():
+            return "int"
+        case model.DataTypeMilliseconds():
+            return "int"
+        case model.DataTypePackedGUID():
+            return "int"
+        case model.DataTypeSeconds():
+            return "int"
+        case model.DataTypePopulation():
+            return "float"
+        case model.DataTypeDateTime():
+            return "int"
+
         case model.DataTypeAchievementDoneArray():
             return "AchievementDoneArray"
         case model.DataTypeAchievementInProgressArray():
@@ -57,42 +80,20 @@ def type_to_python_str(ty: model.DataType) -> str:
         case model.DataTypeAuraMask():
             return "AuraMask"
 
-        case model.DataTypeDateTime():
-            return "DateTime"
         case model.DataTypeEnchantMask():
             return "EnchantMask"
-        case model.DataTypeGold():
-            return "Gold"
-        case model.DataTypeGUID():
-            return "GUID"
         case model.DataTypeInspectTalentGearMask():
             return "InspectTalentGearMask"
-        case model.DataTypeIPAddress():
-            return "int"
-        case model.DataTypeLevel():
-            return "Level"
-        case model.DataTypeLevel16():
-            return "Level16"
-        case model.DataTypeLevel32():
-            return "Level32"
-        case model.DataTypeMilliseconds():
-            return "Milliseconds"
         case model.DataTypeMonsterMoveSpline():
             return "MonsterMoveSpline"
         case model.DataTypeNamedGUID():
             return "NamedGUID"
-        case model.DataTypePackedGUID():
-            return "PackedGUID"
-        case model.DataTypeSeconds():
-            return "Seconds"
         case model.DataTypeSizedCstring():
             return "SizedCString"
         case model.DataTypeUpdateMask():
             return "UpdateMask"
         case model.DataTypeVariableItemRandomProperty():
             return "VariableItemRandomProperty"
-        case model.DataTypePopulation():
-            return "float"
         case v:
             raise Exception("{v}")
 
@@ -107,8 +108,8 @@ def array_type_to_python_str(ty: model.ArrayType):
             return "int"
         case model.ArrayTypePackedGUID():
             return "PackedGUID"
-        case model.ArrayTypeStruct(inner_type=inner_type):
-            return inner_type
+        case model.ArrayTypeStruct(content=content):
+            return content.type_name
 
 
 def all_members_from_container(
@@ -117,15 +118,25 @@ def all_members_from_container(
     out_members = []
 
     def inner(m: model.StructMember, out_members: typing.List[model.Definition]):
+        def inner_if(statement: model.IfStatement, out_members: typing.List[model.Definition]):
+            for member in statement.members:
+                inner(member, out_members)
+
+            for elseif in statement.else_if_statements:
+                inner_if(elseif, out_members)
+
+            for member in statement.else_members:
+                inner(member, out_members)
+
+
         match m:
             case model.StructMemberDefinition(_tag, definition):
                 out_members.append(definition)
 
             case model.StructMemberIfStatement(
-                _tag, model.IfStatement(members=members)
+                _tag, struct_member_content=statement
             ):
-                for member in members:
-                    inner(member, out_members)
+                inner_if(statement, out_members)
 
             case model.StructMemberOptional(
                 _tag, model.OptionalMembers(members=members)

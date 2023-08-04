@@ -13,8 +13,8 @@ from version2 import RealmCategory
 from version2 import RealmType
 from version3 import SecurityFlag
 from version2 import RealmFlag
-from version2 import TelemetryKey
 from all import Version
+from version2 import TelemetryKey
 from all import CMD_AUTH_LOGON_CHALLENGE_Client
 from version3 import CMD_AUTH_LOGON_CHALLENGE_Server
 from version3 import CMD_AUTH_LOGON_PROOF_Client
@@ -35,8 +35,8 @@ __all__ = [
     "SecurityFlag",
     "RealmFlag",
     "Realm",
-    "TelemetryKey",
     "Version",
+    "TelemetryKey",
     "CMD_AUTH_LOGON_CHALLENGE_Client",
     "CMD_AUTH_LOGON_CHALLENGE_Server",
     "CMD_AUTH_LOGON_PROOF_Client",
@@ -73,10 +73,10 @@ class Realm:
         flag = RealmFlag(int.from_bytes(await reader.readexactly(1), 'little'))
 
         # name: DataTypeCstring(data_type_tag='CString')
-        name = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip(b'\x00')
+        name = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip('\x00')
 
         # address: DataTypeCstring(data_type_tag='CString')
-        address = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip(b'\x00')
+        address = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip('\x00')
 
         # population: DataTypePopulation(data_type_tag='Population')
         population = float.from_bytes(await reader.readexactly(4), 'little')
@@ -143,7 +143,7 @@ class Realm:
 
         return fmt, data
 
-    def _size(self):
+    def _size(self) -> int:
         size = 0
 
         # realm_type: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmType', upcast=False))
@@ -192,7 +192,7 @@ class CMD_AUTH_LOGON_PROOF_Server:
         result = LoginResult(int.from_bytes(await reader.readexactly(1), 'little'))
 
         if result == LoginResult.SUCCESS:
-            # server_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+            # server_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
             server_proof = []
             for _ in range(0, 20):
                 server_proof.append(int.from_bytes(await reader.readexactly(1), 'little'))
@@ -219,7 +219,7 @@ class CMD_AUTH_LOGON_PROOF_Server:
         data.append(self.result.value)
 
         if self.result == LoginResult.SUCCESS:
-            # server_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+            # server_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
             fmt += f'{len(self.server_proof)}B'
             data.extend(self.server_proof)
 
@@ -282,7 +282,7 @@ class CMD_REALM_LIST_Server:
         # number_of_realms: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
         number_of_realms = int.from_bytes(await reader.readexactly(1), 'little')
 
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', inner_type='Realm'), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
+        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=522, minimum_size=12), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
         realms = []
         for _ in range(0, number_of_realms):
             realms.append(await Realm.read(reader))
@@ -310,7 +310,7 @@ class CMD_REALM_LIST_Server:
         fmt += 'B'
         data.append(len(self.realms))
 
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', inner_type='Realm'), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
+        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=522, minimum_size=12), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
         for i in self.realms:
             fmt, data = i.write(fmt, data)
 
@@ -321,7 +321,7 @@ class CMD_REALM_LIST_Server:
         data = struct.pack(fmt, *data)
         writer.write(data)
 
-    def _size(self):
+    def _size(self) -> int:
         size = 0
 
         # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
@@ -333,7 +333,7 @@ class CMD_REALM_LIST_Server:
         # number_of_realms: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
         size += 1
 
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', inner_type='Realm'), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
+        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=522, minimum_size=12), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
         for i in self.realms:
             size += i._size()
 

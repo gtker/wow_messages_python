@@ -23,8 +23,8 @@ __all__ = [
     "RealmType",
     "RealmFlag",
     "Realm",
-    "TelemetryKey",
     "Version",
+    "TelemetryKey",
     "CMD_AUTH_LOGON_CHALLENGE_Client",
     "CMD_AUTH_LOGON_CHALLENGE_Server",
     "CMD_AUTH_LOGON_PROOF_Client",
@@ -100,10 +100,10 @@ class Realm:
         flag = RealmFlag(int.from_bytes(await reader.readexactly(1), 'little'))
 
         # name: DataTypeCstring(data_type_tag='CString')
-        name = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip(b'\x00')
+        name = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip('\x00')
 
         # address: DataTypeCstring(data_type_tag='CString')
-        address = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip(b'\x00')
+        address = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip('\x00')
 
         # population: DataTypePopulation(data_type_tag='Population')
         population = float.from_bytes(await reader.readexactly(4), 'little')
@@ -165,7 +165,7 @@ class Realm:
 
         return fmt, data
 
-    def _size(self):
+    def _size(self) -> int:
         size = 0
 
         # realm_type: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='RealmType', upcast=True))
@@ -210,12 +210,12 @@ class TelemetryKey:
         # unknown2: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
         unknown2 = int.from_bytes(await reader.readexactly(4), 'little')
 
-        # unknown3: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='4')))
+        # unknown3: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='4')))
         unknown3 = []
         for _ in range(0, 4):
             unknown3.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
-        # cd_key_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+        # cd_key_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         cd_key_proof = []
         for _ in range(0, 20):
             cd_key_proof.append(int.from_bytes(await reader.readexactly(1), 'little'))
@@ -236,34 +236,15 @@ class TelemetryKey:
         fmt += 'I'
         data.append(self.unknown2)
 
-        # unknown3: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='4')))
+        # unknown3: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='4')))
         fmt += f'{len(self.unknown3)}B'
         data.extend(self.unknown3)
 
-        # cd_key_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+        # cd_key_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         fmt += f'{len(self.cd_key_proof)}B'
         data.extend(self.cd_key_proof)
 
         return fmt, data
-
-    def _size(self):
-        size = 0
-
-        # unknown1: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        size += 2
-
-        # unknown2: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        size += 4
-
-        # unknown3: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='4')))
-        for i in self.unknown3:
-            size += 1
-
-        # cd_key_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
-        for i in self.cd_key_proof:
-            size += 1
-
-        return size
 
 
 @dataclasses.dataclass
@@ -291,7 +272,7 @@ class CMD_AUTH_LOGON_CHALLENGE_Server:
         result = LoginResult(int.from_bytes(await reader.readexactly(1), 'little'))
 
         if result == LoginResult.SUCCESS:
-            # server_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
+            # server_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
             server_public_key = []
             for _ in range(0, 32):
                 server_public_key.append(int.from_bytes(await reader.readexactly(1), 'little'))
@@ -299,7 +280,7 @@ class CMD_AUTH_LOGON_CHALLENGE_Server:
             # generator_length: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
             generator_length = int.from_bytes(await reader.readexactly(1), 'little')
 
-            # generator: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='generator_length')))
+            # generator: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='generator_length')))
             generator = []
             for _ in range(0, generator_length):
                 generator.append(int.from_bytes(await reader.readexactly(1), 'little'))
@@ -307,17 +288,17 @@ class CMD_AUTH_LOGON_CHALLENGE_Server:
             # large_safe_prime_length: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
             large_safe_prime_length = int.from_bytes(await reader.readexactly(1), 'little')
 
-            # large_safe_prime: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='large_safe_prime_length')))
+            # large_safe_prime: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='large_safe_prime_length')))
             large_safe_prime = []
             for _ in range(0, large_safe_prime_length):
                 large_safe_prime.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
-            # salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
+            # salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
             salt = []
             for _ in range(0, 32):
                 salt.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
-            # crc_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
+            # crc_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
             crc_salt = []
             for _ in range(0, 16):
                 crc_salt.append(int.from_bytes(await reader.readexactly(1), 'little'))
@@ -344,7 +325,7 @@ class CMD_AUTH_LOGON_CHALLENGE_Server:
         data.append(self.result.value)
 
         if self.result == LoginResult.SUCCESS:
-            # server_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
+            # server_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
             fmt += f'{len(self.server_public_key)}B'
             data.extend(self.server_public_key)
 
@@ -352,7 +333,7 @@ class CMD_AUTH_LOGON_CHALLENGE_Server:
             fmt += 'B'
             data.append(len(self.generator))
 
-            # generator: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='generator_length')))
+            # generator: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='generator_length')))
             fmt += f'{len(self.generator)}B'
             data.extend(self.generator)
 
@@ -360,15 +341,15 @@ class CMD_AUTH_LOGON_CHALLENGE_Server:
             fmt += 'B'
             data.append(len(self.large_safe_prime))
 
-            # large_safe_prime: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='large_safe_prime_length')))
+            # large_safe_prime: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='large_safe_prime_length')))
             fmt += f'{len(self.large_safe_prime)}B'
             data.extend(self.large_safe_prime)
 
-            # salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
+            # salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
             fmt += f'{len(self.salt)}B'
             data.extend(self.salt)
 
-            # crc_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
+            # crc_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
             fmt += f'{len(self.crc_salt)}B'
             data.extend(self.crc_salt)
 
@@ -385,17 +366,17 @@ class CMD_AUTH_LOGON_PROOF_Client:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
-        # client_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
+        # client_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
         client_public_key = []
         for _ in range(0, 32):
             client_public_key.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
-        # client_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+        # client_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         client_proof = []
         for _ in range(0, 20):
             client_proof.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
-        # crc_hash: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+        # crc_hash: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         crc_hash = []
         for _ in range(0, 20):
             crc_hash.append(int.from_bytes(await reader.readexactly(1), 'little'))
@@ -403,7 +384,7 @@ class CMD_AUTH_LOGON_PROOF_Client:
         # number_of_telemetry_keys: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
         number_of_telemetry_keys = int.from_bytes(await reader.readexactly(1), 'little')
 
-        # telemetry_keys: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', inner_type='TelemetryKey'), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_telemetry_keys')))
+        # telemetry_keys: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=True, maximum_size=30, minimum_size=30), type_name='TelemetryKey')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_telemetry_keys')))
         telemetry_keys = []
         for _ in range(0, number_of_telemetry_keys):
             telemetry_keys.append(await TelemetryKey.read(reader))
@@ -419,15 +400,15 @@ class CMD_AUTH_LOGON_PROOF_Client:
         fmt = '<B' # opcode
         data = [1]
 
-        # client_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
+        # client_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
         fmt += f'{len(self.client_public_key)}B'
         data.extend(self.client_public_key)
 
-        # client_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+        # client_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         fmt += f'{len(self.client_proof)}B'
         data.extend(self.client_proof)
 
-        # crc_hash: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+        # crc_hash: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         fmt += f'{len(self.crc_hash)}B'
         data.extend(self.crc_hash)
 
@@ -435,7 +416,7 @@ class CMD_AUTH_LOGON_PROOF_Client:
         fmt += 'B'
         data.append(len(self.telemetry_keys))
 
-        # telemetry_keys: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', inner_type='TelemetryKey'), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_telemetry_keys')))
+        # telemetry_keys: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=True, maximum_size=30, minimum_size=30), type_name='TelemetryKey')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_telemetry_keys')))
         for i in self.telemetry_keys:
             fmt, data = i.write(fmt, data)
 
@@ -457,7 +438,7 @@ class CMD_AUTH_LOGON_PROOF_Server:
         result = LoginResult(int.from_bytes(await reader.readexactly(1), 'little'))
 
         if result == LoginResult.SUCCESS:
-            # server_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+            # server_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
             server_proof = []
             for _ in range(0, 20):
                 server_proof.append(int.from_bytes(await reader.readexactly(1), 'little'))
@@ -480,7 +461,7 @@ class CMD_AUTH_LOGON_PROOF_Server:
         data.append(self.result.value)
 
         if self.result == LoginResult.SUCCESS:
-            # server_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+            # server_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
             fmt += f'{len(self.server_proof)}B'
             data.extend(self.server_proof)
 
@@ -506,12 +487,12 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Server:
         result = LoginResult(int.from_bytes(await reader.readexactly(1), 'little'))
 
         if result == LoginResult.SUCCESS:
-            # challenge_data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
+            # challenge_data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
             challenge_data = []
             for _ in range(0, 16):
                 challenge_data.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
-            # checksum_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
+            # checksum_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
             checksum_salt = []
             for _ in range(0, 16):
                 checksum_salt.append(int.from_bytes(await reader.readexactly(1), 'little'))
@@ -531,11 +512,11 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Server:
         data.append(self.result.value)
 
         if self.result == LoginResult.SUCCESS:
-            # challenge_data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
+            # challenge_data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
             fmt += f'{len(self.challenge_data)}B'
             data.extend(self.challenge_data)
 
-            # checksum_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
+            # checksum_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
             fmt += f'{len(self.checksum_salt)}B'
             data.extend(self.checksum_salt)
 
@@ -551,17 +532,17 @@ class CMD_AUTH_RECONNECT_PROOF_Client:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
-        # proof_data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
+        # proof_data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
         proof_data = []
         for _ in range(0, 16):
             proof_data.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
-        # client_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+        # client_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         client_proof = []
         for _ in range(0, 20):
             client_proof.append(int.from_bytes(await reader.readexactly(1), 'little'))
 
-        # client_checksum: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+        # client_checksum: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         client_checksum = []
         for _ in range(0, 20):
             client_checksum.append(int.from_bytes(await reader.readexactly(1), 'little'))
@@ -579,15 +560,15 @@ class CMD_AUTH_RECONNECT_PROOF_Client:
         fmt = '<B' # opcode
         data = [3]
 
-        # proof_data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
+        # proof_data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
         fmt += f'{len(self.proof_data)}B'
         data.extend(self.proof_data)
 
-        # client_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+        # client_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         fmt += f'{len(self.client_proof)}B'
         data.extend(self.client_proof)
 
-        # client_checksum: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', inner_type=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+        # client_checksum: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         fmt += f'{len(self.client_checksum)}B'
         data.extend(self.client_checksum)
 
@@ -662,7 +643,7 @@ class CMD_REALM_LIST_Server:
         # number_of_realms: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
         number_of_realms = int.from_bytes(await reader.readexactly(1), 'little')
 
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', inner_type='Realm'), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
+        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=524, minimum_size=14), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
         realms = []
         for _ in range(0, number_of_realms):
             realms.append(await Realm.read(reader))
@@ -690,7 +671,7 @@ class CMD_REALM_LIST_Server:
         fmt += 'B'
         data.append(len(self.realms))
 
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', inner_type='Realm'), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
+        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=524, minimum_size=14), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
         for i in self.realms:
             fmt, data = i.write(fmt, data)
 
@@ -701,7 +682,7 @@ class CMD_REALM_LIST_Server:
         data = struct.pack(fmt, *data)
         writer.write(data)
 
-    def _size(self):
+    def _size(self) -> int:
         size = 0
 
         # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
@@ -713,7 +694,7 @@ class CMD_REALM_LIST_Server:
         # number_of_realms: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
         size += 1
 
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', inner_type='Realm'), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
+        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=524, minimum_size=14), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
         for i in self.realms:
             size += i._size()
 

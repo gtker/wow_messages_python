@@ -19,6 +19,9 @@ class Writer:
         s.__inner += self.__inner
         self.__inner = s.__inner
 
+    def append(self, s):
+        self.__inner += s.__inner
+
     def inner(self):
         assert self.__indentation == 0
         return self.__inner

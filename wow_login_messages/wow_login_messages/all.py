@@ -99,23 +99,6 @@ class Version:
 
         return fmt, data
 
-    def _size(self):
-        size = 0
-
-        # major: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        size += 1
-
-        # minor: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        size += 1
-
-        # patch: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        size += 1
-
-        # build: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        size += 2
-
-        return size
-
 
 @dataclasses.dataclass
 class CMD_AUTH_LOGON_CHALLENGE_Client:
@@ -219,7 +202,7 @@ class CMD_AUTH_LOGON_CHALLENGE_Client:
         data = struct.pack(fmt, *data)
         writer.write(data)
 
-    def _size(self):
+    def _size(self) -> int:
         size = 0
 
         # protocol_version: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='ProtocolVersion', upcast=False))
@@ -357,7 +340,7 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Client:
         data = struct.pack(fmt, *data)
         writer.write(data)
 
-    def _size(self):
+    def _size(self) -> int:
         size = 0
 
         # protocol_version: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='ProtocolVersion', upcast=False))

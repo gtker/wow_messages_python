@@ -81,26 +81,50 @@ def print_write_struct_member(s: Writer, d: model.Definition):
         case model.DataTypeArray(content=content):
             match content:
                 case model.Array(inner_type=inner_type):
-                    match inner_type:
-                        case model.ArrayTypeInteger(inner_type=inner_type):
-                            ty = integer_type_to_struct_pack(inner_type)
-                            s.wln(f"fmt += f'{{len(self.{d.name})}}{ty}'")
-                            s.wln(f"data.extend(self.{d.name})")
+                    if d.tags.compressed is not None:
+                        s.wln(f"fmt += f'{{len(self.{d.name})}}B'")
+                        s.wln(f"data.extend(self.{d.name})")
+                    else:
+                        match inner_type:
+                            case model.ArrayTypeInteger(content=inner_type):
+                                ty = integer_type_to_struct_pack(inner_type)
+                                s.wln(f"fmt += f'{{len(self.{d.name})}}{ty}'")
+                                s.wln(f"data.extend(self.{d.name})")
 
-                        case model.ArrayTypeStruct():
-                            s.wln(f"for i in self.{d.name}:")
-                            s.inc_indent()
-                            s.wln("fmt, data = i.write(fmt, data)")
-                            s.dec_indent()  # for i in
+                            case model.ArrayTypeStruct(content=content):
+                                s.wln(f"for i in self.{d.name}:")
+                                s.inc_indent()
+                                s.wln("fmt, data = i.write(fmt, data)")
+                                s.dec_indent()  # for i in
 
-                        case v:
-                            raise Exception(f"{v}")
+                            case v:
+                                raise Exception(f"{v}")
 
                 case v:
                     raise Exception(f"{v}")
 
         case model.DataTypeStruct(content=model.DataTypeStructContent()):
             s.wln(f"fmt, data = self.{d.name}.write(fmt, data)")
+
+        case model.DataTypeGUID():
+            s.wln("fmt += 'Q'")
+            s.wln(f"data.append(self.{d.name})")
+
+        case model.DataTypeLevel():
+            s.wln("fmt += 'B'")
+            s.wln(f"data.append(self.{d.name})")
+
+        case model.DataTypeLevel16():
+            s.wln("fmt += 'H'")
+            s.wln(f"data.append(self.{d.name})")
+
+        case model.DataTypeLevel32():
+            s.wln("fmt += 'I'")
+            s.wln(f"data.append(self.{d.name})")
+
+        case model.DataTypeFloatingPoint():
+            s.wln("fmt += 'f'")
+            s.wln(f"data.append(self.{d.name})")
 
         case v:
             print(v)
@@ -110,9 +134,23 @@ def print_write_struct_member(s: Writer, d: model.Definition):
 
 
 def print_write(s: Writer, container: Container):
+    unencrypted = container.name == "CMSG_AUTH_SESSION" or container.name == "SMSG_AUTH_CHALLENGE"
+
     match container.object_type:
         case model.ObjectTypeStruct():
             s.wln("def write(self, fmt, data):")
+        case model.ObjectTypeCmsg() | model.ObjectTypeSmsg():
+            if unencrypted:
+                s.wln("def write_unencrypted(self, writer: asyncio.StreamWriter):")
+            else:
+                version_string = "vanilla"
+                s.wln(f"def write_encrypted(")
+                s.inc_indent()
+                s.wln("self,")
+                s.wln("writer: asyncio.StreamWriter,")
+                s.wln(f"header_crypto: wow_srp.{version_string}_header.HeaderCrypto,")
+                s.dec_indent()
+                s.wln("):")
         case _:
             s.wln("def write(self, writer: asyncio.StreamWriter):")
     s.inc_indent()
@@ -126,6 +164,51 @@ def print_write(s: Writer, container: Container):
             s.wln("fmt = '<B' # opcode")
             s.wln(f"data = [{opcode}]")
             s.newline()
+
+        case model.ObjectTypeCmsg(opcode=opcode):
+            size = "self._size()"
+            if container.sizes.constant_sized:
+                size = str(container.sizes.maximum_size)
+
+            s.wln(f"size = {size} + 4")
+            s.wln(f"opcode = 0x{opcode:04X}")
+            s.wln(f"header = bytearray(6 + {size})")
+
+            if not unencrypted:
+                s.wln("data = bytes(header_crypto.encrypt_server_header(size, opcode))")
+                s.newline()
+                s.wln('struct.pack_into("<6s", header, 0, data)')
+                s.newline()
+            else:
+                s.wln('struct.pack_into(">H", header, 0, size)')
+                s.wln('struct.pack_into("<H", header, 2, opcode)')
+
+            s.wln('fmt = "<"')
+            s.wln(f"data = []")
+            s.newline()
+
+        case model.ObjectTypeSmsg(opcode=opcode):
+            size = "self._size()"
+            if container.sizes.constant_sized:
+                size = str(container.sizes.maximum_size)
+
+            s.wln(f"size = {size} + 2")
+            s.wln(f"opcode = 0x{opcode:04X}")
+            s.wln(f"header = bytearray(4 + {size})")
+
+            if not unencrypted:
+                s.wln("data = bytes(header_crypto.encrypt_server_header(size, opcode))")
+                s.newline()
+                s.wln('struct.pack_into("<4s", header, 0, data)')
+                s.newline()
+            else:
+                s.wln('struct.pack_into(">H", header, 0, size)')
+                s.wln('struct.pack_into("<H", header, 2, opcode)')
+
+            s.wln('fmt = "<"')
+            s.wln(f"data = []")
+            s.newline()
+
         case _:
             raise Exception("unsupported write header")
 
@@ -138,6 +221,12 @@ def print_write(s: Writer, container: Container):
         case model.ObjectTypeClogin() | model.ObjectTypeSlogin():
             s.wln("data = struct.pack(fmt, *data)")
             s.wln("writer.write(data)")
+        case model.ObjectTypeCmsg():
+            s.wln("struct.pack_into(fmt, header, 6, *data)")
+            s.wln("writer.write(header)")
+        case model.ObjectTypeSmsg():
+            s.wln("struct.pack_into(fmt, header, 4, *data)")
+            s.wln("writer.write(header)")
         case _:
             raise Exception("unsupported write header")
 
@@ -151,7 +240,7 @@ def print_write_member(s: Writer, m: model.StructMember):
             print_write_struct_member(s, definition)
 
         case model.StructMemberIfStatement(_tag, statement):
-            print_write_if_statement(s, statement)
+            print_write_if_statement(s, statement, False)
 
         case model.StructMemberOptional(_tag, model.OptionalMembers(members=members)):
             raise Exception("optional unimpl")
@@ -160,7 +249,11 @@ def print_write_member(s: Writer, m: model.StructMember):
             raise Exception("invalid struct member")
 
 
-def print_write_if_statement(s: Writer, statement: model.IfStatement):
+def print_write_if_statement(s: Writer, statement: model.IfStatement, is_else_if: bool):
+    extra_elseif = ""
+    if is_else_if:
+        extra_elseif = "el"
+
     original_type = type_to_python_str(statement.original_type)
     match statement.conditional.equations:
         case model.ConditionalEquationsEquals(
@@ -168,7 +261,7 @@ def print_write_if_statement(s: Writer, statement: model.IfStatement):
         ):
             if len(value) == 1:
                 s.wln(
-                    f"if self.{statement.conditional.variable_name} == {original_type}.{value[0]}:"
+                    f"{extra_elseif}if self.{statement.conditional.variable_name} == {original_type}.{value[0]}:"
                 )
             else:
                 raise Exception("unimpl")
@@ -177,7 +270,7 @@ def print_write_if_statement(s: Writer, statement: model.IfStatement):
         ):
             if len(value) == 1:
                 s.wln(
-                    f"if {original_type}.{value[0]} in self.{statement.conditional.variable_name}:"
+                    f"{extra_elseif}if {original_type}.{value[0]} in self.{statement.conditional.variable_name}:"
                 )
             else:
                 raise Exception("unimpl")
@@ -192,3 +285,15 @@ def print_write_if_statement(s: Writer, statement: model.IfStatement):
         print_write_member(s, member)
 
     s.dec_indent()  # if
+
+    for elseif in statement.else_if_statements:
+        print_write_if_statement(s, elseif, True)
+
+    if len(statement.else_members) != 0:
+        s.wln("else:")
+        s.inc_indent()
+
+        for m in statement.else_members:
+            print_write_member(s, m)
+
+        s.dec_indent()
