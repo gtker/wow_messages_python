@@ -1,12 +1,19 @@
+import cProfile
 import json
 import os.path
+import pstats
+import stat
 import typing
 
 import model
 from print_enum import print_enum, print_flag
 from print_struct import print_struct
 from print_struct.util import all_members_from_container
-from util import world_version_matches, should_print_container, world_version_to_module_name
+from util import (
+    world_version_matches,
+    should_print_container,
+    world_version_to_module_name,
+)
 from world_utils import print_world_utils
 from writer import Writer
 
@@ -18,9 +25,7 @@ IR_FILE_PATH = f"{THIS_FILE_PATH}/intermediate_representation.json"
 
 LOGIN_UTIL_FILE = f"{LOGIN_MESSAGE_DIR}/util.py"
 LOGIN_OPCODES_FILE = f"{LOGIN_MESSAGE_DIR}/opcodes.py"
-VERSIONS = [
-    model.WorldVersion(major=1, minor=12, patch=1, build=5875)
-]
+VERSIONS = [model.WorldVersion(major=1, minor=12, patch=1, build=5875)]
 
 
 def print_includes(s: Writer, include_wow_srp: bool):
@@ -65,7 +70,9 @@ def main():
         f.write(opcodes.inner())
 
 
-def sanitize_model(m: model.IntermediateRepresentationSchema) -> model.IntermediateRepresentationSchema:
+def sanitize_model(
+    m: model.IntermediateRepresentationSchema,
+) -> model.IntermediateRepresentationSchema:
     def containers(container: model.Container) -> model.Container:
         for m in all_members_from_container(e):
             if m.name == "class":
@@ -255,4 +262,4 @@ def login_version_matches(tags: model.ObjectTags, value: int) -> bool:
 
 
 if __name__ == "__main__":
-    main()
+    cProfile.run("main()", sort=pstats.SortKey.CUMULATIVE)

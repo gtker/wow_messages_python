@@ -222,7 +222,7 @@ class Realm:
         # realm_id: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
         size += 1
 
-        if RealmFlag.SPECIFY_BUILD in self.flag:
+        if self.RealmFlag.SPECIFY_BUILD in self.flag:
             # version: DataTypeStruct(data_type_tag='Struct', content=DataTypeStructContent(sizes=Sizes(constant_sized=True, maximum_size=5, minimum_size=5), type_name='Version'))
             size += 5
 

@@ -12,6 +12,13 @@ class Writer:
         self.w(s)
         self.newline()
 
+    def wln_no_indent(self, s):
+        self.w_no_indent(s)
+        self.newline()
+
+    def w_no_indent(self, s):
+        self.__inner += s
+
     def newline(self):
         self.__inner += "\n"
 

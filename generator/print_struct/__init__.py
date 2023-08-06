@@ -27,10 +27,10 @@ def print_struct(s: Writer, container: Container):
 def print_members_definitions(s: Writer, container: Container):
     non_optional = Writer()
     non_optional.inc_indent()
-    
+
     optionals = Writer()
     optionals.inc_indent()
-    
+
     for member in container.members:
         print_member_definition(non_optional, optionals, member, False)
 
@@ -40,7 +40,9 @@ def print_members_definitions(s: Writer, container: Container):
     s.newline()
 
 
-def print_member_definition(non_optional: Writer, optionals: Writer, member: model.StructMember, optional: bool):
+def print_member_definition(
+    non_optional: Writer, optionals: Writer, member: model.StructMember, optional: bool
+):
     match member:
         case model.StructMemberDefinition(
             _tag,
@@ -80,7 +82,9 @@ def print_member_definition(non_optional: Writer, optionals: Writer, member: mod
             raise Exception("invalid struct member")
 
 
-def print_member_if_statement(non_optional: Writer, optionals: Writer, statement: model.IfStatement):
+def print_member_if_statement(
+    non_optional: Writer, optionals: Writer, statement: model.IfStatement
+):
     for member in statement.members:
         print_member_definition(non_optional, optionals, member, True)
 

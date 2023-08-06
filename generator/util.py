@@ -1,6 +1,7 @@
 import typing
 
 import model
+from print_struct.util import all_members_from_container
 
 WORLD_ALLOWED_OBJECTS = [
     "CMSG_AUTH_SESSION",
@@ -16,9 +17,99 @@ WORLD_ALLOWED_OBJECTS = [
 ]
 
 
+def should_print_container_if(statement: model.IfStatement) -> bool:
+    match statement.conditional.equations:
+        case model.ConditionalEquationsEquals(
+            _tag, model.ConditionalEquationsEqualsValues(value=value)
+        ):
+            if len(value) != 1:
+                return False
+
+        case model.ConditionalEquationsBitwiseAnd(
+            values=model.ConditionalEquationsBitwiseAndValues(value=value)
+        ):
+            if len(value) != 1:
+                return False
+
+        case model.ConditionalEquationsNotEquals(values=values):
+            pass
+
+        case _:
+            raise Exception("invalid case")
+
+    for m in statement.members:
+        if not should_print_container_struct_member(m):
+            return False
+
+    for elseif in statement.else_if_statements:
+        if not should_print_container_if(elseif):
+            return False
+
+    for m in statement.else_members:
+        if not should_print_container_struct_member(m):
+            return False
+
+    return True
+
+
+def should_print_container_struct_member(m: model.StructMember) -> bool:
+    match m:
+        case model.StructMemberDefinition(struct_member_content=content):
+            forbidden_types = [
+                "TransportInfo",
+                "SpellCastTargets",
+                "MovementInfo",
+                "Mail",
+                "Object",
+            ]
+
+            match content.data_type:
+                case model.DataTypeStruct(content=content):
+                    if content.type_name in forbidden_types:
+                        return False
+                case model.DataTypeArray(content=array):
+                    match array.inner_type:
+                        case model.ArrayTypeStruct(content=content):
+                            if content.type_name in forbidden_types:
+                                return False
+
+        case model.StructMemberIfStatement(struct_member_content=statement):
+            if not should_print_container_if(statement):
+                return False
+        case model.StructMemberOptional(struct_member_content=optional):
+            return False
+        case _:
+            raise Exception("unknown m")
+
+    return True
+
+
 def should_print_container(container: model.Container, v: model.WorldVersion) -> bool:
-    if container.name not in WORLD_ALLOWED_OBJECTS:
+    if container.name == "CMSG_AUTH_SESSION":
+        return True
+
+    if container.tags.compressed is not None:
         return False
+
+    match container.object_type:
+        case model.ObjectTypeMsg():
+            return False
+        case _:
+            pass
+
+    for d in all_members_from_container(container):
+        match d.data_type:
+            case model.DataTypeAchievementDoneArray() | model.DataTypeAchievementInProgressArray() | model.DataTypeAddonArray() | model.DataTypeAuraMask() | model.DataTypeEnchantMask() | model.DataTypeInspectTalentGearMask() | model.DataTypeMonsterMoveSpline() | model.DataTypeNamedGUID() | model.DataTypeUpdateMask() | model.DataTypeVariableItemRandomProperty() | model.DataTypePackedGUID() | model.DataTypeSizedCstring():
+                return False
+            case model.DataTypeArray(content=array):
+                match array.size:
+                    case model.ArraySizeEndless():
+                        return False
+
+    for m in container.members:
+        if not should_print_container_struct_member(m):
+            return False
+
     if not world_version_matches(container.tags, v):
         return False
 
@@ -90,4 +181,3 @@ def world_version_to_module_name(v: model.WorldVersion) -> str:
             return "vanilla"
         case _:
             raise Exception("unknown version")
-

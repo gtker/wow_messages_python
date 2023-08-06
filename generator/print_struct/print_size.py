@@ -61,8 +61,8 @@ def print_size_inner(s: Writer, m: model.StructMember, with_self: bool):
                         size = content.sizes.maximum_size
                         s.wln(f"size += {size}")
                     else:
-                        raise Exception("Not constant sized struct in size")
-                case model.DataTypeIPAddress():
+                        s.wln(f"size += {extra_self}{d.name}._size()")
+                case model.DataTypeDateTime() | model.DataTypeGold() | model.DataTypeSeconds() | model.DataTypeMilliseconds() | model.DataTypeIPAddress():
                     s.wln("size += 4")
                 case model.DataTypePopulation():
                     s.wln("size += 4")
@@ -82,6 +82,22 @@ def print_size_inner(s: Writer, m: model.StructMember, with_self: bool):
                 case model.DataTypeFloatingPoint():
                     s.wln("size += 4")
 
+                case model.DataTypePackedGUID():
+                    s.wln(f"{d.name}_byte_mask = 0")
+
+                    s.wln("for i in range(0, 8):")
+                    s.inc_indent()
+
+                    s.wln(f"if {extra_self}{d.name} & (1 << i * 8):")
+                    s.inc_indent()
+
+                    s.wln(f"{d.name}_byte_mask |= 1 << i")
+
+                    s.wln(f"size += 1 + bin({d.name}_byte_mask)[2:].count('1')")
+
+                    s.dec_indent()
+                    s.dec_indent()
+
                 case model.DataTypeArray(content=array):
                     if d.tags.compressed is not None:
                         s.wln(f"size += len({extra_self}{d.name})")
@@ -98,6 +114,10 @@ def print_size_inner(s: Writer, m: model.StructMember, with_self: bool):
                             case model.ArrayTypeInteger(content=integer_type):
                                 size = integer_type_to_size(integer_type)
                                 s.wln(f"size += {size}")
+                            case model.ArrayTypeCstring():
+                                s.wln("size += len(i) + 1")
+                            case model.ArrayTypeGUID():
+                                s.wln("size += 8")
                             case v:
                                 raise Exception(f"{v}")
 
@@ -107,7 +127,7 @@ def print_size_inner(s: Writer, m: model.StructMember, with_self: bool):
                     raise Exception(f"{v}")
 
         case model.StructMemberIfStatement(struct_member_content=statement):
-            print_size_if_statement(s, statement, False)
+            print_size_if_statement(s, statement, False, with_self)
         case model.StructMemberOptional():
             raise Exception("unimpl")
         case v:
@@ -116,10 +136,16 @@ def print_size_inner(s: Writer, m: model.StructMember, with_self: bool):
     s.newline()
 
 
-def print_size_if_statement(s: Writer, statement: model.IfStatement, is_else_if: bool):
+def print_size_if_statement(
+    s: Writer, statement: model.IfStatement, is_else_if: bool, with_self: bool
+):
     extra_elseif = ""
     if is_else_if:
         extra_elseif = "el"
+
+    extra_self = ""
+    if with_self:
+        extra_self = "self."
 
     original_type = type_to_python_str(statement.original_type)
     match statement.conditional.equations:
@@ -128,7 +154,7 @@ def print_size_if_statement(s: Writer, statement: model.IfStatement, is_else_if:
         ):
             if len(value) == 1:
                 s.wln(
-                    f"{extra_elseif}if self.{statement.conditional.variable_name} == {original_type}.{value[0]}:"
+                    f"{extra_elseif}if {extra_self}{statement.conditional.variable_name} == {original_type}.{value[0]}:"
                 )
             else:
                 raise Exception("unimpl")
@@ -137,28 +163,30 @@ def print_size_if_statement(s: Writer, statement: model.IfStatement, is_else_if:
         ):
             if len(value) == 1:
                 s.wln(
-                    f"{extra_elseif}if {original_type}.{value[0]} in self.{statement.conditional.variable_name}:"
+                    f"{extra_elseif}if {extra_self}{original_type}.{value[0]} in {extra_self}{statement.conditional.variable_name}:"
                 )
             else:
                 raise Exception("unimpl")
-        case model.ConditionalEquationsNotEquals():
-            raise Exception("unimpl")
+        case model.ConditionalEquationsNotEquals(values=values):
+            s.wln(
+                f"if {extra_self}{original_type}.{values.value} not in {extra_self}{statement.conditional.variable_name}:"
+            )
 
     s.inc_indent()
 
     for member in statement.members:
-        print_size_inner(s, member, True)
+        print_size_inner(s, member, with_self)
 
-    s.dec_indent() # if
+    s.dec_indent()  # if
 
     for elseif in statement.else_if_statements:
-        print_size_if_statement(s, elseif, True)
+        print_size_if_statement(s, elseif, True, with_self)
 
     if len(statement.else_members) != 0:
         s.wln("else:")
         s.inc_indent()
 
         for m in statement.else_members:
-            print_size_inner(s, m, True)
+            print_size_inner(s, m, with_self)
 
         s.dec_indent()

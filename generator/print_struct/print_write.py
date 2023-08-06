@@ -60,7 +60,7 @@ def print_write_struct_member(s: Writer, d: model.Definition):
             s.wln(f"fmt += '{integer_type_to_struct_pack(integer_type)}'")
             s.wln(f"data.append(self.{d.name}.value)")
 
-        case model.DataTypeIPAddress():
+        case model.DataTypeDateTime() | model.DataTypeGold() | model.DataTypeSeconds() | model.DataTypeMilliseconds() | model.DataTypeIPAddress():
             s.wln("fmt += 'I'")
             s.wln(f"data.append(self.{d.name})")
 
@@ -97,6 +97,21 @@ def print_write_struct_member(s: Writer, d: model.Definition):
                                 s.wln("fmt, data = i.write(fmt, data)")
                                 s.dec_indent()  # for i in
 
+                            case model.ArrayTypeCstring():
+                                s.wln(f"for i in self.{d.name}:")
+                                s.inc_indent()
+                                s.wln(f"fmt += f'{{len(i)}}sB'")
+                                s.wln(f"data.append(i.encode('utf-8'))")
+                                s.wln("data.append(0)")
+                                s.dec_indent()  # for i in
+
+                            case model.ArrayTypeGUID():
+                                s.wln(f"for i in self.{d.name}:")
+                                s.inc_indent()
+                                s.wln("fmt += 'Q'")
+                                s.wln(f"data.append(i)")
+                                s.dec_indent()  # for i in
+
                             case v:
                                 raise Exception(f"{v}")
 
@@ -126,6 +141,36 @@ def print_write_struct_member(s: Writer, d: model.Definition):
             s.wln("fmt += 'f'")
             s.wln(f"data.append(self.{d.name})")
 
+        case model.DataTypePackedGUID():
+            s.wln(f"{d.name}_byte_mask = 0")
+
+            s.wln("for i in range(0, 8):")
+            s.inc_indent()
+
+            s.wln(f"if self.{d.name} & (1 << i * 8):")
+            s.inc_indent()
+
+            s.wln(f"{d.name}_byte_mask |= 1 << i")
+
+            s.dec_indent()
+            s.dec_indent()
+
+            s.wln("fmt += 'B'")
+            s.wln(f"data.append({d.name}_byte_mask)")
+
+            s.wln("for i in range(0, 8):")
+            s.inc_indent()
+
+            s.wln("val = guid & (1 << i * 8)")
+            s.wln("if val:")
+            s.inc_indent()
+
+            s.wln('fmt += "B"')
+            s.wln("data.append(val)")
+
+            s.dec_indent()
+            s.dec_indent()
+
         case v:
             print(v)
             raise Exception(f"{v}")
@@ -134,7 +179,9 @@ def print_write_struct_member(s: Writer, d: model.Definition):
 
 
 def print_write(s: Writer, container: Container):
-    unencrypted = container.name == "CMSG_AUTH_SESSION" or container.name == "SMSG_AUTH_CHALLENGE"
+    unencrypted = (
+        container.name == "CMSG_AUTH_SESSION" or container.name == "SMSG_AUTH_CHALLENGE"
+    )
 
     match container.object_type:
         case model.ObjectTypeStruct():
@@ -274,8 +321,10 @@ def print_write_if_statement(s: Writer, statement: model.IfStatement, is_else_if
                 )
             else:
                 raise Exception("unimpl")
-        case model.ConditionalEquationsNotEquals():
-            raise Exception("unimpl")
+        case model.ConditionalEquationsNotEquals(values=values):
+            s.wln(
+                f"if {original_type}.{values.value} not in self.{statement.conditional.variable_name}:"
+            )
         case v:
             raise Exception(f"{v}")
 

@@ -103,11 +103,11 @@ def array_type_to_python_str(ty: model.ArrayType):
         case model.ArrayTypeCstring():
             return "str"
         case model.ArrayTypeGUID():
-            return "GUID"
+            return "int"
         case model.ArrayTypeInteger():
             return "int"
         case model.ArrayTypePackedGUID():
-            return "PackedGUID"
+            return "int"
         case model.ArrayTypeStruct(content=content):
             return content.type_name
 

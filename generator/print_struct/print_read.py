@@ -9,14 +9,18 @@ from print_struct.util import (
 from writer import Writer
 
 
-def print_read_struct_member(s: Writer, d: model.Definition, container: model.Container):
+def print_read_struct_member(
+    s: Writer, d: model.Definition, container: model.Container
+):
     s.wln(f"# {d.name}: {d.data_type}")
     if d.tags.compressed is not None:
         s.wln("size = 0")
 
         for m in container.members:
             match m:
-                case model.StructMemberDefinition(struct_member_content=model.Definition(name=name)):
+                case model.StructMemberDefinition(
+                    struct_member_content=model.Definition(name=name)
+                ):
                     if name == d.name:
                         break
 
@@ -70,7 +74,7 @@ def print_read_struct_member(s: Writer, d: model.Definition, container: model.Co
                 f"{d.name} = (await reader.readuntil(b'\\x00')).decode('utf-8').rstrip('\\x00')"
             )
 
-        case model.DataTypeIPAddress():
+        case model.DataTypeDateTime() | model.DataTypeGold() | model.DataTypeSeconds() | model.DataTypeMilliseconds() | model.DataTypeIPAddress():
             s.wln(f"{d.name} = int.from_bytes(await reader.readexactly(4), 'big')")
 
         case model.DataTypeArray(content=content):
@@ -96,6 +100,16 @@ def print_read_struct_member(s: Writer, d: model.Definition, container: model.Co
                 case model.ArrayTypeStruct(content=content):
                     s.wln(f"{d.name}.append(await {content.type_name}.read(reader))")
 
+                case model.ArrayTypeCstring():
+                    s.wln(
+                        f"{d.name}.append((await reader.readuntil(b'\\x00')).decode('utf-8').rstrip('\\x00'))"
+                    )
+
+                case model.ArrayTypeGUID():
+                    s.wln(
+                        f"{d.name}.append(int.from_bytes(await reader.readexactly(8), 'little'))"
+                    )
+
                 case v:
                     raise Exception(f"{v}")
 
@@ -115,6 +129,25 @@ def print_read_struct_member(s: Writer, d: model.Definition, container: model.Co
             s.wln(f"{d.name} = int.from_bytes(await reader.readexactly(2), 'little')")
         case model.DataTypeLevel32():
             s.wln(f"{d.name} = int.from_bytes(await reader.readexactly(4), 'little')")
+
+        case model.DataTypePackedGUID():
+            s.wln(f"{d.name} = 0")
+            s.wln(
+                f"{d.name}_byte_mask = int.from_bytes(await reader.readexactly(1), 'little')"
+            )
+
+            s.wln(f"for i in range(0, 8):")
+            s.inc_indent()
+
+            s.wln(f"if {d.name}_byte_mask & (1 << i):")
+            s.inc_indent()
+
+            s.wln(
+                f"{d.name} |= (int.from_bytes(await reader.readexactly(1), 'little') << (i * 8))"
+            )
+
+            s.dec_indent()
+            s.dec_indent()
 
         case model.DataTypeFloatingPoint():
             s.wln(f"[{d.name}] = struct.unpack('f', await reader.readexactly(4))")
@@ -142,7 +175,12 @@ def print_read_member(s: Writer, m: model.StructMember, container: model.Contain
             raise Exception("invalid struct member")
 
 
-def print_read_if_statement(s: Writer, statement: model.IfStatement, container: model.Container, is_else_if: bool):
+def print_read_if_statement(
+    s: Writer,
+    statement: model.IfStatement,
+    container: model.Container,
+    is_else_if: bool,
+):
     extra_elseif = ""
     if is_else_if:
         extra_elseif = "el"
@@ -167,8 +205,10 @@ def print_read_if_statement(s: Writer, statement: model.IfStatement, container: 
                 )
             else:
                 raise Exception("unimpl")
-        case model.ConditionalEquationsNotEquals():
-            raise Exception("unimpl")
+        case model.ConditionalEquationsNotEquals(values=values):
+            s.wln(
+                f"if {statement.conditional.variable_name} != {original_type}.{values.value}:"
+            )
 
     s.inc_indent()
 
@@ -188,7 +228,6 @@ def print_read_if_statement(s: Writer, statement: model.IfStatement, container: 
             print_read_member(s, m, container)
 
         s.dec_indent()
-
 
 
 def print_read(s: Writer, container: Container):
