@@ -24,6 +24,29 @@ class Writer:
             self.wln(s)
         self.dec_indent()
 
+    def write_block(self, s: str):
+        for i, line in enumerate(s.splitlines()):
+            if i == 0:
+                continue
+
+            if line.strip() == "":
+                self.newline()
+                continue
+
+            self.wln(line)
+
+    def column(self) -> int:
+        for i, ch in enumerate(reversed(self.__inner)):
+            if ch == "\n":
+                return i
+
+        return len(self.__inner)
+
+    def w_break_at(self, s: str):
+        if self.column() >= 80:
+            self.newline()
+        self.w_no_indent(s)
+
     def wln_no_indent(self, s):
         self.w_no_indent(s)
         self.newline()

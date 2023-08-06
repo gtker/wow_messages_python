@@ -21,7 +21,7 @@ def print_members_definitions(s: Writer, container: Container):
 
 
 def print_member_definition(
-    non_optional: Writer, optionals: Writer, member: model.StructMember, optional: bool
+        non_optional: Writer, optionals: Writer, member: model.StructMember, optional: bool
 ):
     match member:
         case model.StructMemberDefinition(
@@ -36,15 +36,13 @@ def print_member_definition(
             ),
         ):
             if (
-                used_as_size_in is not None
-                or size_of_fields_before_size is not None
-                or constant_value is not None
+                    used_as_size_in is not None
+                    or size_of_fields_before_size is not None
+                    or constant_value is not None
             ):
                 return
 
-            if tags.compressed is not None:
-                non_optional.wln(f"{name}: list[int]")
-            elif optional:
+            if optional:
                 optionals.wln(
                     f"{name}: typing.Optional[{type_to_python_str(data_type)}] = None"
                 )
@@ -63,7 +61,7 @@ def print_member_definition(
 
 
 def print_member_if_statement(
-    non_optional: Writer, optionals: Writer, statement: model.IfStatement
+        non_optional: Writer, optionals: Writer, statement: model.IfStatement
 ):
     for member in statement.members:
         print_member_definition(non_optional, optionals, member, True)

@@ -3,7 +3,9 @@ import dataclasses
 import enum
 import struct
 import typing
+import zlib
 from .util import read_string
+from .util import read_bool
 from .util import read_int
 from .util import read_cstring
 from .util import read_float
@@ -83,52 +85,52 @@ class CMD_AUTH_LOGON_CHALLENGE_Server:
         security_flag = None
         pin_grid_seed = None
         pin_salt = None
-        # protocol_version: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
+        # protocol_version: u8
         _protocol_version = await read_int(reader, 1)
 
-        # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
+        # result: LoginResult
         result = LoginResult(await read_int(reader, 1))
 
         if result == LoginResult.SUCCESS:
-            # server_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
+            # server_public_key: u8[32]
             server_public_key = []
             for _ in range(0, 32):
                 server_public_key.append(await read_int(reader, 1))
 
-            # generator_length: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
+            # generator_length: u8
             generator_length = await read_int(reader, 1)
 
-            # generator: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='generator_length')))
+            # generator: u8[generator_length]
             generator = []
             for _ in range(0, generator_length):
                 generator.append(await read_int(reader, 1))
 
-            # large_safe_prime_length: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
+            # large_safe_prime_length: u8
             large_safe_prime_length = await read_int(reader, 1)
 
-            # large_safe_prime: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='large_safe_prime_length')))
+            # large_safe_prime: u8[large_safe_prime_length]
             large_safe_prime = []
             for _ in range(0, large_safe_prime_length):
                 large_safe_prime.append(await read_int(reader, 1))
 
-            # salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
+            # salt: u8[32]
             salt = []
             for _ in range(0, 32):
                 salt.append(await read_int(reader, 1))
 
-            # crc_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
+            # crc_salt: u8[16]
             crc_salt = []
             for _ in range(0, 16):
                 crc_salt.append(await read_int(reader, 1))
 
-            # security_flag: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='SecurityFlag', upcast=False))
+            # security_flag: SecurityFlag
             security_flag = SecurityFlag(await read_int(reader, 1))
 
             if security_flag == SecurityFlag.PIN:
-                # pin_grid_seed: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
+                # pin_grid_seed: u32
                 pin_grid_seed = await read_int(reader, 4)
 
-                # pin_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
+                # pin_salt: u8[16]
                 pin_salt = []
                 for _ in range(0, 16):
                     pin_salt.append(await read_int(reader, 1))
@@ -145,62 +147,24 @@ class CMD_AUTH_LOGON_CHALLENGE_Server:
             pin_salt=pin_salt,
         )
 
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [0]
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [0]
 
-        # protocol_version: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        fmt += 'B'
-        data.append(0)
-
-        # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
-        fmt += 'B'
-        data.append(self.result.value)
-
+        _fmt += 'BB'
+        _data.extend([0, self.result.value])
         if self.result == LoginResult.SUCCESS:
-            # server_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
-            fmt += f'{len(self.server_public_key)}B'
-            data.extend(self.server_public_key)
-
-            # generator_length: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-            fmt += 'B'
-            data.append(len(self.generator))
-
-            # generator: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='generator_length')))
-            fmt += f'{len(self.generator)}B'
-            data.extend(self.generator)
-
-            # large_safe_prime_length: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-            fmt += 'B'
-            data.append(len(self.large_safe_prime))
-
-            # large_safe_prime: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='large_safe_prime_length')))
-            fmt += f'{len(self.large_safe_prime)}B'
-            data.extend(self.large_safe_prime)
-
-            # salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
-            fmt += f'{len(self.salt)}B'
-            data.extend(self.salt)
-
-            # crc_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
-            fmt += f'{len(self.crc_salt)}B'
-            data.extend(self.crc_salt)
-
-            # security_flag: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='SecurityFlag', upcast=False))
-            fmt += 'B'
-            data.append(self.security_flag.value)
-
+            _fmt += f'{len(self.server_public_key)}BB{len(self.generator)}BB{len(self.large_safe_prime)}B{len(self.salt)}B{len(self.crc_salt)}BB'
+            _data.extend([*self.server_public_key, len(self.generator), *self.generator, len(self.large_safe_prime), *self.large_safe_prime, *self.salt, *self.crc_salt, self.security_flag.value])
             if self.security_flag == SecurityFlag.PIN:
-                # pin_grid_seed: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-                fmt += 'I'
-                data.append(self.pin_grid_seed)
-
-                # pin_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
-                fmt += f'{len(self.pin_salt)}B'
-                data.extend(self.pin_salt)
-
-        data = struct.pack(fmt, *data)
-        writer.write(data)
+                _fmt += f'I{len(self.pin_salt)}B'
+                _data.extend([self.pin_grid_seed, *self.pin_salt])
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
 
 
 @dataclasses.dataclass
@@ -217,39 +181,39 @@ class CMD_AUTH_LOGON_PROOF_Client:
     async def read(reader: asyncio.StreamReader):
         pin_salt = None
         pin_hash = None
-        # client_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
+        # client_public_key: u8[32]
         client_public_key = []
         for _ in range(0, 32):
             client_public_key.append(await read_int(reader, 1))
 
-        # client_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+        # client_proof: u8[20]
         client_proof = []
         for _ in range(0, 20):
             client_proof.append(await read_int(reader, 1))
 
-        # crc_hash: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+        # crc_hash: u8[20]
         crc_hash = []
         for _ in range(0, 20):
             crc_hash.append(await read_int(reader, 1))
 
-        # number_of_telemetry_keys: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
+        # number_of_telemetry_keys: u8
         number_of_telemetry_keys = await read_int(reader, 1)
 
-        # telemetry_keys: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=True, maximum_size=30, minimum_size=30), type_name='TelemetryKey')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_telemetry_keys')))
+        # telemetry_keys: TelemetryKey[number_of_telemetry_keys]
         telemetry_keys = []
         for _ in range(0, number_of_telemetry_keys):
             telemetry_keys.append(await TelemetryKey.read(reader))
 
-        # security_flag: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='SecurityFlag', upcast=False))
+        # security_flag: SecurityFlag
         security_flag = SecurityFlag(await read_int(reader, 1))
 
         if security_flag == SecurityFlag.PIN:
-            # pin_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
+            # pin_salt: u8[16]
             pin_salt = []
             for _ in range(0, 16):
                 pin_salt.append(await read_int(reader, 1))
 
-            # pin_hash: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+            # pin_hash: u8[20]
             pin_hash = []
             for _ in range(0, 20):
                 pin_hash.append(await read_int(reader, 1))
@@ -264,45 +228,29 @@ class CMD_AUTH_LOGON_PROOF_Client:
             pin_hash=pin_hash,
         )
 
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [1]
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [1]
 
-        # client_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
-        fmt += f'{len(self.client_public_key)}B'
-        data.extend(self.client_public_key)
-
-        # client_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
-        fmt += f'{len(self.client_proof)}B'
-        data.extend(self.client_proof)
-
-        # crc_hash: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
-        fmt += f'{len(self.crc_hash)}B'
-        data.extend(self.crc_hash)
-
-        # number_of_telemetry_keys: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        fmt += 'B'
-        data.append(len(self.telemetry_keys))
-
-        # telemetry_keys: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=True, maximum_size=30, minimum_size=30), type_name='TelemetryKey')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_telemetry_keys')))
+        _fmt += f'{len(self.client_public_key)}B{len(self.client_proof)}B{len(self.crc_hash)}BB'
+        _data.extend([*self.client_public_key, *self.client_proof, *self.crc_hash, len(self.telemetry_keys)])
+        # telemetry_keys: TelemetryKey[number_of_telemetry_keys]
         for i in self.telemetry_keys:
-            fmt, data = i.write(fmt, data)
+            _fmt, _data = i.write(_fmt, _data)
 
-        # security_flag: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='SecurityFlag', upcast=False))
-        fmt += 'B'
-        data.append(self.security_flag.value)
+        # security_flag: SecurityFlag
+        _fmt += 'B'
+        _data.append(self.security_flag.value)
 
         if self.security_flag == SecurityFlag.PIN:
-            # pin_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
-            fmt += f'{len(self.pin_salt)}B'
-            data.extend(self.pin_salt)
-
-            # pin_hash: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
-            fmt += f'{len(self.pin_hash)}B'
-            data.extend(self.pin_hash)
-
-        data = struct.pack(fmt, *data)
-        writer.write(data)
+            _fmt += f'{len(self.pin_salt)}B{len(self.pin_hash)}B'
+            _data.extend([*self.pin_salt, *self.pin_hash])
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
 
 
 @dataclasses.dataclass
@@ -313,16 +261,16 @@ class CMD_SURVEY_RESULT:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
-        # survey_id: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
+        # survey_id: u32
         survey_id = await read_int(reader, 4)
 
-        # error: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
+        # error: u8
         error = await read_int(reader, 1)
 
-        # compressed_data_length: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
+        # compressed_data_length: u16
         compressed_data_length = await read_int(reader, 2)
 
-        # data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='compressed_data_length')))
+        # data: u8[compressed_data_length]
         data = []
         for _ in range(0, compressed_data_length):
             data.append(await read_int(reader, 1))
@@ -333,28 +281,18 @@ class CMD_SURVEY_RESULT:
             data=data,
         )
 
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [4]
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [4]
 
-        # survey_id: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        fmt += 'I'
-        data.append(self.survey_id)
-
-        # error: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        fmt += 'B'
-        data.append(self.error)
-
-        # compressed_data_length: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        fmt += 'H'
-        data.append(len(self.data))
-
-        # data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='compressed_data_length')))
-        fmt += f'{len(self.data)}B'
-        data.extend(self.data)
-
-        data = struct.pack(fmt, *data)
-        writer.write(data)
+        _fmt += f'IBH{len(self.data)}B'
+        _data.extend([self.survey_id, self.error, len(self.data), *self.data])
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
 
 
 @dataclasses.dataclass
@@ -364,12 +302,16 @@ class CMD_XFER_INITIATE:
     async def read(reader: asyncio.StreamReader):
         return CMD_XFER_INITIATE()
 
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [48]
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [48]
 
-        data = struct.pack(fmt, *data)
-        writer.write(data)
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
 
 
 @dataclasses.dataclass
@@ -378,10 +320,10 @@ class CMD_XFER_DATA:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
-        # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
+        # size: u16
         size = await read_int(reader, 2)
 
-        # data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='size')))
+        # data: u8[size]
         data = []
         for _ in range(0, size):
             data.append(await read_int(reader, 1))
@@ -390,20 +332,18 @@ class CMD_XFER_DATA:
             data=data,
         )
 
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [49]
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [49]
 
-        # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        fmt += 'H'
-        data.append(len(self.data))
-
-        # data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='size')))
-        fmt += f'{len(self.data)}B'
-        data.extend(self.data)
-
-        data = struct.pack(fmt, *data)
-        writer.write(data)
+        _fmt += f'H{len(self.data)}B'
+        _data.extend([len(self.data), *self.data])
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
 
 
 @dataclasses.dataclass
@@ -413,12 +353,16 @@ class CMD_XFER_ACCEPT:
     async def read(reader: asyncio.StreamReader):
         return CMD_XFER_ACCEPT()
 
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [50]
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [50]
 
-        data = struct.pack(fmt, *data)
-        writer.write(data)
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
 
 
 @dataclasses.dataclass
@@ -427,23 +371,25 @@ class CMD_XFER_RESUME:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
-        # offset: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U64: 'U64'>)
+        # offset: u64
         offset = await read_int(reader, 8)
 
         return CMD_XFER_RESUME(
             offset=offset,
         )
 
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [51]
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [51]
 
-        # offset: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U64: 'U64'>)
-        fmt += 'Q'
-        data.append(self.offset)
-
-        data = struct.pack(fmt, *data)
-        writer.write(data)
+        _fmt += 'Q'
+        _data.append(self.offset)
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
 
 
 @dataclasses.dataclass
@@ -453,15 +399,31 @@ class CMD_XFER_CANCEL:
     async def read(reader: asyncio.StreamReader):
         return CMD_XFER_CANCEL()
 
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [52]
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [52]
 
-        data = struct.pack(fmt, *data)
-        writer.write(data)
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
 
 
-async def read_opcode_server(reader: asyncio.StreamReader):
+ClientOpcode = typing.Union[
+    CMD_AUTH_LOGON_CHALLENGE_Client,
+    CMD_AUTH_LOGON_PROOF_Client,
+    CMD_AUTH_RECONNECT_CHALLENGE_Client,
+    CMD_SURVEY_RESULT,
+    CMD_REALM_LIST_Client,
+    CMD_XFER_ACCEPT,
+    CMD_XFER_RESUME,
+    CMD_XFER_CANCEL,
+    ]
+
+
+async def read_client_opcode(reader: asyncio.StreamReader) -> typing.Optional[ClientOpcode]:
     opcode = int.from_bytes(await reader.readexactly(1), 'little')
     if opcode == 0x00:
         return await CMD_AUTH_LOGON_CHALLENGE_Client.read(reader)
@@ -483,7 +445,24 @@ async def read_opcode_server(reader: asyncio.StreamReader):
         raise Exception(f'incorrect opcode {opcode}')
 
 
-async def read_opcode_client(reader: asyncio.StreamReader):
+async def expect_client_opcode(reader: asyncio.StreamReader, opcode: typing.Type[ClientOpcode]) -> typing.Optional[ClientOpcode]:
+    o = await read_client_opcode(reader)
+    if isinstance(o, opcode):
+        return o
+    else:
+        return None
+
+
+ServerOpcode = typing.Union[
+    CMD_AUTH_LOGON_CHALLENGE_Server,
+    CMD_AUTH_LOGON_PROOF_Server,
+    CMD_REALM_LIST_Server,
+    CMD_XFER_INITIATE,
+    CMD_XFER_DATA,
+    ]
+
+
+async def read_server_opcode(reader: asyncio.StreamReader) -> typing.Optional[ServerOpcode]:
     opcode = int.from_bytes(await reader.readexactly(1), 'little')
     if opcode == 0x00:
         return await CMD_AUTH_LOGON_CHALLENGE_Server.read(reader)
@@ -496,6 +475,13 @@ async def read_opcode_client(reader: asyncio.StreamReader):
     if opcode == 0x31:
         return await CMD_XFER_DATA.read(reader)
     else:
-        raise Exception(f'incorrect opcode {opcode}')
+        return None
 
+
+async def expect_server_opcode(reader: asyncio.StreamReader, opcode: typing.Type[ServerOpcode]) -> typing.Optional[ServerOpcode]:
+    o = await read_server_opcode(reader)
+    if isinstance(o, opcode):
+        return o
+    else:
+        return None
 

@@ -6,8 +6,7 @@ from writer import Writer
 def print_type_unions(
         s: Writer, messages: list[model.Container], v: model.WorldVersion
 ):
-    s.wln("ClientOpcode = typing.Union[")
-    s.inc_indent()
+    s.open("ClientOpcode = typing.Union[")
 
     for e in messages:
         if not should_print_container(e, v):
@@ -19,8 +18,7 @@ def print_type_unions(
             case _:
                 pass
 
-    s.dec_indent()
-    s.wln("]")
+    s.close("]")
 
     s.newline()
 
@@ -104,9 +102,17 @@ def read_functions(
     s.wln(
         'opcode = int.from_bytes(await reader.readexactly(size_field_size), "little")'
     )
+    s.newline()
+
+    s.wln("body_size = size - size_field_size")
+    s.wln("body = await reader.readexactly(body_size)")
+    s.wln("body_reader = asyncio.StreamReader()")
+    s.wln("body_reader.feed_data(body)")
+    s.wln("body_reader.feed_eof()")
+    s.newline()
 
     s.wln(
-        f"return await read_{side}_opcode_body(reader, opcode, size, size_field_size)"
+        f"return await read_{side}_opcode_body(body_reader, opcode, body_size)"
     )
     s.dec_indent()  # async def read_
 
@@ -136,8 +142,15 @@ def read_functions(
     s.wln("size, opcode = header_crypto.decrypt_client_header(data)")
     s.newline()
 
+    s.wln("body_size = size - size_field_size")
+    s.wln("body = await reader.readexactly(body_size)")
+    s.wln("body_reader = asyncio.StreamReader()")
+    s.wln("body_reader.feed_data(body)")
+    s.wln("body_reader.feed_eof()")
+    s.newline()
+
     s.wln(
-        f"return await read_{side}_opcode_body(reader, opcode, size, size_field_size)"
+        f"return await read_{side}_opcode_body(body_reader, opcode, body_size)"
     )
     s.dec_indent()  # ) -> opcode
 
@@ -151,19 +164,7 @@ def print_reads(s: Writer, v: model.WorldVersion):
 
 
 def print_read_body(s: Writer, messages: list[model.Container], v: model.WorldVersion):
-    s.wln("async def read_client_opcode_body(")
-    s.inc_indent()
-
-    s.wln("reader: asyncio.StreamReader,")
-    s.wln("opcode: int,")
-    s.wln("size: int,")
-    s.wln("size_field_size: int,")
-    s.dec_indent()
-
-    s.wln(") -> ClientOpcode:")
-    s.inc_indent()
-    s.wln("size = size - size_field_size")
-
+    s.open("client_opcodes: dict[int, ClientOpcode] = {")
     for e in messages:
         if not should_print_container(e, v):
             continue
@@ -172,37 +173,31 @@ def print_read_body(s: Writer, messages: list[model.Container], v: model.WorldVe
             case model.ObjectTypeCmsg(opcode=opcode) | model.ObjectTypeMsg(
                 opcode=opcode
             ):
-                s.wln(f"if opcode == 0x{opcode:04X}:")
-                s.inc_indent()
-
-                s.wln(f"return await {e.name}.read(reader, size)")
-                s.dec_indent()
-            case _:
-                pass
-
-    s.wln("else:")
-    s.inc_indent()
-    s.wln('raise Exception("unimplemented opcode 0x{opcode:02X}")')
-    s.dec_indent()
+                s.wln(f"0x{opcode:04X}: {e.name},")
 
     s.dec_indent()
+    s.wln("}")
+    s.double_newline()
 
-    s.newline()
-    s.newline()
-
-    s.wln("async def read_server_opcode_body(")
+    s.wln("async def read_client_opcode_body(")
     s.inc_indent()
 
     s.wln("reader: asyncio.StreamReader,")
     s.wln("opcode: int,")
-    s.wln("size: int,")
-    s.wln("size_field_size: int,")
+    s.wln("body_size: int,")
     s.dec_indent()
 
-    s.wln(") -> ServerOpcode:")
+    s.wln(") -> ClientOpcode:")
     s.inc_indent()
-    s.wln("size = size - size_field_size")
 
+    s.wln("return await client_opcodes[opcode].read(reader, body_size)")
+
+    s.dec_indent()  # ) -> ClientOpcode
+
+    s.newline()
+    s.newline()
+
+    s.open("server_opcodes: dict[int, ServerOpcode] = {")
     for e in messages:
         if not should_print_container(e, v):
             continue
@@ -211,18 +206,24 @@ def print_read_body(s: Writer, messages: list[model.Container], v: model.WorldVe
             case model.ObjectTypeSmsg(opcode=opcode) | model.ObjectTypeMsg(
                 opcode=opcode
             ):
-                s.wln(f"if opcode == 0x{opcode:04X}:")
-                s.inc_indent()
+                s.wln(f"0x{opcode:04X}: {e.name},")
 
-                s.wln(f"return await {e.name}.read(reader, size)")
-                s.dec_indent()
-            case _:
-                pass
-
-    s.wln("else:")
-    s.inc_indent()
-    s.wln('raise Exception("unimplemented opcode 0x{opcode:02X}")')
     s.dec_indent()
+    s.wln("}")
+    s.double_newline()
+
+    s.wln("async def read_server_opcode_body(")
+    s.inc_indent()
+
+    s.wln("reader: asyncio.StreamReader,")
+    s.wln("opcode: int,")
+    s.wln("body_size: int,")
+    s.dec_indent()
+
+    s.wln(") -> ServerOpcode:")
+    s.inc_indent()
+
+    s.wln("return await server_opcodes[opcode].read(reader, body_size)")
 
     s.dec_indent()
 

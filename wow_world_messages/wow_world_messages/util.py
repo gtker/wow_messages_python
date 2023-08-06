@@ -1,6 +1,111 @@
 import asyncio
+import dataclasses
 import struct
 import typing
+
+
+@dataclasses.dataclass
+class WrathAuraMask:
+    fields: dict[int]
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader):
+        mask = await read_int(reader, 8)
+
+        fields = {}
+        for index in range(0, 64):
+            if mask & 1 << index:
+                first = await read_int(reader, 4)
+                second = await read_int(reader, 1)
+                fields[index] = (first, second)
+
+        return VanillaAuraMask(fields=fields)
+
+    def write(self, fmt, data):
+        mask = 0
+        for i, _ in enumerate(self.fields):
+            mask |= 1 << i
+
+        fmt += 'Q'
+        data.append(mask)
+
+        for (first, second) in self.fields:
+            fmt += "IB"
+            data.append(first)
+            data.append(second)
+
+        return fmt, data
+
+    def size(self):
+        return 4 + len(self.fields) * 5
+
+
+@dataclasses.dataclass
+class TbcAuraMask:
+    fields: dict[int]
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader):
+        mask = await read_int(reader, 8)
+
+        fields = {}
+        for index in range(0, 64):
+            if mask & 1 << index:
+                first = await read_int(reader, 2)
+                second = await read_int(reader, 1)
+                fields[index] = (first, second)
+
+        return VanillaAuraMask(fields=fields)
+
+    def write(self, fmt, data):
+        mask = 0
+        for i, _ in enumerate(self.fields):
+            mask |= 1 << i
+
+        fmt += 'Q'
+        data.append(mask)
+
+        for (first, second) in self.fields:
+            fmt += "HB"
+            data.append(first)
+            data.append(second)
+
+        return fmt, data
+
+    def size(self):
+        return 4 + len(self.fields) * 3
+
+
+@dataclasses.dataclass
+class VanillaAuraMask:
+    fields: dict[int]
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader):
+        mask = await read_int(reader, 4)
+
+        fields = {}
+        for index in range(0, 32):
+            if mask & 1 << index:
+                fields[index] = await read_int(reader, 2)
+
+        return VanillaAuraMask(fields=fields)
+
+    def write(self, fmt, data):
+        mask = 0
+        for key in self.fields:
+            mask |= 1 << key
+
+        fmt += 'I'
+        data.append(mask)
+
+        fmt += f"{len(self.fields)}H"
+        data.extend(list(self.fields.values()))
+
+        return fmt, data
+
+    def size(self):
+        return 4 + len(self.fields) * 2
 
 
 def packed_guid_size(value: int) -> int:
@@ -12,15 +117,23 @@ def packed_guid_size(value: int) -> int:
 
 
 def packed_guid_write(
-        value: int, fmt: str, data: list[typing.Any]
+        value: int,
+        fmt: str,
+        data: list[typing.Any]
 ) -> (str, list[typing.Any]):
-    fmt += "B"
-    data.append(value)
+    mask = 0
     for i in range(0, 8):
         val = value & (0xFF << i * 8)
-        if val:
+        if val != 0:
+            mask |= 1 << i
+
+    fmt += "B"
+    data.append(mask)
+    for i in range(0, 8):
+        val = value & (0xFF << i * 8)
+        if val != 0:
             fmt += "B"
-            data.append(val)
+            data.append(val >> i * 8)
 
     return fmt, data
 

@@ -1,44 +1,19 @@
 import model
 from model import Container
-from print_struct.print_size import print_size_inner
 from print_struct.util import (
     integer_type_to_size,
     all_members_from_container,
-    print_if_statement_header,
+    print_if_statement_header, type_to_wowm_str,
 )
+from util import container_needs_size_in_read
 from writer import Writer
 
 
-def print_read_struct_member(
-        s: Writer, d: model.Definition, container: model.Container
-):
-    s.wln(f"# {d.name}: {d.data_type}")
-    if d.tags.compressed is not None:
-        s.wln("size = 0")
-
-        for m in container.members:
-            match m:
-                case model.StructMemberDefinition(
-                    struct_member_content=model.Definition(name=name)
-                ):
-                    if name == d.name:
-                        break
-
-            print_size_inner(s, m, False)
-
-        s.wln(f"{d.name} = []")
-
-        s.wln("for _ in range(size, body_size):")
-        s.inc_indent()
-        s.wln(f"{d.name}.append(await read_int(reader, 1))")
-        s.dec_indent()
-
-        s.newline()
-        return
-
+def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool):
+    s.wln(f"# {d.name}: {type_to_wowm_str(d.data_type)}")
     match d.data_type:
-        case model.DataTypeInteger(content=content):
-            size = integer_type_to_size(content)
+        case model.DataTypeInteger(content=integer_type):
+            size = integer_type_to_size(integer_type)
             prefix = ""
             if d.constant_value is not None or d.size_of_fields_before_size is not None:
                 prefix = "_"
@@ -46,11 +21,18 @@ def print_read_struct_member(
             s.wln(
                 f"{prefix}{d.name} = await read_int(reader, {size})"
             )
-        case model.DataTypeBool(content=content):
-            size = integer_type_to_size(content)
+
+            if needs_size:
+                s.wln(f"_size += {size}")
+        case model.DataTypeBool(content=integer_type):
+            size = integer_type_to_size(integer_type)
             s.wln(
                 f"{d.name} = await read_bool(reader, {size})"
             )
+
+            if needs_size:
+                s.wln(f"_size += {size}")
+
         case model.DataTypeFlag(
             content=model.DataTypeFlagContent(
                 type_name=type_name, integer_type=integer_type
@@ -60,83 +42,200 @@ def print_read_struct_member(
             s.wln(
                 f"{d.name} = {type_name}(await read_int(reader, {size}))"
             )
-        case model.DataTypeEnum(content=content):
-            size = integer_type_to_size(content.integer_type)
+
+            if needs_size:
+                s.wln(f"_size += {size}")
+
+        case model.DataTypeEnum(content=integer_type):
+            size = integer_type_to_size(integer_type.integer_type)
             s.wln(
-                f"{d.name} = {content.type_name}(await read_int(reader, {size}))"
+                f"{d.name} = {integer_type.type_name}(await read_int(reader, {size}))"
             )
+
+            if needs_size:
+                s.wln(f"_size += {size}")
+
         case model.DataTypeString():
             s.wln(f"{d.name} = await read_string(reader)")
+
+            if needs_size:
+                s.wln(f"_size += len({d.name}) + 1")
 
         case model.DataTypeCstring():
             s.wln(
                 f"{d.name} = await read_cstring(reader)"
             )
 
+            if needs_size:
+                s.wln(f"_size += len({d.name}) + 1")
+
         case model.DataTypeSizedCstring():
             s.wln(f"{d.name} = await read_sized_cstring(reader)")
+
+            if needs_size:
+                s.wln(f"_size += len({d.name}) + 5")
 
         case model.DataTypeDateTime() | model.DataTypeGold() | model.DataTypeSeconds() | model.DataTypeMilliseconds() | model.DataTypeIPAddress():
             s.wln(f"{d.name} = await read_int(reader, 4)")
 
+            if needs_size:
+                s.wln(f"_size += 4")
+
         case model.DataTypeGUID():
             s.wln(f"{d.name} = await read_int(reader, 8)")
+
+            if needs_size:
+                s.wln(f"_size += 8")
+
         case model.DataTypeLevel():
             s.wln(f"{d.name} = await read_int(reader, 1)")
+
+            if needs_size:
+                s.wln(f"_size += 1")
+
         case model.DataTypeLevel16():
             s.wln(f"{d.name} = await read_int(reader, 2)")
+
+            if needs_size:
+                s.wln(f"_size += 2")
         case model.DataTypeLevel32():
             s.wln(f"{d.name} = await read_int(reader, 4)")
+
+            if needs_size:
+                s.wln(f"_size += 4")
 
         case model.DataTypePopulation():
             s.wln(f"{d.name} = await read_float(reader)")
 
+            if needs_size:
+                s.wln(f"_size += 4")
+
         case model.DataTypePackedGUID():
             s.wln(f"{d.name} = await read_packed_guid(reader)")
+
+            if needs_size:
+                s.wln(f"_size += packed_guid_size({d.name})")
 
         case model.DataTypeFloatingPoint():
             s.wln(f"{d.name} = await read_float(reader)")
 
-        case model.DataTypeStruct(
-            content=model.DataTypeStructContent(type_name=type_name)
-        ):
-            s.wln(f"{d.name} = await {type_name}.read(reader)")
+            if needs_size:
+                s.wln(f"_size += 4")
 
-        case model.DataTypeArray(content=content):
+        case model.DataTypeStruct(
+            content=model.DataTypeStructContent(struct_data=e)
+        ):
+            s.wln(f"{d.name} = await {e.name}.read(reader)")
+
+            if needs_size:
+                if e.sizes.constant_sized:
+                    s.wln(f"_size += {e.sizes.maximum_size}")
+                else:
+                    s.wln(f"_size += {d.name}.size()")
+
+        case model.DataTypeUpdateMask():
+            s.wln(f"{d.name} = await UpdateMask.read(reader)")
+
+            if needs_size:
+                s.wln(f"_size += {d.name}.size()")
+
+        case model.DataTypeAuraMask():
+            s.wln(f"{d.name} = await AuraMask.read(reader)")
+
+            if needs_size:
+                s.wln(f"_size += {d.name}.size()")
+
+        case model.DataTypeMonsterMoveSpline():
+            s.wln(f"{d.name} = await MonsterMoveSpline.read(reader)")
+
+            if needs_size:
+                s.wln(f"_size += {d.name}.size()")
+
+        case model.DataTypeArray(content=array):
+            reader = "reader"
+            if array.compressed:
+                s.wln("# {d.name}_decompressed_size: u32")
+                s.wln("_size += 4  # decompressed_size")
+                s.newline()
+
+                s.wln(f"{d.name}_decompressed_size = await read_int(reader, 4)")
+
+                s.wln(f"{d.name}_bytes = await reader.readexactly(body_size - _size)")
+                s.newline()
+
+                s.wln(f"{d.name}_reader = reader")
+                s.open(f"if len({d.name}_bytes) != 0:")
+                s.wln(f"{d.name}_bytes = zlib.decompress({d.name}_bytes, bufsize={d.name}_decompressed_size)")
+                s.wln(f"{d.name}_reader = asyncio.StreamReader()")
+                s.wln(f"{d.name}_reader.feed_data({d.name}_bytes)")
+                s.wln(f"{d.name}_reader.feed_eof()")
+                s.close()
+
+                s.newline()
+                reader = f"{d.name}_reader"
+
             s.wln(f"{d.name} = []")
-            match content.size:
+            match array.size:
                 case model.ArraySizeFixed(size=size) | model.ArraySizeVariable(
                     size=size
                 ):
-                    s.wln(f"for _ in range(0, {size}):")
+                    s.open(f"for _ in range(0, {size}):")
                 case model.ArraySizeEndless():
-                    s.wln("for _ in range(current_size, body_size):")
+                    if not array.compressed:
+                        s.open("while _size < body_size:")
+                    else:
+                        s.open(f"while not {d.name}_reader.at_eof():")
                 case v:
                     raise Exception(f"{v}")
-            s.inc_indent()
 
-            match content.inner_type:
-                case model.ArrayTypeInteger(content=content):
-                    size = integer_type_to_size(content)
+            match array.inner_type:
+                case model.ArrayTypeInteger(content=integer_type):
+                    size = integer_type_to_size(integer_type)
                     s.wln(
-                        f"{d.name}.append(await read_int(reader, {size}))"
+                        f"{d.name}.append(await read_int({reader}, {size}))"
                     )
 
-                case model.ArrayTypeStruct(content=content):
-                    s.wln(f"{d.name}.append(await {content.type_name}.read(reader))")
+                case model.ArrayTypeStruct(content=model.ArrayTypeStructContent(struct_data=e)):
+                    s.wln(f"{d.name}.append(await {e.name}.read({reader}))")
 
                 case model.ArrayTypeCstring():
                     s.wln(
-                        f"{d.name}.append(await read_cstring(reader))"
+                        f"{d.name}.append(await read_cstring({reader}))"
                     )
 
                 case model.ArrayTypeGUID():
                     s.wln(
-                        f"{d.name}.append(await read_int(reader, 8))"
+                        f"{d.name}.append(await read_int({reader}, 8))"
+                    )
+
+                case model.ArrayTypePackedGUID():
+                    s.wln(
+                        f"{d.name}.append(await read_packed_guid({reader}))"
                     )
 
                 case v:
                     raise Exception(f"{v}")
+
+            if needs_size or isinstance(array.size, model.ArraySizeEndless):
+                s.w("_size += ")
+                match array.inner_type:
+                    case model.ArrayTypeInteger(content=integer_type):
+                        size = integer_type_to_size(integer_type)
+                        s.wln_no_indent(str(size))
+                    case model.ArrayTypeStruct(content=model.ArrayTypeStructContent(struct_data=e)):
+                        if e.sizes.constant_sized:
+                            s.wln_no_indent(str(e.sizes.maximum_size))
+                        else:
+                            s.wln_no_indent(f"{d.name}[-1].size()")
+
+                    case model.ArrayTypeCstring():
+                        s.wln_no_indent(f"len({d.name}[-1]) + 1")
+
+                    case model.ArrayTypeGUID():
+                        s.wln_no_indent(str(8))
+
+                    case model.ArrayTypePackedGUID():
+                        s.wln_no_indent(f"{d.name}[-1].size()")
 
             s.dec_indent()
 
@@ -146,18 +245,22 @@ def print_read_struct_member(
     s.newline()
 
 
-def print_read_member(s: Writer, m: model.StructMember, container: model.Container):
+def print_read_member(s: Writer, m: model.StructMember, container: model.Container, needs_size: bool):
     match m:
         case model.StructMemberDefinition(_tag, definition):
-            print_read_struct_member(s, definition, container)
+            print_read_struct_member(s, definition, needs_size)
 
         case model.StructMemberIfStatement(_tag, statement):
-            print_read_if_statement(s, statement, container, False)
+            print_read_if_statement(s, statement, container, False, needs_size)
 
-        case model.StructMemberOptional(_tag, model.OptionalMembers(members=members)):
+        case model.StructMemberOptional(_tag, model.OptionalMembers(name=name, members=members)):
+            s.wln(f"# {name}: optional")
+            s.open("if _size < body_size:")
+
             for member in members:
-                print_read_member(s, member, container)
-            raise Exception("optional unimpl")
+                print_read_member(s, member, container, needs_size)
+
+            s.close()
 
         case _:
             raise Exception("invalid struct member")
@@ -168,6 +271,7 @@ def print_read_if_statement(
         statement: model.IfStatement,
         container: model.Container,
         is_else_if: bool,
+        needs_size: bool,
 ):
     extra_elseif = ""
     if is_else_if:
@@ -178,19 +282,19 @@ def print_read_if_statement(
     s.inc_indent()
 
     for member in statement.members:
-        print_read_member(s, member, container)
+        print_read_member(s, member, container, needs_size)
 
     s.dec_indent()  # if
 
     for elseif in statement.else_if_statements:
-        print_read_if_statement(s, elseif, container, True)
+        print_read_if_statement(s, elseif, container, True, needs_size)
 
     if len(statement.else_members) != 0:
         s.wln("else:")
         s.inc_indent()
 
         for m in statement.else_members:
-            print_read_member(s, m, container)
+            print_read_member(s, m, container, needs_size)
 
         s.dec_indent()
 
@@ -199,7 +303,7 @@ def print_read(s: Writer, container: Container):
     s.wln("@staticmethod")
 
     match container.object_type:
-        case model.ObjectTypeCmsg() | model.ObjectTypeSmsg():
+        case model.ObjectTypeCmsg() | model.ObjectTypeSmsg() | model.ObjectTypeMsg():
             s.wln("async def read(reader: asyncio.StreamReader, body_size: int):")
         case _:
             s.wln("async def read(reader: asyncio.StreamReader):")
@@ -213,8 +317,25 @@ def print_read(s: Writer, container: Container):
         s.newline()
         return
 
+    if container.tags.compressed:
+        s.write_block("""
+decompressed_size = await read_int(reader, 4)
+compressed_bytes = await reader.readexactly(body_size - 4)
+decompressed_bytes = zlib.decompress(compressed_bytes, bufsize=decompressed_size)
+reader = asyncio.StreamReader()
+reader.feed_data(decompressed_bytes)
+reader.feed_eof()
+        """)
+        s.newline()
+
+    needs_size = container_needs_size_in_read(container)
+
+    if needs_size:
+        s.wln("_size = 0")
+        s.newline()
+
     for m in container.members:
-        print_read_member(s, m, container)
+        print_read_member(s, m, container, needs_size)
 
     s.wln(f"return {container.name}(")
     s.inc_indent()

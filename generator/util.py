@@ -1,6 +1,13 @@
 import typing
 
 import model
+from writer import Writer
+
+VANILLA = model.WorldVersion(major=1, minor=12, patch=1, build=5875)
+TBC = model.WorldVersion(major=2, minor=4, patch=3, build=8606)
+WRATH = model.WorldVersion(major=3, minor=3, patch=5, build=12340)
+
+VERSIONS = [VANILLA, TBC]
 
 
 def should_print_container_if(statement: model.IfStatement) -> bool:
@@ -22,40 +29,37 @@ def should_print_container_if(statement: model.IfStatement) -> bool:
 def should_print_container_struct_member(m: model.StructMember) -> bool:
     match m:
         case model.StructMemberDefinition(struct_member_content=d):
-            forbidden_types = [
-                "Object",
-                "MonsterMove",
-            ]
-
             match d.data_type:
-                case model.DataTypeAuraMask() \
-                     | model.DataTypeMonsterMoveSpline() \
-                     | model.DataTypeUpdateMask() \
-                     | model.DataTypeNamedGUID():
-                    return False
-                case model.DataTypeAchievementDoneArray() \
+                # Non-vanilla types
+                case model.DataTypeAddonArray() \
+                     | model.DataTypeAchievementDoneArray() \
                      | model.DataTypeAchievementInProgressArray() \
                      | model.DataTypeEnchantMask() \
+                     | model.DataTypeNamedGUID() \
                      | model.DataTypeInspectTalentGearMask() \
                      | model.DataTypeVariableItemRandomProperty():
                     return False
-                case model.DataTypeStruct(content=d):
-                    if d.type_name in forbidden_types:
-                        return False
+
+                case model.DataTypeStruct(content=model.DataTypeStructContent(struct_data=e)):
+                    for m in e.members:
+                        if not should_print_container_struct_member(m):
+                            return False
+
                 case model.DataTypeArray(content=array):
-                    match array.size:
-                        case model.ArraySizeEndless():
-                            return d.tags.compressed is not None
                     match array.inner_type:
-                        case model.ArrayTypeStruct(content=d):
-                            if d.type_name in forbidden_types:
-                                return False
+                        case model.ArrayTypeStruct(content=model.ArrayTypeStructContent(struct_data=e)):
+                            for m in e.members:
+                                if not should_print_container_struct_member(m):
+                                    return False
 
         case model.StructMemberIfStatement(struct_member_content=statement):
             if not should_print_container_if(statement):
                 return False
         case model.StructMemberOptional(struct_member_content=optional):
-            return False
+            for m in optional.members:
+                if not should_print_container_struct_member(m):
+                    return False
+
         case _:
             raise Exception("unknown m")
 
@@ -63,9 +67,6 @@ def should_print_container_struct_member(m: model.StructMember) -> bool:
 
 
 def should_print_container(container: model.Container, v: model.WorldVersion) -> bool:
-    if container.tags.compressed is not None:
-        return False
-
     if not world_version_matches(container.tags, v):
         return False
 
@@ -136,12 +137,24 @@ def world_version_matches(tags: model.ObjectTags, version: model.WorldVersion) -
     return False
 
 
+def container_is_unencrypted(name: str) -> bool:
+    return name == "CMSG_AUTH_SESSION" or name == "SMSG_AUTH_CHALLENGE"
+
+
 def world_version_to_module_name(v: model.WorldVersion) -> str:
     match v:
         case model.WorldVersion(major=1):
             return "vanilla"
-        case _:
-            raise Exception("unknown version")
+        case model.WorldVersion(major=2):
+            return "tbc"
+        case model.WorldVersion(major=3):
+            return "wrath"
+        case v:
+            raise Exception(f"unknown version {v}")
+
+
+def world_version_to_title_name(v: model.WorldVersion) -> str:
+    return world_version_to_module_name(v).capitalize()
 
 
 def login_version_to_module_name(v: int) -> str:
@@ -177,3 +190,69 @@ def login_version_matches(tags: model.ObjectTags, value: int) -> bool:
                     raise Exception("invalid login versions type")
         case _:
             raise Exception("invalid version")
+
+
+def write_null_header_crypto(s: Writer):
+    s.write_block("""
+class NullHeaderCrypto:
+    def decrypt_server_header(self, data) -> (int, int):
+        size = data[0] << 8 | data[1]
+        opcode = data[2] | data[3] << 8
+        return size, opcode
+
+    def decrypt_client_header(self, data) -> (int, int):
+        size = data[0] << 8 | data[1]
+        opcode = data[2] | data[3] << 8 | data[4] << 16 | data[5] << 24
+        return size, opcode
+
+    def encrypt_server_header(self, size: int, opcode: int) -> bytearray:
+        data = bytearray(4)
+        struct.pack_into(">H", data, 0, size)
+        struct.pack_into("<H", data, 2, opcode)
+        return data
+
+    def encrypt_client_header(self, size: int, opcode: int) -> bytearray:
+        data = bytearray(6)
+        struct.pack_into(">H", data, 0, size)
+        struct.pack_into("<I", data, 2, opcode)
+        return data
+    """)
+
+    s.double_newline()
+
+
+def container_needs_size_in_read(container: model.Container) -> bool:
+    def inner_if(statement: model.IfStatement) -> bool:
+        for m in statement.members:
+            if inner(m):
+                return True
+
+        for elseif in statement.else_if_statements:
+            if inner_if(elseif):
+                return True
+
+        for m in statement.else_members:
+            if inner(m):
+                return True
+
+    def inner(m: model.StructMember) -> bool:
+        match m:
+            case model.StructMemberDefinition(struct_member_content=d):
+                match d.data_type:
+                    case model.DataTypeArray(content=array):
+                        if array.compressed:
+                            return True
+
+                        match array.size:
+                            case model.ArraySizeEndless():
+                                return True
+
+            case model.StructMemberIfStatement(struct_member_content=statement):
+                if inner_if(statement):
+                    return True
+            case model.StructMemberOptional(struct_member_content=optional):
+                return True
+
+    for m in container.members:
+        if inner(m):
+            return True

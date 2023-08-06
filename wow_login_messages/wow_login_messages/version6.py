@@ -3,7 +3,9 @@ import dataclasses
 import enum
 import struct
 import typing
+import zlib
 from .util import read_string
+from .util import read_bool
 from .util import read_int
 from .util import read_cstring
 from .util import read_float
@@ -62,77 +64,62 @@ class CMD_REALM_LIST_Server:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
-        # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
+        # size: u16
         _size = await read_int(reader, 2)
 
-        # header_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
+        # header_padding: u32
         _header_padding = await read_int(reader, 4)
 
-        # number_of_realms: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
+        # number_of_realms: u16
         number_of_realms = await read_int(reader, 2)
 
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=522, minimum_size=12), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
+        # realms: Realm[number_of_realms]
         realms = []
         for _ in range(0, number_of_realms):
             realms.append(await Realm.read(reader))
 
-        # footer_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
+        # footer_padding: u16
         _footer_padding = await read_int(reader, 2)
 
         return CMD_REALM_LIST_Server(
             realms=realms,
         )
 
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [16]
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [16]
 
-        # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        fmt += 'H'
-        data.append(self._size())
-
-        # header_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        fmt += 'I'
-        data.append(0)
-
-        # number_of_realms: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        fmt += 'H'
-        data.append(len(self.realms))
-
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=522, minimum_size=12), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
+        _fmt += 'HIH'
+        _data.extend([self.size(), 0, len(self.realms)])
+        # realms: Realm[number_of_realms]
         for i in self.realms:
-            fmt, data = i.write(fmt, data)
+            _fmt, _data = i.write(_fmt, _data)
 
-        # footer_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        fmt += 'H'
-        data.append(0)
+        # footer_padding: u16
+        _fmt += 'H'
+        _data.append(0)
 
-        data = struct.pack(fmt, *data)
-        writer.write(data)
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
 
-    def _size(self) -> int:
-        size = 0
-
-        # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        size += 2
-
-        # header_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        size += 4
-
-        # number_of_realms: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        size += 2
-
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=522, minimum_size=12), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
-        for i in self.realms:
-            size += i._size()
-
-        # footer_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        size += 2
-
-        return size - 2
+    def size(self) -> int:
+        return 8 + sum([i.size() for i in self.realms])
 
 
-async def read_opcode_server(reader: asyncio.StreamReader):
+ClientOpcode = typing.Union[
+    CMD_AUTH_LOGON_CHALLENGE_Client,
+    CMD_AUTH_LOGON_PROOF_Client,
+    CMD_AUTH_RECONNECT_CHALLENGE_Client,
+    CMD_AUTH_RECONNECT_PROOF_Client,
+    CMD_REALM_LIST_Client,
+    ]
+
+
+async def read_client_opcode(reader: asyncio.StreamReader) -> typing.Optional[ClientOpcode]:
     opcode = int.from_bytes(await reader.readexactly(1), 'little')
     if opcode == 0x00:
         return await CMD_AUTH_LOGON_CHALLENGE_Client.read(reader)
@@ -148,7 +135,24 @@ async def read_opcode_server(reader: asyncio.StreamReader):
         raise Exception(f'incorrect opcode {opcode}')
 
 
-async def read_opcode_client(reader: asyncio.StreamReader):
+async def expect_client_opcode(reader: asyncio.StreamReader, opcode: typing.Type[ClientOpcode]) -> typing.Optional[ClientOpcode]:
+    o = await read_client_opcode(reader)
+    if isinstance(o, opcode):
+        return o
+    else:
+        return None
+
+
+ServerOpcode = typing.Union[
+    CMD_AUTH_LOGON_CHALLENGE_Server,
+    CMD_AUTH_LOGON_PROOF_Server,
+    CMD_AUTH_RECONNECT_CHALLENGE_Server,
+    CMD_AUTH_RECONNECT_PROOF_Server,
+    CMD_REALM_LIST_Server,
+    ]
+
+
+async def read_server_opcode(reader: asyncio.StreamReader) -> typing.Optional[ServerOpcode]:
     opcode = int.from_bytes(await reader.readexactly(1), 'little')
     if opcode == 0x00:
         return await CMD_AUTH_LOGON_CHALLENGE_Server.read(reader)
@@ -161,6 +165,13 @@ async def read_opcode_client(reader: asyncio.StreamReader):
     if opcode == 0x10:
         return await CMD_REALM_LIST_Server.read(reader)
     else:
-        raise Exception(f'incorrect opcode {opcode}')
+        return None
 
+
+async def expect_server_opcode(reader: asyncio.StreamReader, opcode: typing.Type[ServerOpcode]) -> typing.Optional[ServerOpcode]:
+    o = await read_server_opcode(reader)
+    if isinstance(o, opcode):
+        return o
+    else:
+        return None
 

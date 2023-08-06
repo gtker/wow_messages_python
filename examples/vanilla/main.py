@@ -37,7 +37,7 @@ async def login_path(
     print(response)
     response.write(writer)
 
-    request = await login.read_opcode_server(reader)
+    request = await login.read_client_opcode(reader)
     print(request)
     server, proof = server.into_server(request.client_public_key, request.client_proof)
     if server is None:
@@ -49,7 +49,7 @@ async def login_path(
     response = login.CMD_AUTH_LOGON_PROOF_Server(login.LoginResult.SUCCESS, proof, 0)
     response.write(writer)
 
-    opcode = await login.read_opcode_server(reader)
+    opcode = await login.read_client_opcode(reader)
     match opcode:
         case login.CMD_REALM_LIST_Client():
             pass
@@ -77,7 +77,7 @@ async def login_path(
 async def login_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
     print("connect")
     try:
-        request = await login.read_opcode_server(reader)
+        request = await login.read_client_opcode(reader)
         match request:
             case login.CMD_AUTH_LOGON_CHALLENGE_Client():
                 print(request)
@@ -167,6 +167,10 @@ async def world_path(reader: asyncio.StreamReader, writer: asyncio.StreamWriter)
 
     opcode = await read_client_opcodes_encrypted(reader, crypto)
     print(opcode)
+
+    match opcode:
+        case world.CMSG_PLAYER_LOGIN(guid=guid):
+            print(f"Logging into {guid}")
 
 
 async def world_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):

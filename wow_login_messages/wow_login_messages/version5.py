@@ -3,7 +3,9 @@ import dataclasses
 import enum
 import struct
 import typing
+import zlib
 from .util import read_string
+from .util import read_bool
 from .util import read_int
 from .util import read_cstring
 from .util import read_float
@@ -67,31 +69,31 @@ class Realm:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
-        # realm_type: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmType', upcast=False))
+        # realm_type: RealmType
         realm_type = RealmType(await read_int(reader, 1))
 
-        # locked: DataTypeBool(data_type_tag='Bool', content=<IntegerType.U8: 'U8'>)
+        # locked: Bool8
         locked = await read_bool(reader, 1)
 
-        # flag: DataTypeFlag(data_type_tag='Flag', content=DataTypeFlagContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmFlag', upcast=False))
+        # flag: RealmFlag
         flag = RealmFlag(await read_int(reader, 1))
 
-        # name: DataTypeCstring(data_type_tag='CString')
+        # name: CString
         name = await read_cstring(reader)
 
-        # address: DataTypeCstring(data_type_tag='CString')
+        # address: CString
         address = await read_cstring(reader)
 
-        # population: DataTypePopulation(data_type_tag='Population')
+        # population: Population
         population = await read_float(reader)
 
-        # number_of_characters_on_realm: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
+        # number_of_characters_on_realm: u8
         number_of_characters_on_realm = await read_int(reader, 1)
 
-        # category: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmCategory', upcast=False))
+        # category: RealmCategory
         category = RealmCategory(await read_int(reader, 1))
 
-        # realm_id: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
+        # realm_id: u8
         realm_id = await read_int(reader, 1)
 
         return Realm(
@@ -106,49 +108,13 @@ class Realm:
             realm_id=realm_id,
         )
 
-    def write(self, fmt, data):
-        # realm_type: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmType', upcast=False))
-        fmt += 'B'
-        data.append(self.realm_type.value)
+    def write(self, _fmt, _data):
+        _fmt += f'BBB{len(self.name)}sB{len(self.address)}sBfBBB'
+        _data.extend([self.realm_type.value, self.locked, self.flag.value, self.name.encode('utf-8'), 0, self.address.encode('utf-8'), 0, self.population, self.number_of_characters_on_realm, self.category.value, self.realm_id])
+        return _fmt, _data
 
-        # locked: DataTypeBool(data_type_tag='Bool', content=<IntegerType.U8: 'U8'>)
-        fmt += 'B'
-        data.append(self.locked)
-
-        # flag: DataTypeFlag(data_type_tag='Flag', content=DataTypeFlagContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmFlag', upcast=False))
-        fmt += 'B'
-        data.append(self.flag.value)
-
-        # name: DataTypeCstring(data_type_tag='CString')
-        fmt += f'{len(self.name)}sB'
-        data.append(self.name.encode('utf-8'))
-        data.append(0)
-
-        # address: DataTypeCstring(data_type_tag='CString')
-        fmt += f'{len(self.address)}sB'
-        data.append(self.address.encode('utf-8'))
-        data.append(0)
-
-        # population: DataTypePopulation(data_type_tag='Population')
-        fmt += 'f'
-        data.append(self.population)
-
-        # number_of_characters_on_realm: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        fmt += 'B'
-        data.append(self.number_of_characters_on_realm)
-
-        # category: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmCategory', upcast=False))
-        fmt += 'B'
-        data.append(self.category.value)
-
-        # realm_id: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        fmt += 'B'
-        data.append(self.realm_id)
-
-        return fmt, data
-
-    def _size(self) -> int:
-        return 10 + len(self.name) + 1 + len(self.address) + 1
+    def size(self) -> int:
+        return 12 + len(self.name) + len(self.address)
 
 
 @dataclasses.dataclass
@@ -163,19 +129,19 @@ class CMD_AUTH_LOGON_PROOF_Server:
         server_proof = None
         hardware_survey_id = None
         unknown = None
-        # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
+        # result: LoginResult
         result = LoginResult(await read_int(reader, 1))
 
         if result == LoginResult.SUCCESS:
-            # server_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
+            # server_proof: u8[20]
             server_proof = []
             for _ in range(0, 20):
                 server_proof.append(await read_int(reader, 1))
 
-            # hardware_survey_id: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
+            # hardware_survey_id: u32
             hardware_survey_id = await read_int(reader, 4)
 
-            # unknown: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
+            # unknown: u16
             unknown = await read_int(reader, 2)
 
         return CMD_AUTH_LOGON_PROOF_Server(
@@ -185,29 +151,21 @@ class CMD_AUTH_LOGON_PROOF_Server:
             unknown=unknown,
         )
 
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [1]
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [1]
 
-        # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
-        fmt += 'B'
-        data.append(self.result.value)
-
+        _fmt += 'B'
+        _data.append(self.result.value)
         if self.result == LoginResult.SUCCESS:
-            # server_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
-            fmt += f'{len(self.server_proof)}B'
-            data.extend(self.server_proof)
-
-            # hardware_survey_id: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-            fmt += 'I'
-            data.append(self.hardware_survey_id)
-
-            # unknown: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-            fmt += 'H'
-            data.append(self.unknown)
-
-        data = struct.pack(fmt, *data)
-        writer.write(data)
+            _fmt += f'{len(self.server_proof)}BIH'
+            _data.extend([*self.server_proof, self.hardware_survey_id, self.unknown])
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
 
 
 @dataclasses.dataclass
@@ -216,30 +174,28 @@ class CMD_AUTH_RECONNECT_PROOF_Server:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
-        # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
+        # result: LoginResult
         result = LoginResult(await read_int(reader, 1))
 
-        # padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
+        # padding: u16
         _padding = await read_int(reader, 2)
 
         return CMD_AUTH_RECONNECT_PROOF_Server(
             result=result,
         )
 
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [3]
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [3]
 
-        # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
-        fmt += 'B'
-        data.append(self.result.value)
-
-        # padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        fmt += 'H'
-        data.append(0)
-
-        data = struct.pack(fmt, *data)
-        writer.write(data)
+        _fmt += 'BH'
+        _data.extend([self.result.value, 0])
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
 
 
 @dataclasses.dataclass
@@ -248,77 +204,62 @@ class CMD_REALM_LIST_Server:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
-        # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
+        # size: u16
         _size = await read_int(reader, 2)
 
-        # header_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
+        # header_padding: u32
         _header_padding = await read_int(reader, 4)
 
-        # number_of_realms: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
+        # number_of_realms: u8
         number_of_realms = await read_int(reader, 1)
 
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=522, minimum_size=12), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
+        # realms: Realm[number_of_realms]
         realms = []
         for _ in range(0, number_of_realms):
             realms.append(await Realm.read(reader))
 
-        # footer_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
+        # footer_padding: u16
         _footer_padding = await read_int(reader, 2)
 
         return CMD_REALM_LIST_Server(
             realms=realms,
         )
 
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [16]
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [16]
 
-        # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        fmt += 'H'
-        data.append(self._size())
-
-        # header_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        fmt += 'I'
-        data.append(0)
-
-        # number_of_realms: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        fmt += 'B'
-        data.append(len(self.realms))
-
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=522, minimum_size=12), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
+        _fmt += 'HIB'
+        _data.extend([self.size(), 0, len(self.realms)])
+        # realms: Realm[number_of_realms]
         for i in self.realms:
-            fmt, data = i.write(fmt, data)
+            _fmt, _data = i.write(_fmt, _data)
 
-        # footer_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        fmt += 'H'
-        data.append(0)
+        # footer_padding: u16
+        _fmt += 'H'
+        _data.append(0)
 
-        data = struct.pack(fmt, *data)
-        writer.write(data)
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
 
-    def _size(self) -> int:
-        size = 0
-
-        # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        size += 2
-
-        # header_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        size += 4
-
-        # number_of_realms: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        size += 1
-
-        # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=522, minimum_size=12), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
-        for i in self.realms:
-            size += i._size()
-
-        # footer_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        size += 2
-
-        return size - 2
+    def size(self) -> int:
+        return 7 + sum([i.size() for i in self.realms])
 
 
-async def read_opcode_server(reader: asyncio.StreamReader):
+ClientOpcode = typing.Union[
+    CMD_AUTH_LOGON_CHALLENGE_Client,
+    CMD_AUTH_LOGON_PROOF_Client,
+    CMD_AUTH_RECONNECT_CHALLENGE_Client,
+    CMD_AUTH_RECONNECT_PROOF_Client,
+    CMD_REALM_LIST_Client,
+    ]
+
+
+async def read_client_opcode(reader: asyncio.StreamReader) -> typing.Optional[ClientOpcode]:
     opcode = int.from_bytes(await reader.readexactly(1), 'little')
     if opcode == 0x00:
         return await CMD_AUTH_LOGON_CHALLENGE_Client.read(reader)
@@ -334,7 +275,24 @@ async def read_opcode_server(reader: asyncio.StreamReader):
         raise Exception(f'incorrect opcode {opcode}')
 
 
-async def read_opcode_client(reader: asyncio.StreamReader):
+async def expect_client_opcode(reader: asyncio.StreamReader, opcode: typing.Type[ClientOpcode]) -> typing.Optional[ClientOpcode]:
+    o = await read_client_opcode(reader)
+    if isinstance(o, opcode):
+        return o
+    else:
+        return None
+
+
+ServerOpcode = typing.Union[
+    CMD_AUTH_LOGON_CHALLENGE_Server,
+    CMD_AUTH_LOGON_PROOF_Server,
+    CMD_AUTH_RECONNECT_CHALLENGE_Server,
+    CMD_AUTH_RECONNECT_PROOF_Server,
+    CMD_REALM_LIST_Server,
+    ]
+
+
+async def read_server_opcode(reader: asyncio.StreamReader) -> typing.Optional[ServerOpcode]:
     opcode = int.from_bytes(await reader.readexactly(1), 'little')
     if opcode == 0x00:
         return await CMD_AUTH_LOGON_CHALLENGE_Server.read(reader)
@@ -347,6 +305,13 @@ async def read_opcode_client(reader: asyncio.StreamReader):
     if opcode == 0x10:
         return await CMD_REALM_LIST_Server.read(reader)
     else:
-        raise Exception(f'incorrect opcode {opcode}')
+        return None
 
+
+async def expect_server_opcode(reader: asyncio.StreamReader, opcode: typing.Type[ServerOpcode]) -> typing.Optional[ServerOpcode]:
+    o = await read_server_opcode(reader)
+    if isinstance(o, opcode):
+        return o
+    else:
+        return None
 

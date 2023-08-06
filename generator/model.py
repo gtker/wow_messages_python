@@ -66,18 +66,21 @@ class IntermediateRepresentationSchema:
 
 @dataclass
 class Array:
+    compressed: 'bool'
     inner_type: 'ArrayType'
     size: 'ArraySize'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'Array':
         return cls(
+            _from_json_data(bool, data.get("compressed")),
             _from_json_data(ArrayType, data.get("inner_type")),
             _from_json_data(ArraySize, data.get("size")),
         )
 
     def to_json_data(self) -> Any:
         data: Dict[str, Any] = {}
+        data["compressed"] = _to_json_data(self.compressed)
         data["inner_type"] = _to_json_data(self.inner_type)
         data["size"] = _to_json_data(self.size)
         return data
@@ -225,20 +228,17 @@ class ArrayTypePackedGUID(ArrayType):
 
 @dataclass
 class ArrayTypeStructContent:
-    sizes: 'Sizes'
-    type_name: 'str'
+    struct_data: 'Container'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'ArrayTypeStructContent':
         return cls(
-            _from_json_data(Sizes, data.get("sizes")),
-            _from_json_data(str, data.get("type_name")),
+            _from_json_data(Container, data.get("struct_data")),
         )
 
     def to_json_data(self) -> Any:
         data: Dict[str, Any] = {}
-        data["sizes"] = _to_json_data(self.sizes)
-        data["type_name"] = _to_json_data(self.type_name)
+        data["struct_data"] = _to_json_data(self.struct_data)
         return data
 
 @dataclass
@@ -958,20 +958,17 @@ class DataTypeString(DataType):
 
 @dataclass
 class DataTypeStructContent:
-    sizes: 'Sizes'
-    type_name: 'str'
+    struct_data: 'Container'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeStructContent':
         return cls(
-            _from_json_data(Sizes, data.get("sizes")),
-            _from_json_data(str, data.get("type_name")),
+            _from_json_data(Container, data.get("struct_data")),
         )
 
     def to_json_data(self) -> Any:
         data: Dict[str, Any] = {}
-        data["sizes"] = _to_json_data(self.sizes)
-        data["type_name"] = _to_json_data(self.type_name)
+        data["struct_data"] = _to_json_data(self.struct_data)
         return data
 
 @dataclass
@@ -1324,7 +1321,6 @@ class LoginVersionsSpecific(LoginVersions):
 @dataclass
 class MemberTags:
     comment: 'Optional[str]'
-    compressed: 'Optional[str]'
     description: 'Optional[str]'
     display: 'Optional[str]'
 
@@ -1332,7 +1328,6 @@ class MemberTags:
     def from_json_data(cls, data: Any) -> 'MemberTags':
         return cls(
             _from_json_data(Optional[str], data.get("comment")),
-            _from_json_data(Optional[str], data.get("compressed")),
             _from_json_data(Optional[str], data.get("description")),
             _from_json_data(Optional[str], data.get("display")),
         )
@@ -1341,8 +1336,6 @@ class MemberTags:
         data: Dict[str, Any] = {}
         if self.comment is not None:
              data["comment"] = _to_json_data(self.comment)
-        if self.compressed is not None:
-             data["compressed"] = _to_json_data(self.compressed)
         if self.description is not None:
              data["description"] = _to_json_data(self.description)
         if self.display is not None:

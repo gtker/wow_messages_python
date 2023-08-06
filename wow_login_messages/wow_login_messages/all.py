@@ -3,7 +3,9 @@ import dataclasses
 import enum
 import struct
 import typing
+import zlib
 from .util import read_string
+from .util import read_bool
 from .util import read_int
 from .util import read_cstring
 from .util import read_float
@@ -65,16 +67,16 @@ class Version:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
-        # major: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
+        # major: u8
         major = await read_int(reader, 1)
 
-        # minor: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
+        # minor: u8
         minor = await read_int(reader, 1)
 
-        # patch: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
+        # patch: u8
         patch = await read_int(reader, 1)
 
-        # build: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
+        # build: u16
         build = await read_int(reader, 2)
 
         return Version(
@@ -84,24 +86,10 @@ class Version:
             build=build,
         )
 
-    def write(self, fmt, data):
-        # major: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        fmt += 'B'
-        data.append(self.major)
-
-        # minor: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        fmt += 'B'
-        data.append(self.minor)
-
-        # patch: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        fmt += 'B'
-        data.append(self.patch)
-
-        # build: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        fmt += 'H'
-        data.append(self.build)
-
-        return fmt, data
+    def write(self, _fmt, _data):
+        _fmt += 'BBBH'
+        _data.extend([self.major, self.minor, self.patch, self.build])
+        return _fmt, _data
 
 
 @dataclasses.dataclass
@@ -117,34 +105,34 @@ class CMD_AUTH_LOGON_CHALLENGE_Client:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
-        # protocol_version: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='ProtocolVersion', upcast=False))
+        # protocol_version: ProtocolVersion
         protocol_version = ProtocolVersion(await read_int(reader, 1))
 
-        # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
+        # size: u16
         _size = await read_int(reader, 2)
 
-        # game_name: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
+        # game_name: u32
         _game_name = await read_int(reader, 4)
 
-        # version: DataTypeStruct(data_type_tag='Struct', content=DataTypeStructContent(sizes=Sizes(constant_sized=True, maximum_size=5, minimum_size=5), type_name='Version'))
+        # version: Version
         version = await Version.read(reader)
 
-        # platform: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Platform', upcast=False))
+        # platform: Platform
         platform = Platform(await read_int(reader, 4))
 
-        # os: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Os', upcast=False))
+        # os: Os
         os = Os(await read_int(reader, 4))
 
-        # locale: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Locale', upcast=False))
+        # locale: Locale
         locale = Locale(await read_int(reader, 4))
 
-        # utc_timezone_offset: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
+        # utc_timezone_offset: u32
         utc_timezone_offset = await read_int(reader, 4)
 
-        # client_ip_address: DataTypeIPAddress(data_type_tag='IpAddress')
+        # client_ip_address: IpAddress
         client_ip_address = await read_int(reader, 4)
 
-        # account_name: DataTypeString(data_type_tag='String')
+        # account_name: String
         account_name = await read_string(reader)
 
         return CMD_AUTH_LOGON_CHALLENGE_Client(
@@ -158,55 +146,48 @@ class CMD_AUTH_LOGON_CHALLENGE_Client:
             account_name=account_name,
         )
 
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [0]
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [0]
 
-        # protocol_version: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='ProtocolVersion', upcast=False))
-        fmt += 'B'
-        data.append(self.protocol_version.value)
+        _fmt += 'BHI'
+        _data.extend([self.protocol_version.value, self.size(), 5730135])
+        # version: Version
+        _fmt, _data = self.version.write(_fmt, _data)
 
-        # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        fmt += 'H'
-        data.append(self._size())
+        # platform: Platform
+        _fmt += 'I'
+        _data.append(self.platform.value)
 
-        # game_name: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        fmt += 'I'
-        data.append(5730135)
+        # os: Os
+        _fmt += 'I'
+        _data.append(self.os.value)
 
-        # version: DataTypeStruct(data_type_tag='Struct', content=DataTypeStructContent(sizes=Sizes(constant_sized=True, maximum_size=5, minimum_size=5), type_name='Version'))
-        fmt, data = self.version.write(fmt, data)
+        # locale: Locale
+        _fmt += 'I'
+        _data.append(self.locale.value)
 
-        # platform: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Platform', upcast=False))
-        fmt += 'I'
-        data.append(self.platform.value)
+        # utc_timezone_offset: u32
+        _fmt += 'I'
+        _data.append(self.utc_timezone_offset)
 
-        # os: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Os', upcast=False))
-        fmt += 'I'
-        data.append(self.os.value)
+        # client_ip_address: IpAddress
+        _fmt += 'I'
+        _data.append(self.client_ip_address)
 
-        # locale: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Locale', upcast=False))
-        fmt += 'I'
-        data.append(self.locale.value)
+        # account_name: String
+        _fmt += f'B{len(self.account_name)}s'
+        _data.extend([len(self.account_name), self.account_name.encode('utf-8')])
 
-        # utc_timezone_offset: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        fmt += 'I'
-        data.append(self.utc_timezone_offset)
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
 
-        # client_ip_address: DataTypeIPAddress(data_type_tag='IpAddress')
-        fmt += 'I'
-        data.append(self.client_ip_address)
-
-        # account_name: DataTypeString(data_type_tag='String')
-        fmt += f'B{len(self.account_name)}s'
-        data.append(len(self.account_name))
-        data.append(self.account_name.encode('utf-8'))
-
-        data = struct.pack(fmt, *data)
-        writer.write(data)
-
-    def _size(self) -> int:
-        return 32 + len(self.account_name) - 3
+    def size(self) -> int:
+        return 30 + len(self.account_name)
 
 
 @dataclasses.dataclass
@@ -222,34 +203,34 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Client:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
-        # protocol_version: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='ProtocolVersion', upcast=False))
+        # protocol_version: ProtocolVersion
         protocol_version = ProtocolVersion(await read_int(reader, 1))
 
-        # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
+        # size: u16
         _size = await read_int(reader, 2)
 
-        # game_name: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
+        # game_name: u32
         _game_name = await read_int(reader, 4)
 
-        # version: DataTypeStruct(data_type_tag='Struct', content=DataTypeStructContent(sizes=Sizes(constant_sized=True, maximum_size=5, minimum_size=5), type_name='Version'))
+        # version: Version
         version = await Version.read(reader)
 
-        # platform: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Platform', upcast=False))
+        # platform: Platform
         platform = Platform(await read_int(reader, 4))
 
-        # os: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Os', upcast=False))
+        # os: Os
         os = Os(await read_int(reader, 4))
 
-        # locale: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Locale', upcast=False))
+        # locale: Locale
         locale = Locale(await read_int(reader, 4))
 
-        # utc_timezone_offset: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
+        # utc_timezone_offset: u32
         utc_timezone_offset = await read_int(reader, 4)
 
-        # client_ip_address: DataTypeIPAddress(data_type_tag='IpAddress')
+        # client_ip_address: IpAddress
         client_ip_address = await read_int(reader, 4)
 
-        # account_name: DataTypeString(data_type_tag='String')
+        # account_name: String
         account_name = await read_string(reader)
 
         return CMD_AUTH_RECONNECT_CHALLENGE_Client(
@@ -263,54 +244,71 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Client:
             account_name=account_name,
         )
 
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [2]
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [2]
 
-        # protocol_version: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='ProtocolVersion', upcast=False))
-        fmt += 'B'
-        data.append(self.protocol_version.value)
+        _fmt += 'BHI'
+        _data.extend([self.protocol_version.value, self.size(), 5730135])
+        # version: Version
+        _fmt, _data = self.version.write(_fmt, _data)
 
-        # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        fmt += 'H'
-        data.append(self._size())
+        # platform: Platform
+        _fmt += 'I'
+        _data.append(self.platform.value)
 
-        # game_name: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        fmt += 'I'
-        data.append(5730135)
+        # os: Os
+        _fmt += 'I'
+        _data.append(self.os.value)
 
-        # version: DataTypeStruct(data_type_tag='Struct', content=DataTypeStructContent(sizes=Sizes(constant_sized=True, maximum_size=5, minimum_size=5), type_name='Version'))
-        fmt, data = self.version.write(fmt, data)
+        # locale: Locale
+        _fmt += 'I'
+        _data.append(self.locale.value)
 
-        # platform: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Platform', upcast=False))
-        fmt += 'I'
-        data.append(self.platform.value)
+        # utc_timezone_offset: u32
+        _fmt += 'I'
+        _data.append(self.utc_timezone_offset)
 
-        # os: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Os', upcast=False))
-        fmt += 'I'
-        data.append(self.os.value)
+        # client_ip_address: IpAddress
+        _fmt += 'I'
+        _data.append(self.client_ip_address)
 
-        # locale: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='Locale', upcast=False))
-        fmt += 'I'
-        data.append(self.locale.value)
+        # account_name: String
+        _fmt += f'B{len(self.account_name)}s'
+        _data.extend([len(self.account_name), self.account_name.encode('utf-8')])
 
-        # utc_timezone_offset: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        fmt += 'I'
-        data.append(self.utc_timezone_offset)
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
 
-        # client_ip_address: DataTypeIPAddress(data_type_tag='IpAddress')
-        fmt += 'I'
-        data.append(self.client_ip_address)
+    def size(self) -> int:
+        return 30 + len(self.account_name)
 
-        # account_name: DataTypeString(data_type_tag='String')
-        fmt += f'B{len(self.account_name)}s'
-        data.append(len(self.account_name))
-        data.append(self.account_name.encode('utf-8'))
 
-        data = struct.pack(fmt, *data)
-        writer.write(data)
+ClientOpcode = typing.Union[
+    CMD_AUTH_LOGON_CHALLENGE_Client,
+    CMD_AUTH_RECONNECT_CHALLENGE_Client,
+    ]
 
-    def _size(self) -> int:
-        return 32 + len(self.account_name) - 3
+
+async def read_client_opcode(reader: asyncio.StreamReader) -> typing.Optional[ClientOpcode]:
+    opcode = int.from_bytes(await reader.readexactly(1), 'little')
+    if opcode == 0x00:
+        return await CMD_AUTH_LOGON_CHALLENGE_Client.read(reader)
+    if opcode == 0x02:
+        return await CMD_AUTH_RECONNECT_CHALLENGE_Client.read(reader)
+    else:
+        raise Exception(f'incorrect opcode {opcode}')
+
+
+async def expect_client_opcode(reader: asyncio.StreamReader, opcode: typing.Type[ClientOpcode]) -> typing.Optional[ClientOpcode]:
+    o = await read_client_opcode(reader)
+    if isinstance(o, opcode):
+        return o
+    else:
+        return None
 
 

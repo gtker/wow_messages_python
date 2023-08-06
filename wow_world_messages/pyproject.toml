@@ -1,12 +1,14 @@
 [project]
-name = "wow_login_messages"
+name = "wow_world_messages"
 version = "0.1.0"
 description = "Message definitions for World of Warcraft Login servers"
 readme = "README.md"
 
-requires-python = ">=3.10"
+dependencies = [
+    "wow-srp >= 0.2.0",
+]
 
-requires = ["wow-srp>=0.2.0"]
+requires-python = ">=3.10"
 
 authors = [
     { name = "Gtker", email = "python@gtker.com" }

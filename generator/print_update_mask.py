@@ -2,86 +2,66 @@ import model
 from writer import Writer
 
 
-def print_update_mask_read(s: Writer, update_mask: list[model.UpdateMask]):
-    s.wln("@staticmethod")
-    s.open("async def read(reader: asyncio.StreamReader):")
-    s.wln("amount_of_blocks = await read_int(reader, 1)")
-    s.newline()
-    s.wln("blocks = []")
+def print_update_mask(s: Writer, update_mask: list[model.UpdateMask]):
+    s.write_block("""
+@dataclasses.dataclass
+class UpdateMask:
+    fields: dict[int, int]
+    
+    @staticmethod
+    async def read(reader: asyncio.StreamReader):
+        amount_of_blocks = await read_int(reader, 1)
 
-    s.open("for _ in range(0, amount_of_blocks):")
-    s.wln("blocks.append(await read_int(reader, 4))")
-    s.close()  # for _ in range
-    s.newline()
+        blocks = []
+        for _ in range(0, amount_of_blocks):
+            blocks.append(await read_int(reader, 4))
 
-    s.wln("fields = {}")
-    s.open("for block_index, block in enumerate(blocks):")
-    s.open("for bit in range(0, 32):")
+        fields = {}
+        for block_index, block in enumerate(blocks):
+            for bit in range(0, 32):
+                if block & 1 << bit:
+                    value = await read_int(reader, 4)
+                    key = block_index * 32 + bit
+                    fields[key] = value
 
-    s.open("if block & 1 << bit:")
-    s.wln("value = await read_int(reader, 4)")
-    s.wln("key = block_index * 32 + bit")
-    s.wln("fields[key] = value")
-    s.close()  # if block & 1
+        return UpdateMask(fields=fields)
 
-    s.close()  # for bit in range
-    s.close()  # for block_index, block
-    s.newline()
+    def write(self, fmt, data):
+        highest_key = max(self.fields)
+        amount_of_blocks = highest_key // 32
+        if highest_key % 32 != 0:
+            amount_of_blocks += 1
 
-    s.wln("return UpdateMask(fields=fields)")
+        fmt += 'B'
+        data.append(amount_of_blocks)
 
-    s.close()  # async def read
+        blocks = [0] * amount_of_blocks
 
-    s.newline()
+        for key in self.fields:
+            block = key // 32
+            index = key % 32
+            blocks[block] |= 1 << index
 
+        fmt += f'{len(blocks)}I'
+        data.extend(blocks)
 
-def print_update_mask_write(s: Writer, update_mask: list[model.UpdateMask]):
-    s.open("def write(self, fmt, data):")
+        for value in self.fields.values():
+            fmt += 'I'
+            data.append(value)
 
-    s.wln("highest_key = max(self.fields)")
-    s.wln("amount_of_blocks = highest_key // 32")
-    s.newline()
+        return fmt, data
 
-    s.wln("fmt += 'B'")
-    s.wln("data.append(amount_of_blocks)")
-    s.newline()
+    def size(self):
+        highest_key = max(self.fields)
+        amount_of_blocks = highest_key // 32
 
-    s.wln("blocks = [0] * amount_of_blocks")
-    s.newline()
+        extra = highest_key % 32
+        if extra != 0:
+            extra = 1
+        else:
+            extra = 0
 
-    s.open("for key in self.fields:")
-    s.wln("block = key // 32")
-    s.wln("index = key % 32")
-    s.wln("blocks[block] |= 1 << index")
-    s.close()  # for key in self.fields
-    s.newline()
-
-    s.wln("fmt += f'{len(blocks)}I'")
-    s.wln("data.extend(blocks)")
-    s.newline()
-
-    s.open("for value in self.fields.values():")
-    s.wln("fmt += 'I'")
-    s.wln("data.append(value)")
-    s.close()  # for value in self.fields
-    s.newline()
-
-    s.wln("return fmt, data")
-
-    s.close()  # def write
+        return 1 + (extra + amount_of_blocks + len(self.fields)) * 4
+""")
 
     s.double_newline()
-
-
-def print_update_mask(s: Writer, update_mask: list[model.UpdateMask]):
-    s.wln("@dataclasses.dataclass")
-    s.open("class UpdateMask:")
-
-    s.wln("fields: dict[int, int]")
-    s.newline()
-
-    print_update_mask_read(s, update_mask)
-
-    print_update_mask_write(s, update_mask)
-
-    s.close()  # class UpdateMask

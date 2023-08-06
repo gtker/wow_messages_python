@@ -3,7 +3,9 @@ import dataclasses
 import enum
 import struct
 import typing
+import zlib
 from .util import read_string
+from .util import read_bool
 from .util import read_int
 from .util import read_cstring
 from .util import read_float
@@ -57,7 +59,16 @@ __all__ = [
     "CMD_REALM_LIST_Server",
     ]
 
-async def read_opcode_server(reader: asyncio.StreamReader):
+ClientOpcode = typing.Union[
+    CMD_AUTH_LOGON_CHALLENGE_Client,
+    CMD_AUTH_LOGON_PROOF_Client,
+    CMD_AUTH_RECONNECT_CHALLENGE_Client,
+    CMD_AUTH_RECONNECT_PROOF_Client,
+    CMD_REALM_LIST_Client,
+    ]
+
+
+async def read_client_opcode(reader: asyncio.StreamReader) -> typing.Optional[ClientOpcode]:
     opcode = int.from_bytes(await reader.readexactly(1), 'little')
     if opcode == 0x00:
         return await CMD_AUTH_LOGON_CHALLENGE_Client.read(reader)
@@ -73,7 +84,24 @@ async def read_opcode_server(reader: asyncio.StreamReader):
         raise Exception(f'incorrect opcode {opcode}')
 
 
-async def read_opcode_client(reader: asyncio.StreamReader):
+async def expect_client_opcode(reader: asyncio.StreamReader, opcode: typing.Type[ClientOpcode]) -> typing.Optional[ClientOpcode]:
+    o = await read_client_opcode(reader)
+    if isinstance(o, opcode):
+        return o
+    else:
+        return None
+
+
+ServerOpcode = typing.Union[
+    CMD_AUTH_LOGON_CHALLENGE_Server,
+    CMD_AUTH_LOGON_PROOF_Server,
+    CMD_AUTH_RECONNECT_CHALLENGE_Server,
+    CMD_AUTH_RECONNECT_PROOF_Server,
+    CMD_REALM_LIST_Server,
+    ]
+
+
+async def read_server_opcode(reader: asyncio.StreamReader) -> typing.Optional[ServerOpcode]:
     opcode = int.from_bytes(await reader.readexactly(1), 'little')
     if opcode == 0x00:
         return await CMD_AUTH_LOGON_CHALLENGE_Server.read(reader)
@@ -86,6 +114,13 @@ async def read_opcode_client(reader: asyncio.StreamReader):
     if opcode == 0x10:
         return await CMD_REALM_LIST_Server.read(reader)
     else:
-        raise Exception(f'incorrect opcode {opcode}')
+        return None
 
+
+async def expect_server_opcode(reader: asyncio.StreamReader, opcode: typing.Type[ServerOpcode]) -> typing.Optional[ServerOpcode]:
+    o = await read_server_opcode(reader)
+    if isinstance(o, opcode):
+        return o
+    else:
+        return None
 
