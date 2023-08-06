@@ -3,7 +3,9 @@ from util import should_print_container, world_version_to_module_name
 from writer import Writer
 
 
-def print_type_unions(s: Writer, messages: list[model.Container], v: model.WorldVersion):
+def print_type_unions(
+        s: Writer, messages: list[model.Container], v: model.WorldVersion
+):
     s.wln("ClientOpcode = typing.Union[")
     s.inc_indent()
 
@@ -42,13 +44,17 @@ def print_type_unions(s: Writer, messages: list[model.Container], v: model.World
     s.newline()
 
 
-def expect_function(s: Writer, side: str, encryption: str, opcode: str, v: model.WorldVersion):
+def expect_function(
+        s: Writer, side: str, encryption: str, opcode: str, v: model.WorldVersion
+):
     s.wln(f"async def expect_{side}_opcode_{encryption}(")
     s.inc_indent()
-    s.wln(f"reader: asyncio.StreamReader,")
+    s.wln("reader: asyncio.StreamReader,")
     s.wln(f"opcode: typing.Type[{opcode}],")
     if encryption == "encrypted":
-        s.wln(f"header_crypto: wow_srp.{world_version_to_module_name(v)}_header.HeaderCrypto,")
+        s.wln(
+            f"header_crypto: wow_srp.{world_version_to_module_name(v)}_header.HeaderCrypto,"
+        )
     s.dec_indent()
     s.wln(f") -> typing.Optional[{opcode}]:")
 
@@ -82,8 +88,12 @@ def print_expects(s: Writer, v: model.WorldVersion):
     expect_function(s, "server", "encrypted", "ServerOpcode", v)
 
 
-def read_functions(s: Writer, v: model.WorldVersion, side: str, opcode: str, size_field_size: int):
-    s.wln(f"async def read_{side}_opcodes_unencrypted(reader: asyncio.StreamReader) -> {opcode}:")
+def read_functions(
+        s: Writer, v: model.WorldVersion, side: str, opcode: str, size_field_size: int
+):
+    s.wln(
+        f"async def read_{side}_opcodes_unencrypted(reader: asyncio.StreamReader) -> {opcode}:"
+    )
     s.inc_indent()
 
     s.wln("opcode_size = 2")
@@ -91,10 +101,14 @@ def read_functions(s: Writer, v: model.WorldVersion, side: str, opcode: str, siz
     s.newline()
 
     s.wln('size = int.from_bytes(await reader.readexactly(opcode_size), "big")')
-    s.wln('opcode = int.from_bytes(await reader.readexactly(size_field_size), "little")')
+    s.wln(
+        'opcode = int.from_bytes(await reader.readexactly(size_field_size), "little")'
+    )
 
-    s.wln(f"return await read_{side}_opcode_body(reader, opcode, size, size_field_size)")
-    s.dec_indent() # async def read_
+    s.wln(
+        f"return await read_{side}_opcode_body(reader, opcode, size, size_field_size)"
+    )
+    s.dec_indent()  # async def read_
 
     s.newline()
     s.newline()
@@ -103,7 +117,9 @@ def read_functions(s: Writer, v: model.WorldVersion, side: str, opcode: str, siz
     s.inc_indent()
 
     s.wln("reader: asyncio.StreamReader,")
-    s.wln(f"header_crypto: wow_srp.{world_version_to_module_name(v)}_header.HeaderCrypto,")
+    s.wln(
+        f"header_crypto: wow_srp.{world_version_to_module_name(v)}_header.HeaderCrypto,"
+    )
     s.dec_indent()
 
     s.wln(f") -> {opcode}:")
@@ -120,8 +136,10 @@ def read_functions(s: Writer, v: model.WorldVersion, side: str, opcode: str, siz
     s.wln("size, opcode = header_crypto.decrypt_client_header(data)")
     s.newline()
 
-    s.wln(f"return await read_{side}_opcode_body(reader, opcode, size, size_field_size)")
-    s.dec_indent() # ) -> opcode
+    s.wln(
+        f"return await read_{side}_opcode_body(reader, opcode, size, size_field_size)"
+    )
+    s.dec_indent()  # ) -> opcode
 
     s.newline()
     s.newline()
@@ -144,17 +162,20 @@ def print_read_body(s: Writer, messages: list[model.Container], v: model.WorldVe
 
     s.wln(") -> ClientOpcode:")
     s.inc_indent()
+    s.wln("size = size - size_field_size")
 
     for e in messages:
         if not should_print_container(e, v):
             continue
 
         match e.object_type:
-            case model.ObjectTypeCmsg(opcode=opcode) | model.ObjectTypeMsg(opcode=opcode):
+            case model.ObjectTypeCmsg(opcode=opcode) | model.ObjectTypeMsg(
+                opcode=opcode
+            ):
                 s.wln(f"if opcode == 0x{opcode:04X}:")
                 s.inc_indent()
 
-                s.wln(f"return await {e.name}.read(reader, size - size_field_size)")
+                s.wln(f"return await {e.name}.read(reader, size)")
                 s.dec_indent()
             case _:
                 pass
@@ -180,17 +201,20 @@ def print_read_body(s: Writer, messages: list[model.Container], v: model.WorldVe
 
     s.wln(") -> ServerOpcode:")
     s.inc_indent()
+    s.wln("size = size - size_field_size")
 
     for e in messages:
         if not should_print_container(e, v):
             continue
 
         match e.object_type:
-            case model.ObjectTypeSmsg(opcode=opcode) | model.ObjectTypeMsg(opcode=opcode):
+            case model.ObjectTypeSmsg(opcode=opcode) | model.ObjectTypeMsg(
+                opcode=opcode
+            ):
                 s.wln(f"if opcode == 0x{opcode:04X}:")
                 s.inc_indent()
 
-                s.wln(f"return await {e.name}.read(reader, size - size_field_size)")
+                s.wln(f"return await {e.name}.read(reader, size)")
                 s.dec_indent()
             case _:
                 pass
@@ -206,7 +230,9 @@ def print_read_body(s: Writer, messages: list[model.Container], v: model.WorldVe
     s.newline()
 
 
-def print_world_utils(s: Writer, messages: list[model.Container], v: model.WorldVersion):
+def print_world_utils(
+        s: Writer, messages: list[model.Container], v: model.WorldVersion
+):
     print_type_unions(s, messages, v)
 
     print_read_body(s, messages, v)

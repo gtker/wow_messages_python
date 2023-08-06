@@ -31,8 +31,11 @@ class IntermediateRepresentationSchema:
     integer_type_information: 'Dict[str, IntermediateRepresentationSchemaIntegerTypeInformation]'
     login: 'LoginObjects'
     login_version_opcodes: 'Dict[str, int]'
+    tbc_update_mask: 'List[UpdateMask]'
+    vanilla_update_mask: 'List[UpdateMask]'
     version: 'SchemaVersion'
     world: 'WorldObjects'
+    wrath_update_mask: 'List[UpdateMask]'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'IntermediateRepresentationSchema':
@@ -41,8 +44,11 @@ class IntermediateRepresentationSchema:
             _from_json_data(Dict[str, IntermediateRepresentationSchemaIntegerTypeInformation], data.get("integer_type_information")),
             _from_json_data(LoginObjects, data.get("login")),
             _from_json_data(Dict[str, int], data.get("login_version_opcodes")),
+            _from_json_data(List[UpdateMask], data.get("tbc_update_mask")),
+            _from_json_data(List[UpdateMask], data.get("vanilla_update_mask")),
             _from_json_data(SchemaVersion, data.get("version")),
             _from_json_data(WorldObjects, data.get("world")),
+            _from_json_data(List[UpdateMask], data.get("wrath_update_mask")),
         )
 
     def to_json_data(self) -> Any:
@@ -51,8 +57,11 @@ class IntermediateRepresentationSchema:
         data["integer_type_information"] = _to_json_data(self.integer_type_information)
         data["login"] = _to_json_data(self.login)
         data["login_version_opcodes"] = _to_json_data(self.login_version_opcodes)
+        data["tbc_update_mask"] = _to_json_data(self.tbc_update_mask)
+        data["vanilla_update_mask"] = _to_json_data(self.vanilla_update_mask)
         data["version"] = _to_json_data(self.version)
         data["world"] = _to_json_data(self.world)
+        data["wrath_update_mask"] = _to_json_data(self.wrath_update_mask)
         return data
 
 @dataclass
@@ -246,6 +255,69 @@ class ArrayTypeStruct(ArrayType):
     def to_json_data(self) -> Any:
         data = { "array_type_tag": "Struct" }
         data["content"] = _to_json_data(self.content)
+        return data
+
+@dataclass
+class ByteTypeInnerType:
+    byte_type_tag: 'str'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'ByteTypeInnerType':
+        variants: Dict[str, Type[ByteTypeInnerType]] = {
+            "Byte": ByteTypeInnerTypeByte,
+            "Definer": ByteTypeInnerTypeDefiner,
+        }
+
+        return variants[data["byte_type_tag"]].from_json_data(data)
+
+    def to_json_data(self) -> Any:
+        pass
+
+@dataclass
+class ByteTypeInnerTypeByte(ByteTypeInnerType):
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'ByteTypeInnerTypeByte':
+        return cls(
+            "Byte",
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "byte_type_tag": "Byte" }
+        return data
+
+@dataclass
+class ByteTypeInnerTypeDefiner(ByteTypeInnerType):
+    byte_type: 'str'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'ByteTypeInnerTypeDefiner':
+        return cls(
+            "Definer",
+            _from_json_data(str, data.get("byte_type")),
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "byte_type_tag": "Definer" }
+        data["byte_type"] = _to_json_data(self.byte_type)
+        return data
+
+@dataclass
+class ByteType:
+    inner_type: 'ByteTypeInnerType'
+    name: 'str'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'ByteType':
+        return cls(
+            _from_json_data(ByteTypeInnerType, data.get("inner_type")),
+            _from_json_data(str, data.get("name")),
+        )
+
+    def to_json_data(self) -> Any:
+        data: Dict[str, Any] = {}
+        data["inner_type"] = _to_json_data(self.inner_type)
+        data["name"] = _to_json_data(self.name)
         return data
 
 @dataclass
@@ -2043,6 +2115,160 @@ class TestCaseValueUpdateMask(TestCaseValue):
     def to_json_data(self) -> Any:
         data = { "test_value_tag": "UpdateMask" }
         data["content"] = _to_json_data(self.content)
+        return data
+
+@dataclass
+class UpdateMaskDataType:
+    update_mask_type_tag: 'str'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskDataType':
+        variants: Dict[str, Type[UpdateMaskDataType]] = {
+            "Bytes": UpdateMaskDataTypeBytes,
+            "Float": UpdateMaskDataTypeFloat,
+            "Guid": UpdateMaskDataTypeGUID,
+            "Int": UpdateMaskDataTypeInt,
+            "TwoShort": UpdateMaskDataTypeTwoShort,
+        }
+
+        return variants[data["update_mask_type_tag"]].from_json_data(data)
+
+    def to_json_data(self) -> Any:
+        pass
+
+@dataclass
+class UpdateMaskDataTypeBytesContent:
+    first: 'ByteType'
+    fourth: 'ByteType'
+    second: 'ByteType'
+    third: 'ByteType'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskDataTypeBytesContent':
+        return cls(
+            _from_json_data(ByteType, data.get("first")),
+            _from_json_data(ByteType, data.get("fourth")),
+            _from_json_data(ByteType, data.get("second")),
+            _from_json_data(ByteType, data.get("third")),
+        )
+
+    def to_json_data(self) -> Any:
+        data: Dict[str, Any] = {}
+        data["first"] = _to_json_data(self.first)
+        data["fourth"] = _to_json_data(self.fourth)
+        data["second"] = _to_json_data(self.second)
+        data["third"] = _to_json_data(self.third)
+        return data
+
+@dataclass
+class UpdateMaskDataTypeBytes(UpdateMaskDataType):
+    content: 'UpdateMaskDataTypeBytesContent'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskDataTypeBytes':
+        return cls(
+            "Bytes",
+            _from_json_data(UpdateMaskDataTypeBytesContent, data.get("content")),
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "update_mask_type_tag": "Bytes" }
+        data["content"] = _to_json_data(self.content)
+        return data
+
+@dataclass
+class UpdateMaskDataTypeFloat(UpdateMaskDataType):
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskDataTypeFloat':
+        return cls(
+            "Float",
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "update_mask_type_tag": "Float" }
+        return data
+
+@dataclass
+class UpdateMaskDataTypeGUID(UpdateMaskDataType):
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskDataTypeGUID':
+        return cls(
+            "Guid",
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "update_mask_type_tag": "Guid" }
+        return data
+
+@dataclass
+class UpdateMaskDataTypeInt(UpdateMaskDataType):
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskDataTypeInt':
+        return cls(
+            "Int",
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "update_mask_type_tag": "Int" }
+        return data
+
+@dataclass
+class UpdateMaskDataTypeTwoShort(UpdateMaskDataType):
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskDataTypeTwoShort':
+        return cls(
+            "TwoShort",
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "update_mask_type_tag": "TwoShort" }
+        return data
+
+class UpdateMaskObjectType(Enum):
+    CONTAINER = "Container"
+    CORPSE = "Corpse"
+    DYNAMIC_OBJECT = "DynamicObject"
+    GAME_OBJECT = "GameObject"
+    ITEM = "Item"
+    OBJECT = "Object"
+    PLAYER = "Player"
+    UNIT = "Unit"
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskObjectType':
+        return cls(data)
+
+    def to_json_data(self) -> Any:
+        return self.value
+
+@dataclass
+class UpdateMask:
+    data_type: 'UpdateMaskDataType'
+    name: 'str'
+    object_type: 'UpdateMaskObjectType'
+    offset: 'int'
+    size: 'int'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMask':
+        return cls(
+            _from_json_data(UpdateMaskDataType, data.get("data_type")),
+            _from_json_data(str, data.get("name")),
+            _from_json_data(UpdateMaskObjectType, data.get("object_type")),
+            _from_json_data(int, data.get("offset")),
+            _from_json_data(int, data.get("size")),
+        )
+
+    def to_json_data(self) -> Any:
+        data: Dict[str, Any] = {}
+        data["data_type"] = _to_json_data(self.data_type)
+        data["name"] = _to_json_data(self.name)
+        data["object_type"] = _to_json_data(self.object_type)
+        data["offset"] = _to_json_data(self.offset)
+        data["size"] = _to_json_data(self.size)
         return data
 
 @dataclass

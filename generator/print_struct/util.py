@@ -1,6 +1,7 @@
 import typing
 
 import model
+from writer import Writer
 
 
 def integer_type_to_size(ty: model.IntegerType) -> int:
@@ -31,7 +32,8 @@ def type_to_python_str(ty: model.DataType) -> str:
             return "int"
         case model.DataTypeBool():
             return "bool"
-        case model.DataTypeString() | model.DataTypeCstring():
+
+        case model.DataTypeString() | model.DataTypeCstring() | model.DataTypeSizedCstring():
             return "str"
         case model.DataTypeFloatingPoint():
             return "float"
@@ -70,6 +72,8 @@ def type_to_python_str(ty: model.DataType) -> str:
             return "float"
         case model.DataTypeDateTime():
             return "int"
+        case model.DataTypeUpdateMask():
+            return "UpdateMask"
 
         case model.DataTypeAchievementDoneArray():
             return "AchievementDoneArray"
@@ -88,10 +92,6 @@ def type_to_python_str(ty: model.DataType) -> str:
             return "MonsterMoveSpline"
         case model.DataTypeNamedGUID():
             return "NamedGUID"
-        case model.DataTypeSizedCstring():
-            return "SizedCString"
-        case model.DataTypeUpdateMask():
-            return "UpdateMask"
         case model.DataTypeVariableItemRandomProperty():
             return "VariableItemRandomProperty"
         case v:
@@ -113,12 +113,14 @@ def array_type_to_python_str(ty: model.ArrayType):
 
 
 def all_members_from_container(
-    container: model.Container,
+        container: model.Container,
 ) -> typing.List[model.Definition]:
     out_members = []
 
     def inner(m: model.StructMember, out_members: typing.List[model.Definition]):
-        def inner_if(statement: model.IfStatement, out_members: typing.List[model.Definition]):
+        def inner_if(
+                statement: model.IfStatement, out_members: typing.List[model.Definition]
+        ):
             for member in statement.members:
                 inner(member, out_members)
 
@@ -128,14 +130,11 @@ def all_members_from_container(
             for member in statement.else_members:
                 inner(member, out_members)
 
-
         match m:
             case model.StructMemberDefinition(_tag, definition):
                 out_members.append(definition)
 
-            case model.StructMemberIfStatement(
-                _tag, struct_member_content=statement
-            ):
+            case model.StructMemberIfStatement(_tag, struct_member_content=statement):
                 inner_if(statement, out_members)
 
             case model.StructMemberOptional(
@@ -151,3 +150,41 @@ def all_members_from_container(
         inner(m, out_members)
 
     return out_members
+
+
+def print_if_statement_header(
+        s: Writer, statement: model.IfStatement, extra_elseif: str, extra_self: str
+):
+    original_type = type_to_python_str(statement.original_type)
+    var_name = statement.conditional.variable_name
+
+    match statement.conditional.equations:
+        case model.ConditionalEquationsEquals(
+            _tag, model.ConditionalEquationsEqualsValues(value=value)
+        ):
+            if len(value) == 1:
+                s.wln(
+                    f"{extra_elseif}if {extra_self}{var_name} == {original_type}.{value[0]}:"
+                )
+            else:
+                s.w(f"{extra_elseif}if {extra_self}{var_name} in {{")
+                for i, val in enumerate(value):
+                    if i != 0:
+                        s.w_no_indent(", ")
+                    s.w_no_indent(f"{original_type}.{val}")
+                s.wln_no_indent("}:")
+
+        case model.ConditionalEquationsBitwiseAnd(
+            values=model.ConditionalEquationsBitwiseAndValues(value=value)
+        ):
+            s.w(f"{extra_elseif}if ")
+            for i, val in enumerate(value):
+                if i != 0:
+                    s.w_no_indent(" or ")
+                s.w_no_indent(f"{original_type}.{val} in {extra_self}{var_name}")
+            s.wln_no_indent(":")
+
+        case model.ConditionalEquationsNotEquals(values=values):
+            s.wln(
+                f"{extra_elseif}if {extra_self}{var_name} != {original_type}.{values.value}:"
+            )

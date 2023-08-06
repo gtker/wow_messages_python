@@ -4,13 +4,13 @@ from print_struct.print_size import print_size_inner
 from print_struct.util import (
     integer_type_to_size,
     all_members_from_container,
-    type_to_python_str,
+    print_if_statement_header,
 )
 from writer import Writer
 
 
 def print_read_struct_member(
-    s: Writer, d: model.Definition, container: model.Container
+        s: Writer, d: model.Definition, container: model.Container
 ):
     s.wln(f"# {d.name}: {d.data_type}")
     if d.tags.compressed is not None:
@@ -30,7 +30,7 @@ def print_read_struct_member(
 
         s.wln("for _ in range(size, body_size):")
         s.inc_indent()
-        s.wln(f"{d.name}.append(int.from_bytes(await reader.readexactly(1), 'little'))")
+        s.wln(f"{d.name}.append(await read_int(reader, 1))")
         s.dec_indent()
 
         s.newline()
@@ -44,12 +44,12 @@ def print_read_struct_member(
                 prefix = "_"
 
             s.wln(
-                f"{prefix}{d.name} = int.from_bytes(await reader.readexactly({size}), 'little')"
+                f"{prefix}{d.name} = await read_int(reader, {size})"
             )
         case model.DataTypeBool(content=content):
             size = integer_type_to_size(content)
             s.wln(
-                f"{d.name} = int.from_bytes(await reader.readexactly({size}), 'little') == 1"
+                f"{d.name} = await read_bool(reader, {size})"
             )
         case model.DataTypeFlag(
             content=model.DataTypeFlagContent(
@@ -58,24 +58,49 @@ def print_read_struct_member(
         ):
             size = integer_type_to_size(integer_type)
             s.wln(
-                f"{d.name} = {type_name}(int.from_bytes(await reader.readexactly({size}), 'little'))"
+                f"{d.name} = {type_name}(await read_int(reader, {size}))"
             )
         case model.DataTypeEnum(content=content):
             size = integer_type_to_size(content.integer_type)
             s.wln(
-                f"{d.name} = {content.type_name}(int.from_bytes(await reader.readexactly({size}), 'little'))"
+                f"{d.name} = {content.type_name}(await read_int(reader, {size}))"
             )
         case model.DataTypeString():
-            s.wln(f"{d.name} = int.from_bytes(await reader.readexactly(1), 'little')")
-            s.wln(f"{d.name} = (await reader.readexactly({d.name})).decode('utf-8')")
+            s.wln(f"{d.name} = await read_string(reader)")
 
         case model.DataTypeCstring():
             s.wln(
-                f"{d.name} = (await reader.readuntil(b'\\x00')).decode('utf-8').rstrip('\\x00')"
+                f"{d.name} = await read_cstring(reader)"
             )
 
+        case model.DataTypeSizedCstring():
+            s.wln(f"{d.name} = await read_sized_cstring(reader)")
+
         case model.DataTypeDateTime() | model.DataTypeGold() | model.DataTypeSeconds() | model.DataTypeMilliseconds() | model.DataTypeIPAddress():
-            s.wln(f"{d.name} = int.from_bytes(await reader.readexactly(4), 'big')")
+            s.wln(f"{d.name} = await read_int(reader, 4)")
+
+        case model.DataTypeGUID():
+            s.wln(f"{d.name} = await read_int(reader, 8)")
+        case model.DataTypeLevel():
+            s.wln(f"{d.name} = await read_int(reader, 1)")
+        case model.DataTypeLevel16():
+            s.wln(f"{d.name} = await read_int(reader, 2)")
+        case model.DataTypeLevel32():
+            s.wln(f"{d.name} = await read_int(reader, 4)")
+
+        case model.DataTypePopulation():
+            s.wln(f"{d.name} = await read_float(reader)")
+
+        case model.DataTypePackedGUID():
+            s.wln(f"{d.name} = await read_packed_guid(reader)")
+
+        case model.DataTypeFloatingPoint():
+            s.wln(f"{d.name} = await read_float(reader)")
+
+        case model.DataTypeStruct(
+            content=model.DataTypeStructContent(type_name=type_name)
+        ):
+            s.wln(f"{d.name} = await {type_name}.read(reader)")
 
         case model.DataTypeArray(content=content):
             s.wln(f"{d.name} = []")
@@ -94,7 +119,7 @@ def print_read_struct_member(
                 case model.ArrayTypeInteger(content=content):
                     size = integer_type_to_size(content)
                     s.wln(
-                        f"{d.name}.append(int.from_bytes(await reader.readexactly({size}), 'little'))"
+                        f"{d.name}.append(await read_int(reader, {size}))"
                     )
 
                 case model.ArrayTypeStruct(content=content):
@@ -102,55 +127,18 @@ def print_read_struct_member(
 
                 case model.ArrayTypeCstring():
                     s.wln(
-                        f"{d.name}.append((await reader.readuntil(b'\\x00')).decode('utf-8').rstrip('\\x00'))"
+                        f"{d.name}.append(await read_cstring(reader))"
                     )
 
                 case model.ArrayTypeGUID():
                     s.wln(
-                        f"{d.name}.append(int.from_bytes(await reader.readexactly(8), 'little'))"
+                        f"{d.name}.append(await read_int(reader, 8))"
                     )
 
                 case v:
                     raise Exception(f"{v}")
 
             s.dec_indent()
-
-        case model.DataTypeStruct(
-            content=model.DataTypeStructContent(type_name=type_name)
-        ):
-            s.wln(f"{d.name} = await {type_name}.read(reader)")
-        case model.DataTypePopulation():
-            s.wln(f"{d.name} = float.from_bytes(await reader.readexactly(4), 'little')")
-        case model.DataTypeGUID():
-            s.wln(f"{d.name} = int.from_bytes(await reader.readexactly(8), 'little')")
-        case model.DataTypeLevel():
-            s.wln(f"{d.name} = int.from_bytes(await reader.readexactly(1), 'little')")
-        case model.DataTypeLevel16():
-            s.wln(f"{d.name} = int.from_bytes(await reader.readexactly(2), 'little')")
-        case model.DataTypeLevel32():
-            s.wln(f"{d.name} = int.from_bytes(await reader.readexactly(4), 'little')")
-
-        case model.DataTypePackedGUID():
-            s.wln(f"{d.name} = 0")
-            s.wln(
-                f"{d.name}_byte_mask = int.from_bytes(await reader.readexactly(1), 'little')"
-            )
-
-            s.wln(f"for i in range(0, 8):")
-            s.inc_indent()
-
-            s.wln(f"if {d.name}_byte_mask & (1 << i):")
-            s.inc_indent()
-
-            s.wln(
-                f"{d.name} |= (int.from_bytes(await reader.readexactly(1), 'little') << (i * 8))"
-            )
-
-            s.dec_indent()
-            s.dec_indent()
-
-        case model.DataTypeFloatingPoint():
-            s.wln(f"[{d.name}] = struct.unpack('f', await reader.readexactly(4))")
 
         case v:
             raise Exception(f"{v}")
@@ -176,39 +164,16 @@ def print_read_member(s: Writer, m: model.StructMember, container: model.Contain
 
 
 def print_read_if_statement(
-    s: Writer,
-    statement: model.IfStatement,
-    container: model.Container,
-    is_else_if: bool,
+        s: Writer,
+        statement: model.IfStatement,
+        container: model.Container,
+        is_else_if: bool,
 ):
     extra_elseif = ""
     if is_else_if:
         extra_elseif = "el"
 
-    original_type = type_to_python_str(statement.original_type)
-    match statement.conditional.equations:
-        case model.ConditionalEquationsEquals(
-            _tag, model.ConditionalEquationsEqualsValues(value=value)
-        ):
-            if len(value) == 1:
-                s.wln(
-                    f"{extra_elseif}if {statement.conditional.variable_name} == {original_type}.{value[0]}:"
-                )
-            else:
-                raise Exception("unimpl")
-        case model.ConditionalEquationsBitwiseAnd(
-            values=model.ConditionalEquationsBitwiseAndValues(value=value)
-        ):
-            if len(value) == 1:
-                s.wln(
-                    f"{extra_elseif}if {original_type}.{value[0]} in {statement.conditional.variable_name}:"
-                )
-            else:
-                raise Exception("unimpl")
-        case model.ConditionalEquationsNotEquals(values=values):
-            s.wln(
-                f"if {statement.conditional.variable_name} != {original_type}.{values.value}:"
-            )
+    print_if_statement_header(s, statement, extra_elseif, "")
 
     s.inc_indent()
 
@@ -255,9 +220,9 @@ def print_read(s: Writer, container: Container):
     s.inc_indent()
     for d in all_members_from_container(container):
         if (
-            d.used_as_size_in is not None
-            or d.size_of_fields_before_size is not None
-            or d.constant_value is not None
+                d.used_as_size_in is not None
+                or d.size_of_fields_before_size is not None
+                or d.constant_value is not None
         ):
             continue
         s.wln(f"{d.name}={d.name},")

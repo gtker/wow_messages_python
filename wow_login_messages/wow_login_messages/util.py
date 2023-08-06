@@ -1,39 +1,29 @@
 import asyncio
-import typing
-
-from wow_login_messages.wow_login_messages.opcodes import (
-    CMD_AUTH_LOGON_CHALLENGE_opcode,
-    CMD_AUTH_LOGON_PROOF_opcode,
-    CMD_REALM_LIST_opcode,
-)
-from wow_login_messages.wow_login_messages.version3 import (
-    CMD_REALM_LIST_Client,
-    CMD_AUTH_LOGON_CHALLENGE_Client,
-    CMD_AUTH_LOGON_PROOF_Client,
-    CMD_AUTH_RECONNECT_CHALLENGE_Client,
-)
+import struct
 
 
-async def read_opcode_server(reader: asyncio.StreamReader):
-    opcode = int.from_bytes(await reader.readexactly(1), "little")
-    if opcode == CMD_AUTH_LOGON_CHALLENGE_opcode:
-        return await CMD_AUTH_LOGON_CHALLENGE_Client.read(reader)
-    elif opcode == CMD_AUTH_LOGON_PROOF_opcode:
-        return await CMD_AUTH_LOGON_PROOF_Client.read(reader)
-    elif opcode == CMD_REALM_LIST_opcode:
-        return await CMD_REALM_LIST_Client.read(reader)
-    else:
-        raise Exception(f"incorrect opcode: {opcode}")
+async def read_int(reader: asyncio.StreamReader, size: int) -> int:
+    return int.from_bytes(await reader.readexactly(size), "little")
 
 
-async def expect_login_or_reconnect(
-    reader: asyncio.StreamReader,
-) -> typing.Optional[CMD_AUTH_LOGON_CHALLENGE_Client]:
-    opcode = await read_opcode_server(reader)
-    match opcode:
-        case CMD_AUTH_LOGON_CHALLENGE_Client():
-            return opcode
-        case CMD_AUTH_RECONNECT_CHALLENGE_Client():
-            return opcode
+async def read_bool(reader: asyncio.StreamReader, size: int) -> bool:
+    return await read_int(reader, size) == 1
 
-    return None
+
+async def read_string(reader: asyncio.StreamReader) -> str:
+    length = await read_int(reader, 1)
+    return (await reader.readexactly(length)).decode("utf-8")
+
+
+async def read_cstring(reader: asyncio.StreamReader) -> str:
+    return (await reader.readuntil(b'\x00')).decode("utf-8").rstrip('\x00')
+
+
+async def read_sized_cstring(reader: asyncio.StreamReader) -> str:
+    length = await read_int(reader, 4)
+    return (await reader.readexactly(length)).decode("utf-8").rstrip('\x00')
+
+
+async def read_float(reader: asyncio.StreamReader) -> float:
+    [value] = struct.unpack('f', await reader.readexactly(4))
+    return value

@@ -3,19 +3,23 @@ import dataclasses
 import enum
 import struct
 import typing
+from .util import read_string
+from .util import read_int
+from .util import read_cstring
+from .util import read_float
 
-from all import Locale
-from all import Os
-from all import Platform
-from all import ProtocolVersion
-from version2 import RealmCategory
-from version2 import RealmType
-from all import Version
-from version2 import TelemetryKey
-from all import CMD_AUTH_LOGON_CHALLENGE_Client
-from all import CMD_AUTH_RECONNECT_CHALLENGE_Client
-from version2 import CMD_AUTH_RECONNECT_PROOF_Client
-from version2 import CMD_REALM_LIST_Client
+from .all import Locale
+from .all import Os
+from .all import Platform
+from .all import ProtocolVersion
+from .version2 import RealmCategory
+from .version2 import RealmType
+from .all import Version
+from .version2 import TelemetryKey
+from .all import CMD_AUTH_LOGON_CHALLENGE_Client
+from .all import CMD_AUTH_RECONNECT_CHALLENGE_Client
+from .version2 import CMD_AUTH_RECONNECT_PROOF_Client
+from .version2 import CMD_REALM_LIST_Client
 
 
 __all__ = [
@@ -32,12 +36,12 @@ __all__ = [
     "Version",
     "Realm",
     "TelemetryKey",
-    "CMD_AUTH_LOGON_CHALLENGE_Client",
     "CMD_AUTH_LOGON_CHALLENGE_Server",
+    "CMD_AUTH_LOGON_CHALLENGE_Client",
     "CMD_AUTH_LOGON_PROOF_Client",
     "CMD_AUTH_LOGON_PROOF_Server",
-    "CMD_AUTH_RECONNECT_CHALLENGE_Client",
     "CMD_AUTH_RECONNECT_CHALLENGE_Server",
+    "CMD_AUTH_RECONNECT_CHALLENGE_Client",
     "CMD_AUTH_RECONNECT_PROOF_Client",
     "CMD_AUTH_RECONNECT_PROOF_Server",
     "CMD_REALM_LIST_Client",
@@ -104,31 +108,31 @@ class Realm:
     async def read(reader: asyncio.StreamReader):
         version = None
         # realm_type: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmType', upcast=False))
-        realm_type = RealmType(int.from_bytes(await reader.readexactly(1), 'little'))
+        realm_type = RealmType(await read_int(reader, 1))
 
         # locked: DataTypeBool(data_type_tag='Bool', content=<IntegerType.U8: 'U8'>)
-        locked = int.from_bytes(await reader.readexactly(1), 'little') == 1
+        locked = await read_bool(reader, 1)
 
         # flag: DataTypeFlag(data_type_tag='Flag', content=DataTypeFlagContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmFlag', upcast=False))
-        flag = RealmFlag(int.from_bytes(await reader.readexactly(1), 'little'))
+        flag = RealmFlag(await read_int(reader, 1))
 
         # name: DataTypeCstring(data_type_tag='CString')
-        name = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip('\x00')
+        name = await read_cstring(reader)
 
         # address: DataTypeCstring(data_type_tag='CString')
-        address = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip('\x00')
+        address = await read_cstring(reader)
 
         # population: DataTypePopulation(data_type_tag='Population')
-        population = float.from_bytes(await reader.readexactly(4), 'little')
+        population = await read_float(reader)
 
         # number_of_characters_on_realm: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        number_of_characters_on_realm = int.from_bytes(await reader.readexactly(1), 'little')
+        number_of_characters_on_realm = await read_int(reader, 1)
 
         # category: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmCategory', upcast=False))
-        category = RealmCategory(int.from_bytes(await reader.readexactly(1), 'little'))
+        category = RealmCategory(await read_int(reader, 1))
 
         # realm_id: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        realm_id = int.from_bytes(await reader.readexactly(1), 'little')
+        realm_id = await read_int(reader, 1)
 
         if RealmFlag.SPECIFY_BUILD in flag:
             # version: DataTypeStruct(data_type_tag='Struct', content=DataTypeStructContent(sizes=Sizes(constant_sized=True, maximum_size=5, minimum_size=5), type_name='Version'))
@@ -222,7 +226,7 @@ class Realm:
         # realm_id: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
         size += 1
 
-        if self.RealmFlag.SPECIFY_BUILD in self.flag:
+        if RealmFlag.SPECIFY_BUILD in self.flag:
             # version: DataTypeStruct(data_type_tag='Struct', content=DataTypeStructContent(sizes=Sizes(constant_sized=True, maximum_size=5, minimum_size=5), type_name='Version'))
             size += 5
 
@@ -267,74 +271,74 @@ class CMD_AUTH_LOGON_CHALLENGE_Server:
         seed = None
         required = None
         # protocol_version: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        _protocol_version = int.from_bytes(await reader.readexactly(1), 'little')
+        _protocol_version = await read_int(reader, 1)
 
         # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
-        result = LoginResult(int.from_bytes(await reader.readexactly(1), 'little'))
+        result = LoginResult(await read_int(reader, 1))
 
         if result == LoginResult.SUCCESS:
             # server_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
             server_public_key = []
             for _ in range(0, 32):
-                server_public_key.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                server_public_key.append(await read_int(reader, 1))
 
             # generator_length: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-            generator_length = int.from_bytes(await reader.readexactly(1), 'little')
+            generator_length = await read_int(reader, 1)
 
             # generator: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='generator_length')))
             generator = []
             for _ in range(0, generator_length):
-                generator.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                generator.append(await read_int(reader, 1))
 
             # large_safe_prime_length: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-            large_safe_prime_length = int.from_bytes(await reader.readexactly(1), 'little')
+            large_safe_prime_length = await read_int(reader, 1)
 
             # large_safe_prime: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='large_safe_prime_length')))
             large_safe_prime = []
             for _ in range(0, large_safe_prime_length):
-                large_safe_prime.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                large_safe_prime.append(await read_int(reader, 1))
 
             # salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
             salt = []
             for _ in range(0, 32):
-                salt.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                salt.append(await read_int(reader, 1))
 
             # crc_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
             crc_salt = []
             for _ in range(0, 16):
-                crc_salt.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                crc_salt.append(await read_int(reader, 1))
 
             # security_flag: DataTypeFlag(data_type_tag='Flag', content=DataTypeFlagContent(integer_type=<IntegerType.U8: 'U8'>, type_name='SecurityFlag', upcast=False))
-            security_flag = SecurityFlag(int.from_bytes(await reader.readexactly(1), 'little'))
+            security_flag = SecurityFlag(await read_int(reader, 1))
 
             if SecurityFlag.PIN in security_flag:
                 # pin_grid_seed: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-                pin_grid_seed = int.from_bytes(await reader.readexactly(4), 'little')
+                pin_grid_seed = await read_int(reader, 4)
 
                 # pin_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
                 pin_salt = []
                 for _ in range(0, 16):
-                    pin_salt.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                    pin_salt.append(await read_int(reader, 1))
 
             if SecurityFlag.MATRIX_CARD in security_flag:
                 # width: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-                width = int.from_bytes(await reader.readexactly(1), 'little')
+                width = await read_int(reader, 1)
 
                 # height: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-                height = int.from_bytes(await reader.readexactly(1), 'little')
+                height = await read_int(reader, 1)
 
                 # digit_count: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-                digit_count = int.from_bytes(await reader.readexactly(1), 'little')
+                digit_count = await read_int(reader, 1)
 
                 # challenge_count: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-                challenge_count = int.from_bytes(await reader.readexactly(1), 'little')
+                challenge_count = await read_int(reader, 1)
 
                 # seed: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U64: 'U64'>)
-                seed = int.from_bytes(await reader.readexactly(8), 'little')
+                seed = await read_int(reader, 8)
 
             if SecurityFlag.AUTHENTICATOR in security_flag:
                 # required: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-                required = int.from_bytes(await reader.readexactly(1), 'little')
+                required = await read_int(reader, 1)
 
         return CMD_AUTH_LOGON_CHALLENGE_Server(
             result=result,
@@ -460,20 +464,20 @@ class CMD_AUTH_LOGON_PROOF_Client:
         # client_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
         client_public_key = []
         for _ in range(0, 32):
-            client_public_key.append(int.from_bytes(await reader.readexactly(1), 'little'))
+            client_public_key.append(await read_int(reader, 1))
 
         # client_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         client_proof = []
         for _ in range(0, 20):
-            client_proof.append(int.from_bytes(await reader.readexactly(1), 'little'))
+            client_proof.append(await read_int(reader, 1))
 
         # crc_hash: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         crc_hash = []
         for _ in range(0, 20):
-            crc_hash.append(int.from_bytes(await reader.readexactly(1), 'little'))
+            crc_hash.append(await read_int(reader, 1))
 
         # number_of_telemetry_keys: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        number_of_telemetry_keys = int.from_bytes(await reader.readexactly(1), 'little')
+        number_of_telemetry_keys = await read_int(reader, 1)
 
         # telemetry_keys: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=True, maximum_size=30, minimum_size=30), type_name='TelemetryKey')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_telemetry_keys')))
         telemetry_keys = []
@@ -481,33 +485,33 @@ class CMD_AUTH_LOGON_PROOF_Client:
             telemetry_keys.append(await TelemetryKey.read(reader))
 
         # security_flag: DataTypeFlag(data_type_tag='Flag', content=DataTypeFlagContent(integer_type=<IntegerType.U8: 'U8'>, type_name='SecurityFlag', upcast=False))
-        security_flag = SecurityFlag(int.from_bytes(await reader.readexactly(1), 'little'))
+        security_flag = SecurityFlag(await read_int(reader, 1))
 
         if SecurityFlag.PIN in security_flag:
             # pin_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
             pin_salt = []
             for _ in range(0, 16):
-                pin_salt.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                pin_salt.append(await read_int(reader, 1))
 
             # pin_hash: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
             pin_hash = []
             for _ in range(0, 20):
-                pin_hash.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                pin_hash.append(await read_int(reader, 1))
 
         if SecurityFlag.MATRIX_CARD in security_flag:
             # matrix_card_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
             matrix_card_proof = []
             for _ in range(0, 20):
-                matrix_card_proof.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                matrix_card_proof.append(await read_int(reader, 1))
 
         if SecurityFlag.AUTHENTICATOR in security_flag:
             # amount_of_tokens: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-            amount_of_tokens = int.from_bytes(await reader.readexactly(1), 'little')
+            amount_of_tokens = await read_int(reader, 1)
 
             # tokens: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='amount_of_tokens')))
             tokens = []
             for _ in range(0, amount_of_tokens):
-                tokens.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                tokens.append(await read_int(reader, 1))
 
         return CMD_AUTH_LOGON_PROOF_Client(
             client_public_key=client_public_key,
@@ -592,26 +596,26 @@ class CMD_AUTH_LOGON_PROOF_Server:
         unknown_flags = None
         padding = None
         # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
-        result = LoginResult(int.from_bytes(await reader.readexactly(1), 'little'))
+        result = LoginResult(await read_int(reader, 1))
 
         if result == LoginResult.SUCCESS:
             # server_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
             server_proof = []
             for _ in range(0, 20):
-                server_proof.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                server_proof.append(await read_int(reader, 1))
 
             # account_flag: DataTypeFlag(data_type_tag='Flag', content=DataTypeFlagContent(integer_type=<IntegerType.U32: 'U32'>, type_name='AccountFlag', upcast=False))
-            account_flag = AccountFlag(int.from_bytes(await reader.readexactly(4), 'little'))
+            account_flag = AccountFlag(await read_int(reader, 4))
 
             # hardware_survey_id: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-            hardware_survey_id = int.from_bytes(await reader.readexactly(4), 'little')
+            hardware_survey_id = await read_int(reader, 4)
 
             # unknown_flags: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-            unknown_flags = int.from_bytes(await reader.readexactly(2), 'little')
+            unknown_flags = await read_int(reader, 2)
 
         else:
             # padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-            _padding = int.from_bytes(await reader.readexactly(2), 'little')
+            _padding = await read_int(reader, 2)
 
         return CMD_AUTH_LOGON_PROOF_Server(
             result=result,
@@ -666,18 +670,18 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Server:
         challenge_data = None
         checksum_salt = None
         # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
-        result = LoginResult(int.from_bytes(await reader.readexactly(1), 'little'))
+        result = LoginResult(await read_int(reader, 1))
 
         if result == LoginResult.SUCCESS:
             # challenge_data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
             challenge_data = []
             for _ in range(0, 16):
-                challenge_data.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                challenge_data.append(await read_int(reader, 1))
 
             # checksum_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
             checksum_salt = []
             for _ in range(0, 16):
-                checksum_salt.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                checksum_salt.append(await read_int(reader, 1))
 
         return CMD_AUTH_RECONNECT_CHALLENGE_Server(
             result=result,
@@ -713,10 +717,10 @@ class CMD_AUTH_RECONNECT_PROOF_Server:
     @staticmethod
     async def read(reader: asyncio.StreamReader):
         # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
-        result = LoginResult(int.from_bytes(await reader.readexactly(1), 'little'))
+        result = LoginResult(await read_int(reader, 1))
 
         # padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        _padding = int.from_bytes(await reader.readexactly(2), 'little')
+        _padding = await read_int(reader, 2)
 
         return CMD_AUTH_RECONNECT_PROOF_Server(
             result=result,
@@ -745,13 +749,13 @@ class CMD_REALM_LIST_Server:
     @staticmethod
     async def read(reader: asyncio.StreamReader):
         # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        _size = int.from_bytes(await reader.readexactly(2), 'little')
+        _size = await read_int(reader, 2)
 
         # header_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        _header_padding = int.from_bytes(await reader.readexactly(4), 'little')
+        _header_padding = await read_int(reader, 4)
 
         # number_of_realms: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        number_of_realms = int.from_bytes(await reader.readexactly(2), 'little')
+        number_of_realms = await read_int(reader, 2)
 
         # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=527, minimum_size=12), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
         realms = []
@@ -759,7 +763,7 @@ class CMD_REALM_LIST_Server:
             realms.append(await Realm.read(reader))
 
         # footer_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        _footer_padding = int.from_bytes(await reader.readexactly(2), 'little')
+        _footer_padding = await read_int(reader, 2)
 
         return CMD_REALM_LIST_Server(
             realms=realms,
@@ -812,5 +816,37 @@ class CMD_REALM_LIST_Server:
         size += 2
 
         return size - 2
+
+
+async def read_opcode_server(reader: asyncio.StreamReader):
+    opcode = int.from_bytes(await reader.readexactly(1), 'little')
+    if opcode == 0x00:
+        return await CMD_AUTH_LOGON_CHALLENGE_Client.read(reader)
+    if opcode == 0x01:
+        return await CMD_AUTH_LOGON_PROOF_Client.read(reader)
+    if opcode == 0x02:
+        return await CMD_AUTH_RECONNECT_CHALLENGE_Client.read(reader)
+    if opcode == 0x03:
+        return await CMD_AUTH_RECONNECT_PROOF_Client.read(reader)
+    if opcode == 0x10:
+        return await CMD_REALM_LIST_Client.read(reader)
+    else:
+        raise Exception(f'incorrect opcode {opcode}')
+
+
+async def read_opcode_client(reader: asyncio.StreamReader):
+    opcode = int.from_bytes(await reader.readexactly(1), 'little')
+    if opcode == 0x00:
+        return await CMD_AUTH_LOGON_CHALLENGE_Server.read(reader)
+    if opcode == 0x01:
+        return await CMD_AUTH_LOGON_PROOF_Server.read(reader)
+    if opcode == 0x02:
+        return await CMD_AUTH_RECONNECT_CHALLENGE_Server.read(reader)
+    if opcode == 0x03:
+        return await CMD_AUTH_RECONNECT_PROOF_Server.read(reader)
+    if opcode == 0x10:
+        return await CMD_REALM_LIST_Server.read(reader)
+    else:
+        raise Exception(f'incorrect opcode {opcode}')
 
 

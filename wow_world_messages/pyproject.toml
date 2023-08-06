@@ -5,6 +5,9 @@ description = "Message definitions for World of Warcraft Login servers"
 readme = "README.md"
 
 requires-python = ">=3.10"
+
+requires = ["wow-srp>=0.2.0"]
+
 authors = [
     { name = "Gtker", email = "python@gtker.com" }
 ]

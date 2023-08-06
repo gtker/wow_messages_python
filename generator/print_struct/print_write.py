@@ -1,6 +1,6 @@
 import model
 from model import Container
-from print_struct.util import type_to_python_str
+from print_struct.util import print_if_statement_header
 from writer import Writer
 
 
@@ -78,6 +78,12 @@ def print_write_struct_member(s: Writer, d: model.Definition):
             s.wln(f"data.append(self.{d.name}.encode('utf-8'))")
             s.wln("data.append(0)")
 
+        case model.DataTypeSizedCstring():
+            s.wln(f"fmt += f'I{{len(self.{d.name})}}sB'")
+            s.wln(f"data.append(len(self.{d.name}))")
+            s.wln(f"data.append(self.{d.name}.encode('utf-8'))")
+            s.wln("data.append(0)")
+
         case model.DataTypeArray(content=content):
             match content:
                 case model.Array(inner_type=inner_type):
@@ -100,8 +106,8 @@ def print_write_struct_member(s: Writer, d: model.Definition):
                             case model.ArrayTypeCstring():
                                 s.wln(f"for i in self.{d.name}:")
                                 s.inc_indent()
-                                s.wln(f"fmt += f'{{len(i)}}sB'")
-                                s.wln(f"data.append(i.encode('utf-8'))")
+                                s.wln("fmt += f'{len(i)}sB'")
+                                s.wln("data.append(i.encode('utf-8'))")
                                 s.wln("data.append(0)")
                                 s.dec_indent()  # for i in
 
@@ -109,7 +115,7 @@ def print_write_struct_member(s: Writer, d: model.Definition):
                                 s.wln(f"for i in self.{d.name}:")
                                 s.inc_indent()
                                 s.wln("fmt += 'Q'")
-                                s.wln(f"data.append(i)")
+                                s.wln("data.append(i)")
                                 s.dec_indent()  # for i in
 
                             case v:
@@ -142,34 +148,7 @@ def print_write_struct_member(s: Writer, d: model.Definition):
             s.wln(f"data.append(self.{d.name})")
 
         case model.DataTypePackedGUID():
-            s.wln(f"{d.name}_byte_mask = 0")
-
-            s.wln("for i in range(0, 8):")
-            s.inc_indent()
-
-            s.wln(f"if self.{d.name} & (1 << i * 8):")
-            s.inc_indent()
-
-            s.wln(f"{d.name}_byte_mask |= 1 << i")
-
-            s.dec_indent()
-            s.dec_indent()
-
-            s.wln("fmt += 'B'")
-            s.wln(f"data.append({d.name}_byte_mask)")
-
-            s.wln("for i in range(0, 8):")
-            s.inc_indent()
-
-            s.wln("val = guid & (1 << i * 8)")
-            s.wln("if val:")
-            s.inc_indent()
-
-            s.wln('fmt += "B"')
-            s.wln("data.append(val)")
-
-            s.dec_indent()
-            s.dec_indent()
+            s.wln(f"fmt, data = packed_guid_write(self.{d.name}, fmt, data)")
 
         case v:
             print(v)
@@ -178,12 +157,12 @@ def print_write_struct_member(s: Writer, d: model.Definition):
     s.newline()
 
 
-def print_write(s: Writer, container: Container):
+def print_write(s: Writer, container: Container, object_type: model.ObjectType):
     unencrypted = (
         container.name == "CMSG_AUTH_SESSION" or container.name == "SMSG_AUTH_CHALLENGE"
     )
 
-    match container.object_type:
+    match object_type:
         case model.ObjectTypeStruct():
             s.wln("def write(self, fmt, data):")
         case model.ObjectTypeCmsg() | model.ObjectTypeSmsg():
@@ -191,7 +170,13 @@ def print_write(s: Writer, container: Container):
                 s.wln("def write_unencrypted(self, writer: asyncio.StreamWriter):")
             else:
                 version_string = "vanilla"
-                s.wln(f"def write_encrypted(")
+                match object_type:
+                    case model.ObjectTypeCmsg():
+                        s.wln("def write_encrypted_client(")
+                    case model.ObjectTypeSmsg():
+                        s.wln("def write_encrypted_server(")
+                    case _:
+                        raise Exception("unknown object_type")
                 s.inc_indent()
                 s.wln("self,")
                 s.wln("writer: asyncio.StreamWriter,")
@@ -202,7 +187,7 @@ def print_write(s: Writer, container: Container):
             s.wln("def write(self, writer: asyncio.StreamWriter):")
     s.inc_indent()
 
-    match container.object_type:
+    match object_type:
         case model.ObjectTypeStruct():
             pass
         case model.ObjectTypeClogin(opcode=opcode) | model.ObjectTypeSlogin(
@@ -217,21 +202,17 @@ def print_write(s: Writer, container: Container):
             if container.sizes.constant_sized:
                 size = str(container.sizes.maximum_size)
 
-            s.wln(f"size = {size} + 4")
-            s.wln(f"opcode = 0x{opcode:04X}")
-            s.wln(f"header = bytearray(6 + {size})")
-
             if not unencrypted:
-                s.wln("data = bytes(header_crypto.encrypt_server_header(size, opcode))")
-                s.newline()
-                s.wln('struct.pack_into("<6s", header, 0, data)')
-                s.newline()
+                s.wln(
+                    f"data = bytes(header_crypto.encrypt_server_header({size} + 4, 0x{opcode:04X}))"
+                )
             else:
-                s.wln('struct.pack_into(">H", header, 0, size)')
-                s.wln('struct.pack_into("<H", header, 2, opcode)')
+                s.wln("data = bytearray(6)")
+                s.wln(f'struct.pack_into(">H", data, 0, {size} + 4)')
+                s.wln(f'struct.pack_into("<H", data, 2, 0x{opcode:04X})')
 
-            s.wln('fmt = "<"')
-            s.wln(f"data = []")
+            s.wln('fmt = "<6s"')
+            s.wln("data = [data]")
             s.newline()
 
         case model.ObjectTypeSmsg(opcode=opcode):
@@ -239,21 +220,17 @@ def print_write(s: Writer, container: Container):
             if container.sizes.constant_sized:
                 size = str(container.sizes.maximum_size)
 
-            s.wln(f"size = {size} + 2")
-            s.wln(f"opcode = 0x{opcode:04X}")
-            s.wln(f"header = bytearray(4 + {size})")
-
             if not unencrypted:
-                s.wln("data = bytes(header_crypto.encrypt_server_header(size, opcode))")
-                s.newline()
-                s.wln('struct.pack_into("<4s", header, 0, data)')
-                s.newline()
+                s.wln(
+                    f"data = bytes(header_crypto.encrypt_server_header({size} + 2, 0x{opcode:04X}))"
+                )
             else:
-                s.wln('struct.pack_into(">H", header, 0, size)')
-                s.wln('struct.pack_into("<H", header, 2, opcode)')
+                s.wln("data = bytearray(4)")
+                s.wln(f'struct.pack_into(">H", data, 0, {size} + 2)')
+                s.wln(f'struct.pack_into("<H", data, 2, 0x{opcode:04X})')
 
-            s.wln('fmt = "<"')
-            s.wln(f"data = []")
+            s.wln('fmt = "<4s"')
+            s.wln("data = [data]")
             s.newline()
 
         case _:
@@ -262,18 +239,12 @@ def print_write(s: Writer, container: Container):
     for m in container.members:
         print_write_member(s, m)
 
-    match container.object_type:
+    match object_type:
         case model.ObjectTypeStruct():
             s.wln("return fmt, data")
-        case model.ObjectTypeClogin() | model.ObjectTypeSlogin():
+        case model.ObjectTypeClogin() | model.ObjectTypeSlogin() | model.ObjectTypeCmsg() | model.ObjectTypeSmsg():
             s.wln("data = struct.pack(fmt, *data)")
             s.wln("writer.write(data)")
-        case model.ObjectTypeCmsg():
-            s.wln("struct.pack_into(fmt, header, 6, *data)")
-            s.wln("writer.write(header)")
-        case model.ObjectTypeSmsg():
-            s.wln("struct.pack_into(fmt, header, 4, *data)")
-            s.wln("writer.write(header)")
         case _:
             raise Exception("unsupported write header")
 
@@ -301,32 +272,7 @@ def print_write_if_statement(s: Writer, statement: model.IfStatement, is_else_if
     if is_else_if:
         extra_elseif = "el"
 
-    original_type = type_to_python_str(statement.original_type)
-    match statement.conditional.equations:
-        case model.ConditionalEquationsEquals(
-            _tag, model.ConditionalEquationsEqualsValues(value=value)
-        ):
-            if len(value) == 1:
-                s.wln(
-                    f"{extra_elseif}if self.{statement.conditional.variable_name} == {original_type}.{value[0]}:"
-                )
-            else:
-                raise Exception("unimpl")
-        case model.ConditionalEquationsBitwiseAnd(
-            values=model.ConditionalEquationsBitwiseAndValues(value=value)
-        ):
-            if len(value) == 1:
-                s.wln(
-                    f"{extra_elseif}if {original_type}.{value[0]} in self.{statement.conditional.variable_name}:"
-                )
-            else:
-                raise Exception("unimpl")
-        case model.ConditionalEquationsNotEquals(values=values):
-            s.wln(
-                f"if {original_type}.{values.value} not in self.{statement.conditional.variable_name}:"
-            )
-        case v:
-            raise Exception(f"{v}")
+    print_if_statement_header(s, statement, extra_elseif, "self.")
 
     s.inc_indent()
 

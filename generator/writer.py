@@ -1,3 +1,6 @@
+import typing
+
+
 class Writer:
     __inner = ""
     __indentation = 0
@@ -12,6 +15,15 @@ class Writer:
         self.w(s)
         self.newline()
 
+    def open(self, s: str):
+        self.wln(s)
+        self.inc_indent()
+
+    def close(self, s: typing.Optional[str] = None):
+        if s is not None:
+            self.wln(s)
+        self.dec_indent()
+
     def wln_no_indent(self, s):
         self.w_no_indent(s)
         self.newline()
@@ -21,6 +33,10 @@ class Writer:
 
     def newline(self):
         self.__inner += "\n"
+
+    def double_newline(self):
+        self.newline()
+        self.newline()
 
     def prepend(self, s):
         s.__inner += self.__inner

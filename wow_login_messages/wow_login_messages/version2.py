@@ -3,14 +3,18 @@ import dataclasses
 import enum
 import struct
 import typing
+from .util import read_string
+from .util import read_int
+from .util import read_cstring
+from .util import read_float
 
-from all import Locale
-from all import Os
-from all import Platform
-from all import ProtocolVersion
-from all import Version
-from all import CMD_AUTH_LOGON_CHALLENGE_Client
-from all import CMD_AUTH_RECONNECT_CHALLENGE_Client
+from .all import Locale
+from .all import Os
+from .all import Platform
+from .all import ProtocolVersion
+from .all import Version
+from .all import CMD_AUTH_LOGON_CHALLENGE_Client
+from .all import CMD_AUTH_RECONNECT_CHALLENGE_Client
 
 
 __all__ = [
@@ -25,16 +29,16 @@ __all__ = [
     "Realm",
     "Version",
     "TelemetryKey",
-    "CMD_AUTH_LOGON_CHALLENGE_Client",
     "CMD_AUTH_LOGON_CHALLENGE_Server",
+    "CMD_AUTH_LOGON_CHALLENGE_Client",
     "CMD_AUTH_LOGON_PROOF_Client",
     "CMD_AUTH_LOGON_PROOF_Server",
-    "CMD_AUTH_RECONNECT_CHALLENGE_Client",
     "CMD_AUTH_RECONNECT_CHALLENGE_Server",
-    "CMD_AUTH_RECONNECT_PROOF_Client",
+    "CMD_AUTH_RECONNECT_CHALLENGE_Client",
     "CMD_AUTH_RECONNECT_PROOF_Server",
-    "CMD_REALM_LIST_Client",
+    "CMD_AUTH_RECONNECT_PROOF_Client",
     "CMD_REALM_LIST_Server",
+    "CMD_REALM_LIST_Client",
     ]
 
 class LoginResult(enum.Enum):
@@ -94,28 +98,28 @@ class Realm:
     @staticmethod
     async def read(reader: asyncio.StreamReader):
         # realm_type: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='RealmType', upcast=True))
-        realm_type = RealmType(int.from_bytes(await reader.readexactly(4), 'little'))
+        realm_type = RealmType(await read_int(reader, 4))
 
         # flag: DataTypeFlag(data_type_tag='Flag', content=DataTypeFlagContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmFlag', upcast=False))
-        flag = RealmFlag(int.from_bytes(await reader.readexactly(1), 'little'))
+        flag = RealmFlag(await read_int(reader, 1))
 
         # name: DataTypeCstring(data_type_tag='CString')
-        name = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip('\x00')
+        name = await read_cstring(reader)
 
         # address: DataTypeCstring(data_type_tag='CString')
-        address = (await reader.readuntil(b'\x00')).decode('utf-8').rstrip('\x00')
+        address = await read_cstring(reader)
 
         # population: DataTypePopulation(data_type_tag='Population')
-        population = float.from_bytes(await reader.readexactly(4), 'little')
+        population = await read_float(reader)
 
         # number_of_characters_on_realm: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        number_of_characters_on_realm = int.from_bytes(await reader.readexactly(1), 'little')
+        number_of_characters_on_realm = await read_int(reader, 1)
 
         # category: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmCategory', upcast=False))
-        category = RealmCategory(int.from_bytes(await reader.readexactly(1), 'little'))
+        category = RealmCategory(await read_int(reader, 1))
 
         # realm_id: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        realm_id = int.from_bytes(await reader.readexactly(1), 'little')
+        realm_id = await read_int(reader, 1)
 
         return Realm(
             realm_type=realm_type,
@@ -166,33 +170,7 @@ class Realm:
         return fmt, data
 
     def _size(self) -> int:
-        size = 0
-
-        # realm_type: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U32: 'U32'>, type_name='RealmType', upcast=True))
-        size += 4
-
-        # flag: DataTypeFlag(data_type_tag='Flag', content=DataTypeFlagContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmFlag', upcast=False))
-        size += 1
-
-        # name: DataTypeCstring(data_type_tag='CString')
-        size += len(self.name) + 1
-
-        # address: DataTypeCstring(data_type_tag='CString')
-        size += len(self.address) + 1
-
-        # population: DataTypePopulation(data_type_tag='Population')
-        size += 4
-
-        # number_of_characters_on_realm: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        size += 1
-
-        # category: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='RealmCategory', upcast=False))
-        size += 1
-
-        # realm_id: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        size += 1
-
-        return size
+        return 12 + len(self.name) + 1 + len(self.address) + 1
 
 
 @dataclasses.dataclass
@@ -205,20 +183,20 @@ class TelemetryKey:
     @staticmethod
     async def read(reader: asyncio.StreamReader):
         # unknown1: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        unknown1 = int.from_bytes(await reader.readexactly(2), 'little')
+        unknown1 = await read_int(reader, 2)
 
         # unknown2: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        unknown2 = int.from_bytes(await reader.readexactly(4), 'little')
+        unknown2 = await read_int(reader, 4)
 
         # unknown3: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='4')))
         unknown3 = []
         for _ in range(0, 4):
-            unknown3.append(int.from_bytes(await reader.readexactly(1), 'little'))
+            unknown3.append(await read_int(reader, 1))
 
         # cd_key_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         cd_key_proof = []
         for _ in range(0, 20):
-            cd_key_proof.append(int.from_bytes(await reader.readexactly(1), 'little'))
+            cd_key_proof.append(await read_int(reader, 1))
 
         return TelemetryKey(
             unknown1=unknown1,
@@ -266,42 +244,42 @@ class CMD_AUTH_LOGON_CHALLENGE_Server:
         salt = None
         crc_salt = None
         # protocol_version: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        _protocol_version = int.from_bytes(await reader.readexactly(1), 'little')
+        _protocol_version = await read_int(reader, 1)
 
         # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
-        result = LoginResult(int.from_bytes(await reader.readexactly(1), 'little'))
+        result = LoginResult(await read_int(reader, 1))
 
         if result == LoginResult.SUCCESS:
             # server_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
             server_public_key = []
             for _ in range(0, 32):
-                server_public_key.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                server_public_key.append(await read_int(reader, 1))
 
             # generator_length: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-            generator_length = int.from_bytes(await reader.readexactly(1), 'little')
+            generator_length = await read_int(reader, 1)
 
             # generator: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='generator_length')))
             generator = []
             for _ in range(0, generator_length):
-                generator.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                generator.append(await read_int(reader, 1))
 
             # large_safe_prime_length: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-            large_safe_prime_length = int.from_bytes(await reader.readexactly(1), 'little')
+            large_safe_prime_length = await read_int(reader, 1)
 
             # large_safe_prime: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeVariable(array_size_tag='Variable', size='large_safe_prime_length')))
             large_safe_prime = []
             for _ in range(0, large_safe_prime_length):
-                large_safe_prime.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                large_safe_prime.append(await read_int(reader, 1))
 
             # salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
             salt = []
             for _ in range(0, 32):
-                salt.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                salt.append(await read_int(reader, 1))
 
             # crc_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
             crc_salt = []
             for _ in range(0, 16):
-                crc_salt.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                crc_salt.append(await read_int(reader, 1))
 
         return CMD_AUTH_LOGON_CHALLENGE_Server(
             result=result,
@@ -369,20 +347,20 @@ class CMD_AUTH_LOGON_PROOF_Client:
         # client_public_key: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='32')))
         client_public_key = []
         for _ in range(0, 32):
-            client_public_key.append(int.from_bytes(await reader.readexactly(1), 'little'))
+            client_public_key.append(await read_int(reader, 1))
 
         # client_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         client_proof = []
         for _ in range(0, 20):
-            client_proof.append(int.from_bytes(await reader.readexactly(1), 'little'))
+            client_proof.append(await read_int(reader, 1))
 
         # crc_hash: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         crc_hash = []
         for _ in range(0, 20):
-            crc_hash.append(int.from_bytes(await reader.readexactly(1), 'little'))
+            crc_hash.append(await read_int(reader, 1))
 
         # number_of_telemetry_keys: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        number_of_telemetry_keys = int.from_bytes(await reader.readexactly(1), 'little')
+        number_of_telemetry_keys = await read_int(reader, 1)
 
         # telemetry_keys: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=True, maximum_size=30, minimum_size=30), type_name='TelemetryKey')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_telemetry_keys')))
         telemetry_keys = []
@@ -435,16 +413,16 @@ class CMD_AUTH_LOGON_PROOF_Server:
         server_proof = None
         hardware_survey_id = None
         # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
-        result = LoginResult(int.from_bytes(await reader.readexactly(1), 'little'))
+        result = LoginResult(await read_int(reader, 1))
 
         if result == LoginResult.SUCCESS:
             # server_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
             server_proof = []
             for _ in range(0, 20):
-                server_proof.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                server_proof.append(await read_int(reader, 1))
 
             # hardware_survey_id: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-            hardware_survey_id = int.from_bytes(await reader.readexactly(4), 'little')
+            hardware_survey_id = await read_int(reader, 4)
 
         return CMD_AUTH_LOGON_PROOF_Server(
             result=result,
@@ -484,18 +462,18 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Server:
         challenge_data = None
         checksum_salt = None
         # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
-        result = LoginResult(int.from_bytes(await reader.readexactly(1), 'little'))
+        result = LoginResult(await read_int(reader, 1))
 
         if result == LoginResult.SUCCESS:
             # challenge_data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
             challenge_data = []
             for _ in range(0, 16):
-                challenge_data.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                challenge_data.append(await read_int(reader, 1))
 
             # checksum_salt: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
             checksum_salt = []
             for _ in range(0, 16):
-                checksum_salt.append(int.from_bytes(await reader.readexactly(1), 'little'))
+                checksum_salt.append(await read_int(reader, 1))
 
         return CMD_AUTH_RECONNECT_CHALLENGE_Server(
             result=result,
@@ -525,6 +503,31 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Server:
 
 
 @dataclasses.dataclass
+class CMD_AUTH_RECONNECT_PROOF_Server:
+    result: LoginResult
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader):
+        # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
+        result = LoginResult(await read_int(reader, 1))
+
+        return CMD_AUTH_RECONNECT_PROOF_Server(
+            result=result,
+        )
+
+    def write(self, writer: asyncio.StreamWriter):
+        fmt = '<B' # opcode
+        data = [3]
+
+        # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
+        fmt += 'B'
+        data.append(self.result.value)
+
+        data = struct.pack(fmt, *data)
+        writer.write(data)
+
+
+@dataclasses.dataclass
 class CMD_AUTH_RECONNECT_PROOF_Client:
     proof_data: typing.List[int]
     client_proof: typing.List[int]
@@ -535,20 +538,20 @@ class CMD_AUTH_RECONNECT_PROOF_Client:
         # proof_data: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='16')))
         proof_data = []
         for _ in range(0, 16):
-            proof_data.append(int.from_bytes(await reader.readexactly(1), 'little'))
+            proof_data.append(await read_int(reader, 1))
 
         # client_proof: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         client_proof = []
         for _ in range(0, 20):
-            client_proof.append(int.from_bytes(await reader.readexactly(1), 'little'))
+            client_proof.append(await read_int(reader, 1))
 
         # client_checksum: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeInteger(array_type_tag='Integer', content=<IntegerType.U8: 'U8'>), size=ArraySizeFixed(array_size_tag='Fixed', size='20')))
         client_checksum = []
         for _ in range(0, 20):
-            client_checksum.append(int.from_bytes(await reader.readexactly(1), 'little'))
+            client_checksum.append(await read_int(reader, 1))
 
         # key_count: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        _key_count = int.from_bytes(await reader.readexactly(1), 'little')
+        _key_count = await read_int(reader, 1)
 
         return CMD_AUTH_RECONNECT_PROOF_Client(
             proof_data=proof_data,
@@ -581,67 +584,19 @@ class CMD_AUTH_RECONNECT_PROOF_Client:
 
 
 @dataclasses.dataclass
-class CMD_AUTH_RECONNECT_PROOF_Server:
-    result: LoginResult
-
-    @staticmethod
-    async def read(reader: asyncio.StreamReader):
-        # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
-        result = LoginResult(int.from_bytes(await reader.readexactly(1), 'little'))
-
-        return CMD_AUTH_RECONNECT_PROOF_Server(
-            result=result,
-        )
-
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [3]
-
-        # result: DataTypeEnum(data_type_tag='Enum', content=DataTypeEnumContent(integer_type=<IntegerType.U8: 'U8'>, type_name='LoginResult', upcast=False))
-        fmt += 'B'
-        data.append(self.result.value)
-
-        data = struct.pack(fmt, *data)
-        writer.write(data)
-
-
-@dataclasses.dataclass
-class CMD_REALM_LIST_Client:
-
-    @staticmethod
-    async def read(reader: asyncio.StreamReader):
-        # padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        _padding = int.from_bytes(await reader.readexactly(4), 'little')
-
-        return CMD_REALM_LIST_Client(
-        )
-
-    def write(self, writer: asyncio.StreamWriter):
-        fmt = '<B' # opcode
-        data = [16]
-
-        # padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        fmt += 'I'
-        data.append(0)
-
-        data = struct.pack(fmt, *data)
-        writer.write(data)
-
-
-@dataclasses.dataclass
 class CMD_REALM_LIST_Server:
     realms: typing.List[Realm]
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
         # size: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        _size = int.from_bytes(await reader.readexactly(2), 'little')
+        _size = await read_int(reader, 2)
 
         # header_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
-        _header_padding = int.from_bytes(await reader.readexactly(4), 'little')
+        _header_padding = await read_int(reader, 4)
 
         # number_of_realms: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U8: 'U8'>)
-        number_of_realms = int.from_bytes(await reader.readexactly(1), 'little')
+        number_of_realms = await read_int(reader, 1)
 
         # realms: DataTypeArray(data_type_tag='Array', content=Array(inner_type=ArrayTypeStruct(array_type_tag='Struct', content=ArrayTypeStructContent(sizes=Sizes(constant_sized=False, maximum_size=524, minimum_size=14), type_name='Realm')), size=ArraySizeVariable(array_size_tag='Variable', size='number_of_realms')))
         realms = []
@@ -649,7 +604,7 @@ class CMD_REALM_LIST_Server:
             realms.append(await Realm.read(reader))
 
         # footer_padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U16: 'U16'>)
-        _footer_padding = int.from_bytes(await reader.readexactly(2), 'little')
+        _footer_padding = await read_int(reader, 2)
 
         return CMD_REALM_LIST_Server(
             realms=realms,
@@ -702,5 +657,60 @@ class CMD_REALM_LIST_Server:
         size += 2
 
         return size - 2
+
+
+@dataclasses.dataclass
+class CMD_REALM_LIST_Client:
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader):
+        # padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
+        _padding = await read_int(reader, 4)
+
+        return CMD_REALM_LIST_Client(
+        )
+
+    def write(self, writer: asyncio.StreamWriter):
+        fmt = '<B' # opcode
+        data = [16]
+
+        # padding: DataTypeInteger(data_type_tag='Integer', content=<IntegerType.U32: 'U32'>)
+        fmt += 'I'
+        data.append(0)
+
+        data = struct.pack(fmt, *data)
+        writer.write(data)
+
+
+async def read_opcode_server(reader: asyncio.StreamReader):
+    opcode = int.from_bytes(await reader.readexactly(1), 'little')
+    if opcode == 0x00:
+        return await CMD_AUTH_LOGON_CHALLENGE_Client.read(reader)
+    if opcode == 0x01:
+        return await CMD_AUTH_LOGON_PROOF_Client.read(reader)
+    if opcode == 0x02:
+        return await CMD_AUTH_RECONNECT_CHALLENGE_Client.read(reader)
+    if opcode == 0x03:
+        return await CMD_AUTH_RECONNECT_PROOF_Client.read(reader)
+    if opcode == 0x10:
+        return await CMD_REALM_LIST_Client.read(reader)
+    else:
+        raise Exception(f'incorrect opcode {opcode}')
+
+
+async def read_opcode_client(reader: asyncio.StreamReader):
+    opcode = int.from_bytes(await reader.readexactly(1), 'little')
+    if opcode == 0x00:
+        return await CMD_AUTH_LOGON_CHALLENGE_Server.read(reader)
+    if opcode == 0x01:
+        return await CMD_AUTH_LOGON_PROOF_Server.read(reader)
+    if opcode == 0x02:
+        return await CMD_AUTH_RECONNECT_CHALLENGE_Server.read(reader)
+    if opcode == 0x03:
+        return await CMD_AUTH_RECONNECT_PROOF_Server.read(reader)
+    if opcode == 0x10:
+        return await CMD_REALM_LIST_Server.read(reader)
+    else:
+        raise Exception(f'incorrect opcode {opcode}')
 
 

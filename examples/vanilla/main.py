@@ -2,10 +2,9 @@ import asyncio
 
 import wow_srp
 
-import wow_login_messages.wow_login_messages.util as login_util
-import wow_login_messages.wow_login_messages.version3 as login
-import wow_world_messages.wow_world_messages.vanilla as world
-from wow_world_messages.wow_world_messages.vanilla import (
+import wow_login_messages.version3 as login
+import wow_world_messages.vanilla as world
+from wow_world_messages.vanilla import (
     expect_client_opcode_unencrypted,
     read_client_opcodes_encrypted,
 )
@@ -14,9 +13,9 @@ session_keys = {}
 
 
 async def login_path(
-    reader: asyncio.StreamReader,
-    writer: asyncio.StreamWriter,
-    request: login.CMD_AUTH_LOGON_CHALLENGE_Client,
+        reader: asyncio.StreamReader,
+        writer: asyncio.StreamWriter,
+        request: login.CMD_AUTH_LOGON_CHALLENGE_Client,
 ):
     account_name = request.account_name
     print(account_name)
@@ -38,7 +37,7 @@ async def login_path(
     print(response)
     response.write(writer)
 
-    request = await login_util.read_opcode_server(reader)
+    request = await login.read_opcode_server(reader)
     print(request)
     server, proof = server.into_server(request.client_public_key, request.client_proof)
     if server is None:
@@ -50,7 +49,7 @@ async def login_path(
     response = login.CMD_AUTH_LOGON_PROOF_Server(login.LoginResult.SUCCESS, proof, 0)
     response.write(writer)
 
-    opcode = await login_util.read_opcode_server(reader)
+    opcode = await login.read_opcode_server(reader)
     match opcode:
         case login.CMD_REALM_LIST_Client():
             pass
@@ -78,14 +77,14 @@ async def login_path(
 async def login_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
     print("connect")
     try:
-        request = await login_util.expect_login_or_reconnect(reader)
+        request = await login.read_opcode_server(reader)
         match request:
-            case None:
-                print("invalid starting opcode")
-                return
             case login.CMD_AUTH_LOGON_CHALLENGE_Client():
                 print(request)
                 await login_path(reader, writer, request)
+            case _:
+                print("invalid starting opcode")
+                return
     except Exception as e:
         print(e)
         exit(1)
@@ -109,7 +108,7 @@ async def world_path(reader: asyncio.StreamReader, writer: asyncio.StreamWriter)
         opcode.username, server.session_key(), opcode.client_proof, opcode.client_seed
     )
 
-    world.SMSG_AUTH_RESPONSE(world.WorldResult.AUTH_OK, 0, 0, 0).write_encrypted(
+    world.SMSG_AUTH_RESPONSE(world.WorldResult.AUTH_OK, 0, 0, 0).write_encrypted_server(
         writer, crypto
     )
 
@@ -118,52 +117,53 @@ async def world_path(reader: asyncio.StreamReader, writer: asyncio.StreamWriter)
 
     c = world.SMSG_CHAR_ENUM(
         characters=[
-            world.Character(1,
-                            "TestChar",
-                            world.Race.HUMAN,
-                            world.Class.WARRIOR,
-                            world.Gender.MALE,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            1,
-                            world.Area.NORTHSHIRE_ABBEY,
-                            world.Map.EASTERN_KINGDOMS,
-                            world.Vector3d(0.0, 0.0, 0.0),
-                            0,
-                            world.CharacterFlags.NONE,
-                            False,
-                            0,
-                            0,
-                            world.CreatureFamily.NONE,
-                            [
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                                world.CharacterGear(0, world.InventoryType.NON_EQUIP),
-                            ]
+            world.Character(
+                1,
+                "TestChar",
+                world.Race.HUMAN,
+                world.Class.WARRIOR,
+                world.Gender.MALE,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                world.Area.NORTHSHIRE_ABBEY,
+                world.Map.EASTERN_KINGDOMS,
+                world.Vector3d(0.0, 0.0, 0.0),
+                0,
+                world.CharacterFlags.NONE,
+                False,
+                0,
+                0,
+                world.CreatureFamily.NONE,
+                [
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                    world.CharacterGear(0, world.InventoryType.NON_EQUIP),
+                ],
             )
         ]
     )
     print(c)
-    c.write_encrypted(writer, crypto)
+    c.write_encrypted_server(writer, crypto)
 
     opcode = await read_client_opcodes_encrypted(reader, crypto)
     print(opcode)

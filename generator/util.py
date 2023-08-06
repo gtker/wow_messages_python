@@ -1,42 +1,9 @@
 import typing
 
 import model
-from print_struct.util import all_members_from_container
-
-WORLD_ALLOWED_OBJECTS = [
-    "CMSG_AUTH_SESSION",
-    "CMSG_CHAR_ENUM",
-    "CMSG_PLAYER_LOGIN",
-    "Character",
-    "CharacterGear",
-    "SMSG_AUTH_CHALLENGE",
-    "SMSG_AUTH_RESPONSE",
-    "SMSG_CHAR_ENUM",
-    "Vector2d",
-    "Vector3d",
-]
 
 
 def should_print_container_if(statement: model.IfStatement) -> bool:
-    match statement.conditional.equations:
-        case model.ConditionalEquationsEquals(
-            _tag, model.ConditionalEquationsEqualsValues(value=value)
-        ):
-            if len(value) != 1:
-                return False
-
-        case model.ConditionalEquationsBitwiseAnd(
-            values=model.ConditionalEquationsBitwiseAndValues(value=value)
-        ):
-            if len(value) != 1:
-                return False
-
-        case model.ConditionalEquationsNotEquals(values=values):
-            pass
-
-        case _:
-            raise Exception("invalid case")
-
     for m in statement.members:
         if not should_print_container_struct_member(m):
             return False
@@ -54,23 +21,34 @@ def should_print_container_if(statement: model.IfStatement) -> bool:
 
 def should_print_container_struct_member(m: model.StructMember) -> bool:
     match m:
-        case model.StructMemberDefinition(struct_member_content=content):
+        case model.StructMemberDefinition(struct_member_content=d):
             forbidden_types = [
-                "TransportInfo",
-                "SpellCastTargets",
-                "MovementInfo",
-                "Mail",
                 "Object",
+                "MonsterMove",
             ]
 
-            match content.data_type:
-                case model.DataTypeStruct(content=content):
-                    if content.type_name in forbidden_types:
+            match d.data_type:
+                case model.DataTypeAuraMask() \
+                     | model.DataTypeMonsterMoveSpline() \
+                     | model.DataTypeUpdateMask() \
+                     | model.DataTypeNamedGUID():
+                    return False
+                case model.DataTypeAchievementDoneArray() \
+                     | model.DataTypeAchievementInProgressArray() \
+                     | model.DataTypeEnchantMask() \
+                     | model.DataTypeInspectTalentGearMask() \
+                     | model.DataTypeVariableItemRandomProperty():
+                    return False
+                case model.DataTypeStruct(content=d):
+                    if d.type_name in forbidden_types:
                         return False
                 case model.DataTypeArray(content=array):
+                    match array.size:
+                        case model.ArraySizeEndless():
+                            return d.tags.compressed is not None
                     match array.inner_type:
-                        case model.ArrayTypeStruct(content=content):
-                            if content.type_name in forbidden_types:
+                        case model.ArrayTypeStruct(content=d):
+                            if d.type_name in forbidden_types:
                                 return False
 
         case model.StructMemberIfStatement(struct_member_content=statement):
@@ -85,33 +63,15 @@ def should_print_container_struct_member(m: model.StructMember) -> bool:
 
 
 def should_print_container(container: model.Container, v: model.WorldVersion) -> bool:
-    if container.name == "CMSG_AUTH_SESSION":
-        return True
-
     if container.tags.compressed is not None:
         return False
 
-    match container.object_type:
-        case model.ObjectTypeMsg():
-            return False
-        case _:
-            pass
-
-    for d in all_members_from_container(container):
-        match d.data_type:
-            case model.DataTypeAchievementDoneArray() | model.DataTypeAchievementInProgressArray() | model.DataTypeAddonArray() | model.DataTypeAuraMask() | model.DataTypeEnchantMask() | model.DataTypeInspectTalentGearMask() | model.DataTypeMonsterMoveSpline() | model.DataTypeNamedGUID() | model.DataTypeUpdateMask() | model.DataTypeVariableItemRandomProperty() | model.DataTypePackedGUID() | model.DataTypeSizedCstring():
-                return False
-            case model.DataTypeArray(content=array):
-                match array.size:
-                    case model.ArraySizeEndless():
-                        return False
+    if not world_version_matches(container.tags, v):
+        return False
 
     for m in container.members:
         if not should_print_container_struct_member(m):
             return False
-
-    if not world_version_matches(container.tags, v):
-        return False
 
     return True
 
@@ -122,6 +82,7 @@ def world_version_satisfies(t: model.WorldVersion, o: model.WorldVersion) -> boo
     """
     if t.major != o.major:
         return False
+
     # Major versions are equal
 
     def test(t: typing.Optional[int], o: typing.Optional[int]):
@@ -181,3 +142,38 @@ def world_version_to_module_name(v: model.WorldVersion) -> str:
             return "vanilla"
         case _:
             raise Exception("unknown version")
+
+
+def login_version_to_module_name(v: int) -> str:
+    if v == 0:
+        return "all"
+    else:
+        return f"version{v}"
+
+
+def first_login_version(tags: model.ObjectTags) -> int:
+    match tags.version:
+        case model.ObjectVersionsLogin(version_type=version_type):
+            match version_type:
+                case model.LoginVersionsAll():
+                    return 0
+                case model.LoginVersionsSpecific(versions=versions):
+                    return versions[0]
+                case _:
+                    raise Exception("invalid login versions type")
+        case _:
+            raise Exception("invalid version")
+
+
+def login_version_matches(tags: model.ObjectTags, value: int) -> bool:
+    match tags.version:
+        case model.ObjectVersionsLogin(version_type=version_type):
+            match version_type:
+                case model.LoginVersionsAll():
+                    return True
+                case model.LoginVersionsSpecific(versions=versions):
+                    return value in versions
+                case _:
+                    raise Exception("invalid login versions type")
+        case _:
+            raise Exception("invalid version")
