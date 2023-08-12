@@ -45,9 +45,12 @@ class UpdateMask:
         fmt += f'{len(blocks)}I'
         data.extend(blocks)
 
-        for value in self.fields.values():
-            fmt += 'I'
-            data.append(value)
+        for key in sorted(self.fields):
+            if isinstance(self.fields[key], float):
+                fmt += 'f'
+            else:
+                fmt += 'I'
+            data.append(self.fields[key])
 
         return fmt, data
 
@@ -64,4 +67,13 @@ class UpdateMask:
         return 1 + (extra + amount_of_blocks + len(self.fields)) * 4
 """)
 
+    s.double_newline()
+
+    s.open("class UpdateMaskValue(enum.IntEnum):")
+
+    for value in update_mask:
+        name = f"{value.object_type.name}_{value.name}"
+        s.wln(f"{name} = {value.offset}")
+
+    s.close()
     s.double_newline()

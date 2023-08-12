@@ -172,6 +172,64 @@ async def world_path(reader: asyncio.StreamReader, writer: asyncio.StreamWriter)
         case world.CMSG_PLAYER_LOGIN(guid=guid):
             print(f"Logging into {guid}")
 
+            position = world.Vector3d(
+                x=-8949.95,
+                y=-132.493,
+                z=83.5312,
+            )
+
+            world.SMSG_LOGIN_VERIFY_WORLD(
+                map=world.Map.EASTERN_KINGDOMS,
+                position=position,
+                orientation=0.0,
+            ).write_encrypted_server(writer, crypto)
+
+            world.SMSG_TUTORIAL_FLAGS(
+                tutorial_data=[
+                    0xFF, 0xFF, 0xFF, 0xFF,
+                    0xFF, 0xFF, 0xFF, 0xFF,
+                ]
+            ).write_encrypted_server(writer, crypto)
+
+            mask = world.UpdateMask(fields={
+                world.UpdateMaskValue.OBJECT_GUID: guid,
+                world.UpdateMaskValue.OBJECT_SCALE_X: 1.0,
+                world.UpdateMaskValue.OBJECT_TYPE: 25,
+                world.UpdateMaskValue.UNIT_BYTES_0: 0x01010101,
+                world.UpdateMaskValue.UNIT_DISPLAYID: 50,
+                world.UpdateMaskValue.UNIT_FACTIONTEMPLATE: 1,
+                world.UpdateMaskValue.UNIT_HEALTH: 100,
+                world.UpdateMaskValue.UNIT_LEVEL: 1,
+                world.UpdateMaskValue.UNIT_NATIVEDISPLAYID: 50,
+            })
+
+            world.SMSG_UPDATE_OBJECT(
+                has_transport=0,
+                objects=[
+                    world.Object(
+                        update_type=world.UpdateType.CREATE_OBJECT2,
+                        guid3=guid,
+                        object_type=world.ObjectType.PLAYER,
+                        movement2=world.MovementBlock(
+                            update_flag=world.UpdateFlag.SELF | world.UpdateFlag.ALL | world.UpdateFlag.LIVING,
+                            flags=world.MovementFlags.NONE,
+                            timestamp=0,
+                            living_position=position,
+                            living_orientation=0.0,
+                            fall_time=0.0,
+                            walking_speed=1.0,
+                            running_speed=70.0,
+                            backwards_running_speed=4.5,
+                            swimming_speed=0.0,
+                            backwards_swimming_speed=0.0,
+                            turn_rate=3.1415,
+                            unknown1=0,
+                        ),
+                        mask2=mask,
+                    )
+                ]
+            ).write_encrypted_server(writer, crypto)
+
 
 async def world_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
     try:
