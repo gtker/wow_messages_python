@@ -2120,6 +2120,7 @@ class UpdateMaskDataType:
             "Bytes": UpdateMaskDataTypeBytes,
             "Float": UpdateMaskDataTypeFloat,
             "Guid": UpdateMaskDataTypeGUID,
+            "GuidArrayUsingEnum": UpdateMaskDataTypeGUIDArrayUsingEnum,
             "Int": UpdateMaskDataTypeInt,
             "TwoShort": UpdateMaskDataTypeTwoShort,
         }
@@ -2193,6 +2194,40 @@ class UpdateMaskDataTypeGUID(UpdateMaskDataType):
 
     def to_json_data(self) -> Any:
         data = { "update_mask_type_tag": "Guid" }
+        return data
+
+@dataclass
+class UpdateMaskDataTypeGUIDArrayUsingEnumContent:
+    definer: 'Definer'
+    variable_name: 'str'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskDataTypeGUIDArrayUsingEnumContent':
+        return cls(
+            _from_json_data(Definer, data.get("definer")),
+            _from_json_data(str, data.get("variable_name")),
+        )
+
+    def to_json_data(self) -> Any:
+        data: Dict[str, Any] = {}
+        data["definer"] = _to_json_data(self.definer)
+        data["variable_name"] = _to_json_data(self.variable_name)
+        return data
+
+@dataclass
+class UpdateMaskDataTypeGUIDArrayUsingEnum(UpdateMaskDataType):
+    content: 'UpdateMaskDataTypeGUIDArrayUsingEnumContent'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskDataTypeGUIDArrayUsingEnum':
+        return cls(
+            "GuidArrayUsingEnum",
+            _from_json_data(UpdateMaskDataTypeGUIDArrayUsingEnumContent, data.get("content")),
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "update_mask_type_tag": "GuidArrayUsingEnum" }
+        data["content"] = _to_json_data(self.content)
         return data
 
 @dataclass

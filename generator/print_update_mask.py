@@ -73,7 +73,12 @@ class UpdateMask:
 
     for value in update_mask:
         name = f"{value.object_type.name}_{value.name}"
-        s.wln(f"{name} = {value.offset}")
+        match value.data_type:
+            case model.UpdateMaskDataTypeGUIDArrayUsingEnum(content=content):
+                for enumerator in content.definer.enumerators:
+                    s.wln(f"{name}_{enumerator.name} = {value.offset + int(enumerator.value.value) * 2}")
+            case _:
+                s.wln(f"{name} = {value.offset}")
 
     s.close()
     s.double_newline()
