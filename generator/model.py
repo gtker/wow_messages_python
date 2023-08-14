@@ -1361,6 +1361,7 @@ class ObjectTags:
     description: 'Optional[str]'
     non_network_type: 'Optional[bool]'
     unimplemented: 'Optional[bool]'
+    used_in_update_mask: 'Optional[bool]'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'ObjectTags':
@@ -1371,6 +1372,7 @@ class ObjectTags:
             _from_json_data(Optional[str], data.get("description")),
             _from_json_data(Optional[bool], data.get("non_network_type")),
             _from_json_data(Optional[bool], data.get("unimplemented")),
+            _from_json_data(Optional[bool], data.get("used_in_update_mask")),
         )
 
     def to_json_data(self) -> Any:
@@ -1386,6 +1388,8 @@ class ObjectTags:
              data["non_network_type"] = _to_json_data(self.non_network_type)
         if self.unimplemented is not None:
              data["unimplemented"] = _to_json_data(self.unimplemented)
+        if self.used_in_update_mask is not None:
+             data["used_in_update_mask"] = _to_json_data(self.used_in_update_mask)
         return data
 
 @dataclass
@@ -2117,6 +2121,7 @@ class UpdateMaskDataType:
     @classmethod
     def from_json_data(cls, data: Any) -> 'UpdateMaskDataType':
         variants: Dict[str, Type[UpdateMaskDataType]] = {
+            "ArrayOfStruct": UpdateMaskDataTypeArrayOfStruct,
             "Bytes": UpdateMaskDataTypeBytes,
             "Float": UpdateMaskDataTypeFloat,
             "Guid": UpdateMaskDataTypeGUID,
@@ -2129,6 +2134,43 @@ class UpdateMaskDataType:
 
     def to_json_data(self) -> Any:
         pass
+
+@dataclass
+class UpdateMaskDataTypeArrayOfStructContent:
+    size: 'int'
+    update_mask_struct: 'UpdateMaskStruct'
+    variable_name: 'str'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskDataTypeArrayOfStructContent':
+        return cls(
+            _from_json_data(int, data.get("size")),
+            _from_json_data(UpdateMaskStruct, data.get("update_mask_struct")),
+            _from_json_data(str, data.get("variable_name")),
+        )
+
+    def to_json_data(self) -> Any:
+        data: Dict[str, Any] = {}
+        data["size"] = _to_json_data(self.size)
+        data["update_mask_struct"] = _to_json_data(self.update_mask_struct)
+        data["variable_name"] = _to_json_data(self.variable_name)
+        return data
+
+@dataclass
+class UpdateMaskDataTypeArrayOfStruct(UpdateMaskDataType):
+    content: 'UpdateMaskDataTypeArrayOfStructContent'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskDataTypeArrayOfStruct':
+        return cls(
+            "ArrayOfStruct",
+            _from_json_data(UpdateMaskDataTypeArrayOfStructContent, data.get("content")),
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "update_mask_type_tag": "ArrayOfStruct" }
+        data["content"] = _to_json_data(self.content)
+        return data
 
 @dataclass
 class UpdateMaskDataTypeBytesContent:
@@ -2297,6 +2339,54 @@ class UpdateMask:
         data["object_type"] = _to_json_data(self.object_type)
         data["offset"] = _to_json_data(self.offset)
         data["size"] = _to_json_data(self.size)
+        return data
+
+@dataclass
+class UpdateMaskStructMember:
+    index: 'int'
+    member: 'Definition'
+    offset: 'int'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskStructMember':
+        return cls(
+            _from_json_data(int, data.get("index")),
+            _from_json_data(Definition, data.get("member")),
+            _from_json_data(int, data.get("offset")),
+        )
+
+    def to_json_data(self) -> Any:
+        data: Dict[str, Any] = {}
+        data["index"] = _to_json_data(self.index)
+        data["member"] = _to_json_data(self.member)
+        data["offset"] = _to_json_data(self.offset)
+        return data
+
+@dataclass
+class UpdateMaskStruct:
+    file_info: 'FileInfo'
+    members: 'List[UpdateMaskStructMember]'
+    name: 'str'
+    sizes: 'Sizes'
+    tags: 'ObjectTags'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskStruct':
+        return cls(
+            _from_json_data(FileInfo, data.get("file_info")),
+            _from_json_data(List[UpdateMaskStructMember], data.get("members")),
+            _from_json_data(str, data.get("name")),
+            _from_json_data(Sizes, data.get("sizes")),
+            _from_json_data(ObjectTags, data.get("tags")),
+        )
+
+    def to_json_data(self) -> Any:
+        data: Dict[str, Any] = {}
+        data["file_info"] = _to_json_data(self.file_info)
+        data["members"] = _to_json_data(self.members)
+        data["name"] = _to_json_data(self.name)
+        data["sizes"] = _to_json_data(self.sizes)
+        data["tags"] = _to_json_data(self.tags)
         return data
 
 @dataclass

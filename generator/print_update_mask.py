@@ -77,6 +77,14 @@ class UpdateMask:
             case model.UpdateMaskDataTypeGUIDArrayUsingEnum(content=content):
                 for enumerator in content.definer.enumerators:
                     s.wln(f"{name}_{enumerator.name} = {value.offset + int(enumerator.value.value) * 2}")
+            case model.UpdateMaskDataTypeArrayOfStruct(content=content):
+                amount_of_items = value.size // content.size
+                mask = content.update_mask_struct
+                for i in range(0, amount_of_items):
+                    for m in mask.members:
+                        val = value.offset + m.offset * i
+                        extra = m.member.name.upper()
+                        s.wln(f"{name}_{extra}_{i} = {val}")
             case _:
                 s.wln(f"{name} = {value.offset}")
 
