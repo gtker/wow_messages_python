@@ -2343,29 +2343,29 @@ class UpdateMask:
 
 @dataclass
 class UpdateMaskStructMember:
-    index: 'int'
     member: 'Definition'
     offset: 'int'
+    size: 'int'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'UpdateMaskStructMember':
         return cls(
-            _from_json_data(int, data.get("index")),
             _from_json_data(Definition, data.get("member")),
             _from_json_data(int, data.get("offset")),
+            _from_json_data(int, data.get("size")),
         )
 
     def to_json_data(self) -> Any:
         data: Dict[str, Any] = {}
-        data["index"] = _to_json_data(self.index)
         data["member"] = _to_json_data(self.member)
         data["offset"] = _to_json_data(self.offset)
+        data["size"] = _to_json_data(self.size)
         return data
 
 @dataclass
 class UpdateMaskStruct:
     file_info: 'FileInfo'
-    members: 'List[UpdateMaskStructMember]'
+    members: 'List[List[UpdateMaskStructMember]]'
     name: 'str'
     sizes: 'Sizes'
     tags: 'ObjectTags'
@@ -2374,7 +2374,7 @@ class UpdateMaskStruct:
     def from_json_data(cls, data: Any) -> 'UpdateMaskStruct':
         return cls(
             _from_json_data(FileInfo, data.get("file_info")),
-            _from_json_data(List[UpdateMaskStructMember], data.get("members")),
+            _from_json_data(List[List[UpdateMaskStructMember]], data.get("members")),
             _from_json_data(str, data.get("name")),
             _from_json_data(Sizes, data.get("sizes")),
             _from_json_data(ObjectTags, data.get("tags")),

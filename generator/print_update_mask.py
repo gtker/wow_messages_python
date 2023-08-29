@@ -81,10 +81,19 @@ class UpdateMask:
                 amount_of_items = value.size // content.size
                 mask = content.update_mask_struct
                 for i in range(0, amount_of_items):
-                    for m in mask.members:
-                        val = value.offset + m.offset * i
-                        extra = m.member.name.upper()
-                        s.wln(f"{name}_{extra}_{i} = {val}")
+                    for word_index, word in enumerate(mask.members):
+                        for member_index, member in enumerate(word):
+                            val = value.offset + i * content.size + word_index
+                            extra = member.member.name.upper()
+
+                            if member.size == 4:
+                                s.wln(f"{name}_{i}_{extra} = {val}")
+                            elif member.size == 8:
+                                s.wln(f"{name}_{i}_{extra}_LOW = {val}")
+                                s.wln(f"{name}_{i}_{extra}_HIGH = {val + 1}")
+                            else:
+                                s.wln(f"{name}_{i}_{extra}_{member_index} = {val}")
+
             case _:
                 s.wln(f"{name} = {value.offset}")
 
