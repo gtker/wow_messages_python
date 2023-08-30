@@ -2115,6 +2115,69 @@ class TestCaseValueUpdateMask(TestCaseValue):
         return data
 
 @dataclass
+class TwoShortTypeInnerType:
+    two_short_type_tag: 'str'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'TwoShortTypeInnerType':
+        variants: Dict[str, Type[TwoShortTypeInnerType]] = {
+            "Definer": TwoShortTypeInnerTypeDefiner,
+            "Short": TwoShortTypeInnerTypeShort,
+        }
+
+        return variants[data["two_short_type_tag"]].from_json_data(data)
+
+    def to_json_data(self) -> Any:
+        pass
+
+@dataclass
+class TwoShortTypeInnerTypeDefiner(TwoShortTypeInnerType):
+    two_short_type: 'str'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'TwoShortTypeInnerTypeDefiner':
+        return cls(
+            "Definer",
+            _from_json_data(str, data.get("two_short_type")),
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "two_short_type_tag": "Definer" }
+        data["two_short_type"] = _to_json_data(self.two_short_type)
+        return data
+
+@dataclass
+class TwoShortTypeInnerTypeShort(TwoShortTypeInnerType):
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'TwoShortTypeInnerTypeShort':
+        return cls(
+            "Short",
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "two_short_type_tag": "Short" }
+        return data
+
+@dataclass
+class TwoShortType:
+    inner_type: 'TwoShortTypeInnerType'
+    name: 'str'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'TwoShortType':
+        return cls(
+            _from_json_data(TwoShortTypeInnerType, data.get("inner_type")),
+            _from_json_data(str, data.get("name")),
+        )
+
+    def to_json_data(self) -> Any:
+        data: Dict[str, Any] = {}
+        data["inner_type"] = _to_json_data(self.inner_type)
+        data["name"] = _to_json_data(self.name)
+        return data
+
+@dataclass
 class UpdateMaskDataType:
     update_mask_type_tag: 'str'
 
@@ -2286,16 +2349,37 @@ class UpdateMaskDataTypeInt(UpdateMaskDataType):
         return data
 
 @dataclass
+class UpdateMaskDataTypeTwoShortContent:
+    first: 'TwoShortType'
+    second: 'TwoShortType'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'UpdateMaskDataTypeTwoShortContent':
+        return cls(
+            _from_json_data(TwoShortType, data.get("first")),
+            _from_json_data(TwoShortType, data.get("second")),
+        )
+
+    def to_json_data(self) -> Any:
+        data: Dict[str, Any] = {}
+        data["first"] = _to_json_data(self.first)
+        data["second"] = _to_json_data(self.second)
+        return data
+
+@dataclass
 class UpdateMaskDataTypeTwoShort(UpdateMaskDataType):
+    content: 'UpdateMaskDataTypeTwoShortContent'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'UpdateMaskDataTypeTwoShort':
         return cls(
             "TwoShort",
+            _from_json_data(UpdateMaskDataTypeTwoShortContent, data.get("content")),
         )
 
     def to_json_data(self) -> Any:
         data = { "update_mask_type_tag": "TwoShort" }
+        data["content"] = _to_json_data(self.content)
         return data
 
 class UpdateMaskObjectType(Enum):
