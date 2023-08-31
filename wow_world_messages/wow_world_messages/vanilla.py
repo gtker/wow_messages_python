@@ -1,9 +1,11 @@
+from __future__ import annotations
 import asyncio
 import dataclasses
 import enum
 import struct
 import typing
 import zlib
+
 import wow_srp
 from .util import packed_guid_size
 from .util import packed_guid_write
@@ -7551,7 +7553,7 @@ class Addon:
     url: typing.Optional[str] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> Addon:
         key_version = None
         public_key = None
         update_available_flag = None
@@ -7638,7 +7640,7 @@ class AddonInfo:
     addon_extra_crc: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> AddonInfo:
         # addon_name: CString
         addon_name = await read_cstring(reader)
 
@@ -7685,7 +7687,7 @@ class AuctionListItem:
     highest_bid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> AuctionListItem:
         # id: u32
         id = await read_int(reader, 4)
 
@@ -7766,7 +7768,7 @@ class AuraLog:
     gain_multiplier: typing.Optional[float] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> AuraLog:
         damage1 = None
         school = None
         absorbed = None
@@ -7871,7 +7873,7 @@ class BattlegroundPlayer:
     fields: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> BattlegroundPlayer:
         # player: Guid
         player = await read_int(reader, 8)
 
@@ -7924,7 +7926,7 @@ class BattlegroundPlayerPosition:
     position_y: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> BattlegroundPlayerPosition:
         # player: Guid
         player = await read_int(reader, 8)
 
@@ -7952,7 +7954,7 @@ class ChannelMember:
     member_flags: ChannelMemberFlags
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> ChannelMember:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -7977,7 +7979,7 @@ class Vector3d:
     z: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> Vector3d:
         # x: f32
         x = await read_float(reader)
 
@@ -8058,7 +8060,7 @@ class CharacterGear:
     inventory_type: InventoryType
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CharacterGear:
         # equipment_display_id: u32
         equipment_display_id = await read_int(reader, 4)
 
@@ -8101,7 +8103,7 @@ class Character:
     equipment: typing.List[CharacterGear]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> Character:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -8258,7 +8260,7 @@ class MonsterMove:
     splines: typing.Optional[MonsterMoveSpline] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> MonsterMove:
         target = None
         angle = None
         position = None
@@ -8364,7 +8366,7 @@ class CompressedMove:
     monster_move_transport: typing.Optional[MonsterMove] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CompressedMove:
         speed = None
         monster_move = None
         transport = None
@@ -8446,7 +8448,7 @@ class CooldownSpell:
     category_cooldown: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CooldownSpell:
         # spell_id: u16
         spell_id = await read_int(reader, 2)
 
@@ -8485,7 +8487,7 @@ class DamageInfo:
     resist: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> DamageInfo:
         # spell_school_mask: u32
         spell_school_mask = await read_int(reader, 4)
 
@@ -8521,7 +8523,7 @@ class FactionInitializer:
     standing: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> FactionInitializer:
         # flag: FactionFlag
         flag = FactionFlag(await read_int(reader, 1))
 
@@ -8545,7 +8547,7 @@ class FactionStanding:
     standing: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> FactionStanding:
         # faction: Faction
         faction = Faction(await read_int(reader, 2))
 
@@ -8569,7 +8571,7 @@ class ForcedReaction:
     reputation_rank: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> ForcedReaction:
         # faction: Faction
         faction = Faction(await read_int(reader, 2))
 
@@ -8596,7 +8598,7 @@ class Friend:
     class_type: typing.Optional[Class] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> Friend:
         area = None
         level = None
         class_type = None
@@ -8648,7 +8650,7 @@ class GmSurveyQuestion:
     comment: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> GmSurveyQuestion:
         # question_id: u32
         question_id = await read_int(reader, 4)
 
@@ -8681,7 +8683,7 @@ class GossipItem:
     message: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> GossipItem:
         # id: u32
         id = await read_int(reader, 4)
 
@@ -8718,7 +8720,7 @@ class GroupListMember:
     flags: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> GroupListMember:
         # name: CString
         name = await read_cstring(reader)
 
@@ -8761,7 +8763,7 @@ class GuildMember:
     time_offline: typing.Optional[float] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> GuildMember:
         time_offline = None
         # guid: Guid
         guid = await read_int(reader, 8)
@@ -8838,7 +8840,7 @@ class InitialSpell:
     unknown1: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> InitialSpell:
         # spell_id: u16
         spell_id = await read_int(reader, 2)
 
@@ -8863,7 +8865,7 @@ class ItemDamageType:
     school: SpellSchool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> ItemDamageType:
         # damage_minimum: f32
         damage_minimum = await read_float(reader)
 
@@ -8895,7 +8897,7 @@ class ItemSpells:
     spell_category_cooldown: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> ItemSpells:
         # spell: u32
         spell = await read_int(reader, 4)
 
@@ -8935,7 +8937,7 @@ class ItemStat:
     value: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> ItemStat:
         # stat_type: ItemStatType
         stat_type = ItemStatType(await read_int(reader, 4))
 
@@ -8964,7 +8966,7 @@ class ListInventoryItem:
     durability: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> ListInventoryItem:
         # item_stack_count: u32
         item_stack_count = await read_int(reader, 4)
 
@@ -9009,7 +9011,7 @@ class LootItem:
     ty: LootSlotType
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> LootItem:
         # index: u8
         index = await read_int(reader, 1)
 
@@ -9057,7 +9059,7 @@ class Mail:
     auction_id: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> Mail:
         sender = None
         sender_id = None
         auction_id = None
@@ -9290,7 +9292,7 @@ class MovementBlock:
     transport_progress_in_ms: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> MovementBlock:
         flags = None
         timestamp = None
         living_position = None
@@ -9668,7 +9670,7 @@ class TransportInfo:
     timestamp: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> TransportInfo:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -9725,7 +9727,7 @@ class MovementInfo:
     spline_elevation: typing.Optional[float] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> MovementInfo:
         transport = None
         pitch = None
         z_speed = None
@@ -9841,7 +9843,7 @@ class NpcTextUpdateEmote:
     emote: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> NpcTextUpdateEmote:
         # delay: u32
         delay = await read_int(reader, 4)
 
@@ -9867,7 +9869,7 @@ class NpcTextUpdate:
     emotes: typing.List[NpcTextUpdateEmote]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> NpcTextUpdate:
         # probability: f32
         probability = await read_float(reader)
 
@@ -9928,7 +9930,7 @@ class Object:
     guids: typing.Optional[typing.List[int]] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> Object:
         guid1 = None
         mask1 = None
         guid2 = None
@@ -10054,7 +10056,7 @@ class PetSpellCooldown:
     category_cooldown: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> PetSpellCooldown:
         # spell: u16
         spell = await read_int(reader, 2)
 
@@ -10089,7 +10091,7 @@ class PetitionShowlist:
     unknown1: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> PetitionShowlist:
         # index: u32
         index = await read_int(reader, 4)
 
@@ -10125,7 +10127,7 @@ class PetitionSignature:
     unknown1: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> PetitionSignature:
         # signer: Guid
         signer = await read_int(reader, 8)
 
@@ -10149,7 +10151,7 @@ class QuestDetailsEmote:
     emote_delay: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> QuestDetailsEmote:
         # emote: u32
         emote = await read_int(reader, 4)
 
@@ -10175,7 +10177,7 @@ class QuestItem:
     title: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> QuestItem:
         # quest_id: u32
         quest_id = await read_int(reader, 4)
 
@@ -10211,7 +10213,7 @@ class QuestItemRequirement:
     item_display_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> QuestItemRequirement:
         # item: u32
         item = await read_int(reader, 4)
 
@@ -10239,7 +10241,7 @@ class QuestItemReward:
     item_count: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> QuestItemReward:
         # item: u32
         item = await read_int(reader, 4)
 
@@ -10265,7 +10267,7 @@ class QuestObjective:
     required_item_count: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> QuestObjective:
         # creature_id: u32
         creature_id = await read_int(reader, 4)
 
@@ -10298,7 +10300,7 @@ class RaidInfo:
     instance_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> RaidInfo:
         # map: Map
         map = Map(await read_int(reader, 4))
 
@@ -10326,7 +10328,7 @@ class RaidTargetUpdate:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> RaidTargetUpdate:
         # index: RaidTargetIndex
         index = RaidTargetIndex(await read_int(reader, 1))
 
@@ -10359,7 +10361,7 @@ class SpellCastTargets:
     pvp_corpse: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> SpellCastTargets:
         unit_target = None
         gameobject = None
         object_unk = None
@@ -10510,7 +10512,7 @@ class SpellCooldownStatus:
     cooldown_time: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> SpellCooldownStatus:
         # id: u32
         id = await read_int(reader, 4)
 
@@ -10553,7 +10555,7 @@ class SpellLog:
     target7: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> SpellLog:
         target1 = None
         amount = None
         power = None
@@ -10736,7 +10738,7 @@ class SpellLogMiss:
     miss_info: SpellMissInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> SpellLogMiss:
         # target: Guid
         target = await read_int(reader, 8)
 
@@ -10760,7 +10762,7 @@ class SpellMiss:
     miss_info: SpellMissInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> SpellMiss:
         # target: Guid
         target = await read_int(reader, 8)
 
@@ -10788,7 +10790,7 @@ class StabledPet:
     slot: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> StabledPet:
         # pet_number: u32
         pet_number = await read_int(reader, 4)
 
@@ -10843,7 +10845,7 @@ class TradeSlot:
     durability: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> TradeSlot:
         # trade_slot_number: u8
         trade_slot_number = await read_int(reader, 1)
 
@@ -10922,7 +10924,7 @@ class TrainerSpell:
     required_spells: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> TrainerSpell:
         # spell: u32
         spell = await read_int(reader, 4)
 
@@ -10976,7 +10978,7 @@ class Vector2d:
     y: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> Vector2d:
         # x: f32
         x = await read_float(reader)
 
@@ -11005,7 +11007,7 @@ class WhoPlayer:
     party_status: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> WhoPlayer:
         # name: CString
         name = await read_cstring(reader)
 
@@ -11052,7 +11054,7 @@ class WorldState:
     value: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> WorldState:
         # state: u32
         state = await read_int(reader, 4)
 
@@ -11074,7 +11076,7 @@ class WorldState:
 class CMSG_BOOTME:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BOOTME:
         return CMSG_BOOTME()
 
     def write_encrypted_client(
@@ -11099,7 +11101,7 @@ class CMSG_DBLOOKUP:
     query: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_DBLOOKUP:
         # query: CString
         query = await read_cstring(reader)
 
@@ -11137,7 +11139,7 @@ class CMSG_WORLD_TELEPORT:
     orientation: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_WORLD_TELEPORT:
         # time: Milliseconds
         time = await read_int(reader, 4)
 
@@ -11188,7 +11190,7 @@ class CMSG_TELEPORT_TO_UNIT:
     name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_TELEPORT_TO_UNIT:
         # name: CString
         name = await read_cstring(reader)
 
@@ -11231,7 +11233,7 @@ class CMSG_CHAR_CREATE:
     facial_hair: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHAR_CREATE:
         # name: CString
         name = await read_cstring(reader)
 
@@ -11300,7 +11302,7 @@ class CMSG_CHAR_CREATE:
 class CMSG_CHAR_ENUM:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHAR_ENUM:
         return CMSG_CHAR_ENUM()
 
     def write_encrypted_client(
@@ -11325,7 +11327,7 @@ class CMSG_CHAR_DELETE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHAR_DELETE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -11357,7 +11359,7 @@ class SMSG_CHAR_CREATE:
     result: WorldResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CHAR_CREATE:
         # result: WorldResult
         result = WorldResult(await read_int(reader, 1))
 
@@ -11389,7 +11391,7 @@ class SMSG_CHAR_ENUM:
     characters: typing.List[Character]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CHAR_ENUM:
         # amount_of_characters: u8
         amount_of_characters = await read_int(reader, 1)
 
@@ -11433,7 +11435,7 @@ class SMSG_CHAR_DELETE:
     result: WorldResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CHAR_DELETE:
         # result: WorldResult
         result = WorldResult(await read_int(reader, 1))
 
@@ -11465,7 +11467,7 @@ class CMSG_PLAYER_LOGIN:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PLAYER_LOGIN:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -11499,7 +11501,7 @@ class SMSG_NEW_WORLD:
     orientation: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_NEW_WORLD:
         # map: Map
         map = Map(await read_int(reader, 4))
 
@@ -11548,7 +11550,7 @@ class SMSG_TRANSFER_PENDING:
     transport_map: typing.Optional[Map] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_TRANSFER_PENDING:
         transport = None
         transport_map = None
         _size = 0
@@ -11612,7 +11614,7 @@ class SMSG_TRANSFER_ABORTED:
     argument: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_TRANSFER_ABORTED:
         # map: Map
         map = Map(await read_int(reader, 4))
 
@@ -11652,7 +11654,7 @@ class SMSG_CHARACTER_LOGIN_FAILED:
     result: WorldResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CHARACTER_LOGIN_FAILED:
         # result: WorldResult
         result = WorldResult(await read_int(reader, 1))
 
@@ -11685,7 +11687,7 @@ class SMSG_LOGIN_SETTIMESPEED:
     timescale: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOGIN_SETTIMESPEED:
         # datetime: DateTime
         datetime = await read_int(reader, 4)
 
@@ -11720,7 +11722,7 @@ class SMSG_LOGIN_SETTIMESPEED:
 class CMSG_PLAYER_LOGOUT:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PLAYER_LOGOUT:
         return CMSG_PLAYER_LOGOUT()
 
     def write_encrypted_client(
@@ -11744,7 +11746,7 @@ class CMSG_PLAYER_LOGOUT:
 class CMSG_LOGOUT_REQUEST:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_LOGOUT_REQUEST:
         return CMSG_LOGOUT_REQUEST()
 
     def write_encrypted_client(
@@ -11770,7 +11772,7 @@ class SMSG_LOGOUT_RESPONSE:
     speed: LogoutSpeed
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOGOUT_RESPONSE:
         # result: LogoutResult
         result = LogoutResult(await read_int(reader, 4))
 
@@ -11805,7 +11807,7 @@ class SMSG_LOGOUT_RESPONSE:
 class SMSG_LOGOUT_COMPLETE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOGOUT_COMPLETE:
         return SMSG_LOGOUT_COMPLETE()
 
     def write_encrypted_server(
@@ -11829,7 +11831,7 @@ class SMSG_LOGOUT_COMPLETE:
 class CMSG_LOGOUT_CANCEL:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_LOGOUT_CANCEL:
         return CMSG_LOGOUT_CANCEL()
 
     def write_encrypted_client(
@@ -11853,7 +11855,7 @@ class CMSG_LOGOUT_CANCEL:
 class SMSG_LOGOUT_CANCEL_ACK:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOGOUT_CANCEL_ACK:
         return SMSG_LOGOUT_CANCEL_ACK()
 
     def write_encrypted_server(
@@ -11878,7 +11880,7 @@ class CMSG_NAME_QUERY:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_NAME_QUERY:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -11915,7 +11917,7 @@ class SMSG_NAME_QUERY_RESPONSE:
     class_type: Class
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_NAME_QUERY_RESPONSE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -11971,7 +11973,7 @@ class CMSG_PET_NAME_QUERY:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PET_NAME_QUERY:
         # pet_number: u32
         pet_number = await read_int(reader, 4)
 
@@ -12009,7 +12011,7 @@ class SMSG_PET_NAME_QUERY_RESPONSE:
     pet_name_timestamp: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PET_NAME_QUERY_RESPONSE:
         # pet_number: u32
         pet_number = await read_int(reader, 4)
 
@@ -12052,7 +12054,7 @@ class CMSG_GUILD_QUERY:
     guild_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_QUERY:
         # guild_id: u32
         guild_id = await read_int(reader, 4)
 
@@ -12091,7 +12093,7 @@ class SMSG_GUILD_QUERY_RESPONSE:
     background_color: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GUILD_QUERY_RESPONSE:
         # id: u32
         id = await read_int(reader, 4)
 
@@ -12183,7 +12185,7 @@ class CMSG_ITEM_QUERY_SINGLE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_ITEM_QUERY_SINGLE:
         # item: u32
         item = await read_int(reader, 4)
 
@@ -12273,7 +12275,7 @@ class SMSG_ITEM_QUERY_SINGLE_RESPONSE:
     bag_family: typing.Optional[BagFamily] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ITEM_QUERY_SINGLE_RESPONSE:
         class_and_sub_class = None
         name1 = None
         name2 = None
@@ -12769,7 +12771,7 @@ class CMSG_PAGE_TEXT_QUERY:
     page_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PAGE_TEXT_QUERY:
         # page_id: u32
         page_id = await read_int(reader, 4)
 
@@ -12803,7 +12805,7 @@ class SMSG_PAGE_TEXT_QUERY_RESPONSE:
     next_page_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PAGE_TEXT_QUERY_RESPONSE:
         # page_id: u32
         page_id = await read_int(reader, 4)
 
@@ -12846,7 +12848,7 @@ class CMSG_QUEST_QUERY:
     quest_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_QUEST_QUERY:
         # quest_id: u32
         quest_id = await read_int(reader, 4)
 
@@ -12903,7 +12905,7 @@ class SMSG_QUEST_QUERY_RESPONSE:
     objective_texts: typing.List[str]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUEST_QUERY_RESPONSE:
         # quest_id: u32
         quest_id = await read_int(reader, 4)
 
@@ -13092,7 +13094,7 @@ class CMSG_GAMEOBJECT_QUERY:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GAMEOBJECT_QUERY:
         # entry_id: u32
         entry_id = await read_int(reader, 4)
 
@@ -13136,7 +13138,7 @@ class SMSG_GAMEOBJECT_QUERY_RESPONSE:
     raw_data: typing.Optional[typing.List[int]] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GAMEOBJECT_QUERY_RESPONSE:
         info_type = None
         display_id = None
         name1 = None
@@ -13237,7 +13239,7 @@ class CMSG_CREATURE_QUERY:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CREATURE_QUERY:
         # creature: u32
         creature = await read_int(reader, 4)
 
@@ -13287,7 +13289,7 @@ class SMSG_CREATURE_QUERY_RESPONSE:
     racial_leader: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CREATURE_QUERY_RESPONSE:
         name1 = None
         name2 = None
         name3 = None
@@ -13428,7 +13430,7 @@ class CMSG_WHO:
     search_strings: typing.List[str]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_WHO:
         # minimum_level: Level32
         minimum_level = await read_int(reader, 4)
 
@@ -13508,7 +13510,7 @@ class SMSG_WHO:
     players: typing.List[WhoPlayer]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_WHO:
         # listed_players: u32
         listed_players = await read_int(reader, 4)
 
@@ -13556,7 +13558,7 @@ class CMSG_WHOIS:
     character: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_WHOIS:
         # character: CString
         character = await read_cstring(reader)
 
@@ -13591,7 +13593,7 @@ class SMSG_WHOIS:
     message: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_WHOIS:
         # message: CString
         message = await read_cstring(reader)
 
@@ -13625,7 +13627,7 @@ class SMSG_WHOIS:
 class CMSG_FRIEND_LIST:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_FRIEND_LIST:
         return CMSG_FRIEND_LIST()
 
     def write_encrypted_client(
@@ -13650,7 +13652,7 @@ class SMSG_FRIEND_LIST:
     friends: typing.List[Friend]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_FRIEND_LIST:
         # amount_of_friends: u8
         amount_of_friends = await read_int(reader, 1)
 
@@ -13695,7 +13697,7 @@ class SMSG_FRIEND_STATUS:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_FRIEND_STATUS:
         # result: FriendResult
         result = FriendResult(await read_int(reader, 1))
 
@@ -13731,7 +13733,7 @@ class CMSG_ADD_FRIEND:
     name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_ADD_FRIEND:
         # name: CString
         name = await read_cstring(reader)
 
@@ -13766,7 +13768,7 @@ class CMSG_DEL_FRIEND:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_DEL_FRIEND:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -13798,7 +13800,7 @@ class SMSG_IGNORE_LIST:
     ignored: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_IGNORE_LIST:
         # amount_of_ignored: u8
         amount_of_ignored = await read_int(reader, 1)
 
@@ -13838,7 +13840,7 @@ class CMSG_ADD_IGNORE:
     name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_ADD_IGNORE:
         # name: CString
         name = await read_cstring(reader)
 
@@ -13873,7 +13875,7 @@ class CMSG_DEL_IGNORE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_DEL_IGNORE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -13905,7 +13907,7 @@ class CMSG_GROUP_INVITE:
     name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GROUP_INVITE:
         # name: CString
         name = await read_cstring(reader)
 
@@ -13940,7 +13942,7 @@ class SMSG_GROUP_INVITE:
     name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GROUP_INVITE:
         # name: CString
         name = await read_cstring(reader)
 
@@ -13974,7 +13976,7 @@ class SMSG_GROUP_INVITE:
 class CMSG_GROUP_ACCEPT:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GROUP_ACCEPT:
         return CMSG_GROUP_ACCEPT()
 
     def write_encrypted_client(
@@ -13998,7 +14000,7 @@ class CMSG_GROUP_ACCEPT:
 class CMSG_GROUP_DECLINE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GROUP_DECLINE:
         return CMSG_GROUP_DECLINE()
 
     def write_encrypted_client(
@@ -14023,7 +14025,7 @@ class SMSG_GROUP_DECLINE:
     name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GROUP_DECLINE:
         # name: CString
         name = await read_cstring(reader)
 
@@ -14058,7 +14060,7 @@ class CMSG_GROUP_UNINVITE:
     name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GROUP_UNINVITE:
         # name: CString
         name = await read_cstring(reader)
 
@@ -14093,7 +14095,7 @@ class CMSG_GROUP_UNINVITE_GUID:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GROUP_UNINVITE_GUID:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -14124,7 +14126,7 @@ class CMSG_GROUP_UNINVITE_GUID:
 class SMSG_GROUP_UNINVITE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GROUP_UNINVITE:
         return SMSG_GROUP_UNINVITE()
 
     def write_encrypted_server(
@@ -14149,7 +14151,7 @@ class CMSG_GROUP_SET_LEADER:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GROUP_SET_LEADER:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -14181,7 +14183,7 @@ class SMSG_GROUP_SET_LEADER:
     name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GROUP_SET_LEADER:
         # name: CString
         name = await read_cstring(reader)
 
@@ -14218,7 +14220,7 @@ class CMSG_LOOT_METHOD:
     loot_threshold: ItemQuality
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_LOOT_METHOD:
         # loot_setting: GroupLootSetting
         loot_setting = GroupLootSetting(await read_int(reader, 4))
 
@@ -14257,7 +14259,7 @@ class CMSG_LOOT_METHOD:
 class CMSG_GROUP_DISBAND:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GROUP_DISBAND:
         return CMSG_GROUP_DISBAND()
 
     def write_encrypted_client(
@@ -14281,7 +14283,7 @@ class CMSG_GROUP_DISBAND:
 class SMSG_GROUP_DESTROYED:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GROUP_DESTROYED:
         return SMSG_GROUP_DESTROYED()
 
     def write_encrypted_server(
@@ -14312,7 +14314,7 @@ class SMSG_GROUP_LIST:
     loot_threshold: typing.Optional[ItemQuality] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GROUP_LIST:
         loot_setting = None
         master_loot = None
         loot_threshold = None
@@ -14431,7 +14433,7 @@ class SMSG_PARTY_MEMBER_STATS:
     pet_auras: typing.Optional[AuraMask] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PARTY_MEMBER_STATS:
         status = None
         current_health = None
         max_health = None
@@ -14727,7 +14729,7 @@ class SMSG_PARTY_COMMAND_RESULT:
     result: PartyResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PARTY_COMMAND_RESULT:
         # operation: PartyOperation
         operation = PartyOperation(await read_int(reader, 4))
 
@@ -14770,7 +14772,7 @@ class CMSG_GUILD_CREATE:
     guild_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_CREATE:
         # guild_name: CString
         guild_name = await read_cstring(reader)
 
@@ -14805,7 +14807,7 @@ class CMSG_GUILD_INVITE:
     invited_player: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_INVITE:
         # invited_player: CString
         invited_player = await read_cstring(reader)
 
@@ -14841,7 +14843,7 @@ class SMSG_GUILD_INVITE:
     guild_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GUILD_INVITE:
         # player_name: CString
         player_name = await read_cstring(reader)
 
@@ -14879,7 +14881,7 @@ class SMSG_GUILD_INVITE:
 class CMSG_GUILD_ACCEPT:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_ACCEPT:
         return CMSG_GUILD_ACCEPT()
 
     def write_encrypted_client(
@@ -14903,7 +14905,7 @@ class CMSG_GUILD_ACCEPT:
 class CMSG_GUILD_DECLINE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_DECLINE:
         return CMSG_GUILD_DECLINE()
 
     def write_encrypted_client(
@@ -14927,7 +14929,7 @@ class CMSG_GUILD_DECLINE:
 class CMSG_GUILD_INFO:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_INFO:
         return CMSG_GUILD_INFO()
 
     def write_encrypted_client(
@@ -14957,7 +14959,7 @@ class SMSG_GUILD_INFO:
     amount_of_accounts_in_guild: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GUILD_INFO:
         # guild_name: CString
         guild_name = await read_cstring(reader)
 
@@ -15011,7 +15013,7 @@ class SMSG_GUILD_INFO:
 class CMSG_GUILD_ROSTER:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_ROSTER:
         return CMSG_GUILD_ROSTER()
 
     def write_encrypted_client(
@@ -15039,7 +15041,7 @@ class SMSG_GUILD_ROSTER:
     members: typing.List[GuildMember]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GUILD_ROSTER:
         # amount_of_members: u32
         amount_of_members = await read_int(reader, 4)
 
@@ -15100,7 +15102,7 @@ class CMSG_GUILD_PROMOTE:
     player_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_PROMOTE:
         # player_name: CString
         player_name = await read_cstring(reader)
 
@@ -15135,7 +15137,7 @@ class CMSG_GUILD_DEMOTE:
     player_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_DEMOTE:
         # player_name: CString
         player_name = await read_cstring(reader)
 
@@ -15169,7 +15171,7 @@ class CMSG_GUILD_DEMOTE:
 class CMSG_GUILD_LEAVE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_LEAVE:
         return CMSG_GUILD_LEAVE()
 
     def write_encrypted_client(
@@ -15194,7 +15196,7 @@ class CMSG_GUILD_REMOVE:
     player_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_REMOVE:
         # player_name: CString
         player_name = await read_cstring(reader)
 
@@ -15228,7 +15230,7 @@ class CMSG_GUILD_REMOVE:
 class CMSG_GUILD_DISBAND:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_DISBAND:
         return CMSG_GUILD_DISBAND()
 
     def write_encrypted_client(
@@ -15253,7 +15255,7 @@ class CMSG_GUILD_LEADER:
     new_guild_leader_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_LEADER:
         # new_guild_leader_name: CString
         new_guild_leader_name = await read_cstring(reader)
 
@@ -15288,7 +15290,7 @@ class CMSG_GUILD_MOTD:
     message_of_the_day: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_MOTD:
         # message_of_the_day: CString
         message_of_the_day = await read_cstring(reader)
 
@@ -15324,7 +15326,7 @@ class SMSG_GUILD_EVENT:
     event_descriptions: typing.List[str]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GUILD_EVENT:
         # event: GuildEvent
         event = GuildEvent(await read_int(reader, 1))
 
@@ -15376,7 +15378,7 @@ class SMSG_GUILD_COMMAND_RESULT:
     result: GuildCommandResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GUILD_COMMAND_RESULT:
         # command: GuildCommand
         command = GuildCommand(await read_int(reader, 4))
 
@@ -15423,7 +15425,7 @@ class CMSG_MESSAGECHAT:
     channel: typing.Optional[str] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MESSAGECHAT:
         target_player = None
         channel = None
         # chat_type: ChatType
@@ -15509,7 +15511,7 @@ class SMSG_MESSAGECHAT:
     sender2: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MESSAGECHAT:
         monster_name = None
         monster = None
         speech_bubble_credit = None
@@ -15653,7 +15655,7 @@ class CMSG_JOIN_CHANNEL:
     channel_password: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_JOIN_CHANNEL:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -15692,7 +15694,7 @@ class CMSG_LEAVE_CHANNEL:
     channel_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_LEAVE_CHANNEL:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -15728,7 +15730,7 @@ class SMSG_CHANNEL_NOTIFY:
     channel_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CHANNEL_NOTIFY:
         # notify_type: ChatNotify
         notify_type = ChatNotify(await read_int(reader, 1))
 
@@ -15767,7 +15769,7 @@ class CMSG_CHANNEL_LIST:
     channel_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHANNEL_LIST:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -15804,7 +15806,7 @@ class SMSG_CHANNEL_LIST:
     members: typing.List[ChannelMember]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CHANNEL_LIST:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -15857,7 +15859,7 @@ class CMSG_CHANNEL_PASSWORD:
     channel_password: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHANNEL_PASSWORD:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -15897,7 +15899,7 @@ class CMSG_CHANNEL_SET_OWNER:
     new_owner: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHANNEL_SET_OWNER:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -15936,7 +15938,7 @@ class CMSG_CHANNEL_OWNER:
     channel_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHANNEL_OWNER:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -15972,7 +15974,7 @@ class CMSG_CHANNEL_MODERATOR:
     player_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHANNEL_MODERATOR:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -16012,7 +16014,7 @@ class CMSG_CHANNEL_UNMODERATOR:
     player_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHANNEL_UNMODERATOR:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -16052,7 +16054,7 @@ class CMSG_CHANNEL_MUTE:
     player_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHANNEL_MUTE:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -16092,7 +16094,7 @@ class CMSG_CHANNEL_UNMUTE:
     player_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHANNEL_UNMUTE:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -16132,7 +16134,7 @@ class CMSG_CHANNEL_INVITE:
     player_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHANNEL_INVITE:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -16172,7 +16174,7 @@ class CMSG_CHANNEL_KICK:
     player_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHANNEL_KICK:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -16212,7 +16214,7 @@ class CMSG_CHANNEL_BAN:
     player_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHANNEL_BAN:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -16252,7 +16254,7 @@ class CMSG_CHANNEL_UNBAN:
     player_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHANNEL_UNBAN:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -16291,7 +16293,7 @@ class CMSG_CHANNEL_ANNOUNCEMENTS:
     channel_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHANNEL_ANNOUNCEMENTS:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -16326,7 +16328,7 @@ class CMSG_CHANNEL_MODERATE:
     channel_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHANNEL_MODERATE:
         # channel_name: CString
         channel_name = await read_cstring(reader)
 
@@ -16362,7 +16364,7 @@ class SMSG_UPDATE_OBJECT:
     objects: typing.List[Object]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_UPDATE_OBJECT:
         # amount_of_objects: u32
         amount_of_objects = await read_int(reader, 4)
 
@@ -16410,7 +16412,7 @@ class SMSG_DESTROY_OBJECT:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_DESTROY_OBJECT:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -16445,7 +16447,7 @@ class CMSG_USE_ITEM:
     targets: SpellCastTargets
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_USE_ITEM:
         # bag_index: u8
         bag_index = await read_int(reader, 1)
 
@@ -16496,7 +16498,7 @@ class CMSG_OPEN_ITEM:
     slot: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_OPEN_ITEM:
         # bag_index: u8
         bag_index = await read_int(reader, 1)
 
@@ -16533,7 +16535,7 @@ class CMSG_READ_ITEM:
     slot: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_READ_ITEM:
         # bag_index: u8
         bag_index = await read_int(reader, 1)
 
@@ -16569,7 +16571,7 @@ class SMSG_READ_ITEM_OK:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_READ_ITEM_OK:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -16601,7 +16603,7 @@ class SMSG_READ_ITEM_FAILED:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_READ_ITEM_FAILED:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -16634,7 +16636,7 @@ class SMSG_ITEM_COOLDOWN:
     id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ITEM_COOLDOWN:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -16670,7 +16672,7 @@ class CMSG_GAMEOBJ_USE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GAMEOBJ_USE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -16703,7 +16705,7 @@ class SMSG_GAMEOBJECT_CUSTOM_ANIM:
     animation_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GAMEOBJECT_CUSTOM_ANIM:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -16739,7 +16741,7 @@ class CMSG_AREATRIGGER:
     trigger_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AREATRIGGER:
         # trigger_id: u32
         trigger_id = await read_int(reader, 4)
 
@@ -16771,7 +16773,7 @@ class MSG_MOVE_START_FORWARD_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_FORWARD_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -16808,7 +16810,7 @@ class MSG_MOVE_START_FORWARD_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_FORWARD_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -16851,7 +16853,7 @@ class MSG_MOVE_START_BACKWARD_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_BACKWARD_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -16888,7 +16890,7 @@ class MSG_MOVE_START_BACKWARD_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_BACKWARD_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -16931,7 +16933,7 @@ class MSG_MOVE_STOP_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_STOP_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -16968,7 +16970,7 @@ class MSG_MOVE_STOP_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_STOP_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -17011,7 +17013,7 @@ class MSG_MOVE_START_STRAFE_LEFT_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_STRAFE_LEFT_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -17048,7 +17050,7 @@ class MSG_MOVE_START_STRAFE_LEFT_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_STRAFE_LEFT_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -17091,7 +17093,7 @@ class MSG_MOVE_START_STRAFE_RIGHT_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_STRAFE_RIGHT_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -17128,7 +17130,7 @@ class MSG_MOVE_START_STRAFE_RIGHT_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_STRAFE_RIGHT_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -17171,7 +17173,7 @@ class MSG_MOVE_STOP_STRAFE_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_STOP_STRAFE_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -17208,7 +17210,7 @@ class MSG_MOVE_STOP_STRAFE_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_STOP_STRAFE_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -17251,7 +17253,7 @@ class MSG_MOVE_JUMP_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_JUMP_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -17288,7 +17290,7 @@ class MSG_MOVE_JUMP_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_JUMP_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -17331,7 +17333,7 @@ class MSG_MOVE_START_TURN_LEFT_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_TURN_LEFT_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -17368,7 +17370,7 @@ class MSG_MOVE_START_TURN_LEFT_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_TURN_LEFT_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -17411,7 +17413,7 @@ class MSG_MOVE_START_TURN_RIGHT_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_TURN_RIGHT_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -17448,7 +17450,7 @@ class MSG_MOVE_START_TURN_RIGHT_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_TURN_RIGHT_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -17491,7 +17493,7 @@ class MSG_MOVE_STOP_TURN_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_STOP_TURN_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -17528,7 +17530,7 @@ class MSG_MOVE_STOP_TURN_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_STOP_TURN_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -17571,7 +17573,7 @@ class MSG_MOVE_START_PITCH_UP_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_PITCH_UP_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -17608,7 +17610,7 @@ class MSG_MOVE_START_PITCH_UP_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_PITCH_UP_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -17651,7 +17653,7 @@ class MSG_MOVE_START_PITCH_DOWN_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_PITCH_DOWN_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -17688,7 +17690,7 @@ class MSG_MOVE_START_PITCH_DOWN_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_PITCH_DOWN_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -17731,7 +17733,7 @@ class MSG_MOVE_STOP_PITCH_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_STOP_PITCH_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -17768,7 +17770,7 @@ class MSG_MOVE_STOP_PITCH_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_STOP_PITCH_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -17811,7 +17813,7 @@ class MSG_MOVE_SET_RUN_MODE_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_SET_RUN_MODE_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -17848,7 +17850,7 @@ class MSG_MOVE_SET_RUN_MODE_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_SET_RUN_MODE_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -17891,7 +17893,7 @@ class MSG_MOVE_SET_WALK_MODE_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_SET_WALK_MODE_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -17928,7 +17930,7 @@ class MSG_MOVE_SET_WALK_MODE_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_SET_WALK_MODE_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -17973,7 +17975,7 @@ class MSG_MOVE_TELEPORT_ACK_Client:
     time: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_TELEPORT_ACK_Client:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -18027,7 +18029,7 @@ class MSG_MOVE_TELEPORT_ACK_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_TELEPORT_ACK_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -18078,7 +18080,7 @@ class MSG_MOVE_FALL_LAND_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_FALL_LAND_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -18115,7 +18117,7 @@ class MSG_MOVE_FALL_LAND_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_FALL_LAND_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -18158,7 +18160,7 @@ class MSG_MOVE_START_SWIM_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_SWIM_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -18195,7 +18197,7 @@ class MSG_MOVE_START_SWIM_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_START_SWIM_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -18238,7 +18240,7 @@ class MSG_MOVE_STOP_SWIM_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_STOP_SWIM_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -18275,7 +18277,7 @@ class MSG_MOVE_STOP_SWIM_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_STOP_SWIM_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -18318,7 +18320,7 @@ class MSG_MOVE_SET_FACING_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_SET_FACING_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -18355,7 +18357,7 @@ class MSG_MOVE_SET_FACING_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_SET_FACING_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -18398,7 +18400,7 @@ class MSG_MOVE_SET_PITCH_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_SET_PITCH_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -18435,7 +18437,7 @@ class MSG_MOVE_SET_PITCH_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_SET_PITCH_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -18477,7 +18479,7 @@ class MSG_MOVE_SET_PITCH_Server:
 class MSG_MOVE_WORLDPORT_ACK:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_WORLDPORT_ACK:
         return MSG_MOVE_WORLDPORT_ACK()
 
     def write_encrypted_client(
@@ -18527,7 +18529,7 @@ class SMSG_MONSTER_MOVE:
     position: typing.Optional[Vector3d] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MONSTER_MOVE:
         target = None
         angle = None
         position = None
@@ -18647,7 +18649,7 @@ class SMSG_MOVE_WATER_WALK:
     counter: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MOVE_WATER_WALK:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -18692,7 +18694,7 @@ class SMSG_MOVE_LAND_WALK:
     counter: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MOVE_LAND_WALK:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -18737,7 +18739,7 @@ class CMSG_MOVE_SET_RAW_POSITION:
     orientation: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MOVE_SET_RAW_POSITION:
         # position: Vector3d
         position = await Vector3d.read(reader)
 
@@ -18780,7 +18782,7 @@ class SMSG_FORCE_RUN_SPEED_CHANGE:
     speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_FORCE_RUN_SPEED_CHANGE:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -18835,7 +18837,7 @@ class CMSG_FORCE_RUN_SPEED_CHANGE_ACK:
     new_speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_FORCE_RUN_SPEED_CHANGE_ACK:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -18891,7 +18893,7 @@ class SMSG_FORCE_RUN_BACK_SPEED_CHANGE:
     speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_FORCE_RUN_BACK_SPEED_CHANGE:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -18946,7 +18948,7 @@ class CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK:
     new_speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -19002,7 +19004,7 @@ class SMSG_FORCE_SWIM_SPEED_CHANGE:
     speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_FORCE_SWIM_SPEED_CHANGE:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -19057,7 +19059,7 @@ class CMSG_FORCE_SWIM_SPEED_CHANGE_ACK:
     new_speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_FORCE_SWIM_SPEED_CHANGE_ACK:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -19112,7 +19114,7 @@ class SMSG_FORCE_MOVE_ROOT:
     counter: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_FORCE_MOVE_ROOT:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -19150,7 +19152,7 @@ class CMSG_FORCE_MOVE_ROOT_ACK:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_FORCE_MOVE_ROOT_ACK:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -19197,7 +19199,7 @@ class SMSG_FORCE_MOVE_UNROOT:
     counter: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_FORCE_MOVE_UNROOT:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -19235,7 +19237,7 @@ class CMSG_FORCE_MOVE_UNROOT_ACK:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_FORCE_MOVE_UNROOT_ACK:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -19281,7 +19283,7 @@ class MSG_MOVE_HEARTBEAT_Client:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_HEARTBEAT_Client:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -19318,7 +19320,7 @@ class MSG_MOVE_HEARTBEAT_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_HEARTBEAT_Server:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -19366,7 +19368,7 @@ class SMSG_MOVE_KNOCK_BACK:
     vertical_speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MOVE_KNOCK_BACK:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -19444,7 +19446,7 @@ class CMSG_MOVE_KNOCK_BACK_ACK:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MOVE_KNOCK_BACK_ACK:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -19491,7 +19493,7 @@ class SMSG_MOVE_FEATHER_FALL:
     counter: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MOVE_FEATHER_FALL:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -19536,7 +19538,7 @@ class SMSG_MOVE_NORMAL_FALL:
     counter: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MOVE_NORMAL_FALL:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -19581,7 +19583,7 @@ class SMSG_MOVE_SET_HOVER:
     counter: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MOVE_SET_HOVER:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -19626,7 +19628,7 @@ class SMSG_MOVE_UNSET_HOVER:
     counter: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MOVE_UNSET_HOVER:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -19673,7 +19675,7 @@ class CMSG_MOVE_HOVER_ACK:
     is_applied: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MOVE_HOVER_ACK:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -19727,7 +19729,7 @@ class SMSG_TRIGGER_CINEMATIC:
     cinematic_sequence_id: CinematicSequenceId
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_TRIGGER_CINEMATIC:
         # cinematic_sequence_id: CinematicSequenceId
         cinematic_sequence_id = CinematicSequenceId(await read_int(reader, 4))
 
@@ -19758,7 +19760,7 @@ class SMSG_TRIGGER_CINEMATIC:
 class CMSG_NEXT_CINEMATIC_CAMERA:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_NEXT_CINEMATIC_CAMERA:
         return CMSG_NEXT_CINEMATIC_CAMERA()
 
     def write_encrypted_client(
@@ -19782,7 +19784,7 @@ class CMSG_NEXT_CINEMATIC_CAMERA:
 class CMSG_COMPLETE_CINEMATIC:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_COMPLETE_CINEMATIC:
         return CMSG_COMPLETE_CINEMATIC()
 
     def write_encrypted_client(
@@ -19807,7 +19809,7 @@ class SMSG_TUTORIAL_FLAGS:
     tutorial_data: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_TUTORIAL_FLAGS:
         # tutorial_data: u32[8]
         tutorial_data = []
         for _ in range(0, 8):
@@ -19841,7 +19843,7 @@ class CMSG_TUTORIAL_FLAG:
     tutorial_flag: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_TUTORIAL_FLAG:
         # tutorial_flag: u32
         tutorial_flag = await read_int(reader, 4)
 
@@ -19872,7 +19874,7 @@ class CMSG_TUTORIAL_FLAG:
 class CMSG_TUTORIAL_CLEAR:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_TUTORIAL_CLEAR:
         return CMSG_TUTORIAL_CLEAR()
 
     def write_encrypted_client(
@@ -19896,7 +19898,7 @@ class CMSG_TUTORIAL_CLEAR:
 class CMSG_TUTORIAL_RESET:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_TUTORIAL_RESET:
         return CMSG_TUTORIAL_RESET()
 
     def write_encrypted_client(
@@ -19921,7 +19923,7 @@ class CMSG_STANDSTATECHANGE:
     animation_state: UnitStandState
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_STANDSTATECHANGE:
         # animation_state: UnitStandState
         animation_state = UnitStandState(await read_int(reader, 4))
 
@@ -19953,7 +19955,7 @@ class CMSG_EMOTE:
     emote: Emote
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_EMOTE:
         # emote: Emote
         emote = Emote(await read_int(reader, 4))
 
@@ -19986,7 +19988,7 @@ class SMSG_EMOTE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_EMOTE:
         # emote: Emote
         emote = Emote(await read_int(reader, 4))
 
@@ -20024,7 +20026,7 @@ class CMSG_TEXT_EMOTE:
     target: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_TEXT_EMOTE:
         # text_emote: TextEmote
         text_emote = TextEmote(await read_int(reader, 4))
 
@@ -20067,7 +20069,7 @@ class SMSG_TEXT_EMOTE:
     name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_TEXT_EMOTE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -20114,7 +20116,7 @@ class CMSG_AUTOSTORE_LOOT_ITEM:
     item_slot: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AUTOSTORE_LOOT_ITEM:
         # item_slot: u8
         item_slot = await read_int(reader, 1)
 
@@ -20147,7 +20149,7 @@ class CMSG_AUTOEQUIP_ITEM:
     source_slot: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AUTOEQUIP_ITEM:
         # source_bag: u8
         source_bag = await read_int(reader, 1)
 
@@ -20185,7 +20187,7 @@ class CMSG_AUTOSTORE_BAG_ITEM:
     destination_bag: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AUTOSTORE_BAG_ITEM:
         # source_bag: u8
         source_bag = await read_int(reader, 1)
 
@@ -20228,7 +20230,7 @@ class CMSG_SWAP_ITEM:
     source_slot: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SWAP_ITEM:
         # destination_bag: u8
         destination_bag = await read_int(reader, 1)
 
@@ -20273,7 +20275,7 @@ class CMSG_SWAP_INV_ITEM:
     destination_slot: ItemSlot
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SWAP_INV_ITEM:
         # source_slot: ItemSlot
         source_slot = ItemSlot(await read_int(reader, 1))
 
@@ -20313,7 +20315,7 @@ class CMSG_SPLIT_ITEM:
     amount: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SPLIT_ITEM:
         # source_bag: u8
         source_bag = await read_int(reader, 1)
 
@@ -20362,7 +20364,7 @@ class CMSG_AUTOEQUIP_ITEM_SLOT:
     destination_slot: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AUTOEQUIP_ITEM_SLOT:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -20403,7 +20405,7 @@ class CMSG_DESTROYITEM:
     unknown3: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_DESTROYITEM:
         # bag: u8
         bag = await read_int(reader, 1)
 
@@ -20459,7 +20461,7 @@ class SMSG_INVENTORY_CHANGE_FAILURE:
     bag_type_subclass: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_INVENTORY_CHANGE_FAILURE:
         required_level = None
         item1 = None
         item2 = None
@@ -20530,7 +20532,7 @@ class SMSG_OPEN_CONTAINER:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_OPEN_CONTAINER:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -20562,7 +20564,7 @@ class CMSG_INSPECT:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_INSPECT:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -20594,7 +20596,7 @@ class SMSG_INSPECT:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_INSPECT:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -20626,7 +20628,7 @@ class CMSG_INITIATE_TRADE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_INITIATE_TRADE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -20657,7 +20659,7 @@ class CMSG_INITIATE_TRADE:
 class CMSG_BEGIN_TRADE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BEGIN_TRADE:
         return CMSG_BEGIN_TRADE()
 
     def write_encrypted_client(
@@ -20681,7 +20683,7 @@ class CMSG_BEGIN_TRADE:
 class CMSG_BUSY_TRADE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BUSY_TRADE:
         return CMSG_BUSY_TRADE()
 
     def write_encrypted_client(
@@ -20705,7 +20707,7 @@ class CMSG_BUSY_TRADE:
 class CMSG_IGNORE_TRADE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_IGNORE_TRADE:
         return CMSG_IGNORE_TRADE()
 
     def write_encrypted_client(
@@ -20730,7 +20732,7 @@ class CMSG_ACCEPT_TRADE:
     unknown1: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_ACCEPT_TRADE:
         # unknown1: u32
         unknown1 = await read_int(reader, 4)
 
@@ -20761,7 +20763,7 @@ class CMSG_ACCEPT_TRADE:
 class CMSG_UNACCEPT_TRADE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_UNACCEPT_TRADE:
         return CMSG_UNACCEPT_TRADE()
 
     def write_encrypted_client(
@@ -20785,7 +20787,7 @@ class CMSG_UNACCEPT_TRADE:
 class CMSG_CANCEL_TRADE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CANCEL_TRADE:
         return CMSG_CANCEL_TRADE()
 
     def write_encrypted_client(
@@ -20812,7 +20814,7 @@ class CMSG_SET_TRADE_ITEM:
     slot: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SET_TRADE_ITEM:
         # trade_slot: u8
         trade_slot = await read_int(reader, 1)
 
@@ -20852,7 +20854,7 @@ class CMSG_CLEAR_TRADE_ITEM:
     trade_slot: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CLEAR_TRADE_ITEM:
         # trade_slot: u8
         trade_slot = await read_int(reader, 1)
 
@@ -20884,7 +20886,7 @@ class CMSG_SET_TRADE_GOLD:
     gold: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SET_TRADE_GOLD:
         # gold: Gold
         gold = await read_int(reader, 4)
 
@@ -20921,7 +20923,7 @@ class SMSG_TRADE_STATUS:
     slot: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_TRADE_STATUS:
         unknown1 = None
         inventory_result = None
         target_error = None
@@ -21007,7 +21009,7 @@ class SMSG_TRADE_STATUS_EXTENDED:
     trade_slots: typing.List[TradeSlot]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_TRADE_STATUS_EXTENDED:
         # self_player: Bool8
         self_player = await read_bool(reader, 1)
 
@@ -21065,7 +21067,7 @@ class SMSG_INITIALIZE_FACTIONS:
     factions: typing.List[FactionInitializer]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_INITIALIZE_FACTIONS:
         # amount_of_factions: u32
         amount_of_factions = await read_int(reader, 4)
 
@@ -21109,7 +21111,7 @@ class SMSG_SET_FACTION_VISIBLE:
     faction: Faction
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SET_FACTION_VISIBLE:
         # faction: Faction
         faction = Faction(await read_int(reader, 2))
 
@@ -21141,7 +21143,7 @@ class SMSG_SET_FACTION_STANDING:
     faction_standings: typing.List[FactionStanding]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SET_FACTION_STANDING:
         # amount_of_faction_standings: u32
         amount_of_faction_standings = await read_int(reader, 4)
 
@@ -21186,7 +21188,7 @@ class CMSG_SET_FACTION_ATWAR:
     flags: FactionFlag
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SET_FACTION_ATWAR:
         # faction: Faction
         faction = Faction(await read_int(reader, 2))
 
@@ -21223,7 +21225,7 @@ class SMSG_SET_PROFICIENCY:
     item_sub_class_mask: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SET_PROFICIENCY:
         # class_type: ItemClass
         class_type = ItemClass(await read_int(reader, 1))
 
@@ -21262,7 +21264,7 @@ class CMSG_SET_ACTION_BUTTON:
     action_type: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SET_ACTION_BUTTON:
         # button: u8
         button = await read_int(reader, 1)
 
@@ -21306,7 +21308,7 @@ class SMSG_ACTION_BUTTONS:
     data: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ACTION_BUTTONS:
         # data: u32[120]
         data = []
         for _ in range(0, 120):
@@ -21342,7 +21344,7 @@ class SMSG_INITIAL_SPELLS:
     cooldowns: typing.List[CooldownSpell]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_INITIAL_SPELLS:
         # unknown1: u8
         unknown1 = await read_int(reader, 1)
 
@@ -21407,7 +21409,7 @@ class SMSG_LEARNED_SPELL:
     id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LEARNED_SPELL:
         # id: u32
         id = await read_int(reader, 4)
 
@@ -21440,7 +21442,7 @@ class SMSG_SUPERCEDED_SPELL:
     old_spell_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SUPERCEDED_SPELL:
         # new_spell_id: u16
         new_spell_id = await read_int(reader, 2)
 
@@ -21477,7 +21479,7 @@ class CMSG_CAST_SPELL:
     targets: SpellCastTargets
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CAST_SPELL:
         # spell: u32
         spell = await read_int(reader, 4)
 
@@ -21519,7 +21521,7 @@ class CMSG_CANCEL_CAST:
     id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CANCEL_CAST:
         # id: u32
         id = await read_int(reader, 4)
 
@@ -21558,7 +21560,7 @@ class SMSG_CAST_RESULT:
     equipped_item_inventory_type_mask: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CAST_RESULT:
         reason = None
         required_spell_focus = None
         area = None
@@ -21663,7 +21665,7 @@ class SMSG_SPELL_START:
     ammo_inventory_type: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELL_START:
         ammo_display_id = None
         ammo_inventory_type = None
         # cast_item: PackedGuid
@@ -21764,7 +21766,7 @@ class SMSG_SPELL_GO:
     ammo_inventory_type: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELL_GO:
         ammo_display_id = None
         ammo_inventory_type = None
         # cast_item: PackedGuid
@@ -21885,7 +21887,7 @@ class SMSG_SPELL_FAILURE:
     result: SpellCastResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELL_FAILURE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -21926,7 +21928,7 @@ class SMSG_SPELL_COOLDOWN:
     cooldowns: typing.List[SpellCooldownStatus]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELL_COOLDOWN:
         _size = 0
 
         # guid: Guid
@@ -21976,7 +21978,7 @@ class SMSG_COOLDOWN_EVENT:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_COOLDOWN_EVENT:
         # id: u32
         id = await read_int(reader, 4)
 
@@ -22012,7 +22014,7 @@ class CMSG_CANCEL_AURA:
     id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CANCEL_AURA:
         # id: u32
         id = await read_int(reader, 4)
 
@@ -22045,7 +22047,7 @@ class SMSG_UPDATE_AURA_DURATION:
     aura_duration: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_UPDATE_AURA_DURATION:
         # aura_slot: u8
         aura_slot = await read_int(reader, 1)
 
@@ -22083,7 +22085,7 @@ class SMSG_PET_CAST_FAILED:
     result: SpellCastResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PET_CAST_FAILED:
         # id: u32
         id = await read_int(reader, 4)
 
@@ -22124,7 +22126,7 @@ class MSG_CHANNEL_START_Server:
     duration: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_CHANNEL_START_Server:
         # spell: u32
         spell = await read_int(reader, 4)
 
@@ -22160,7 +22162,7 @@ class MSG_CHANNEL_UPDATE_Server:
     time: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_CHANNEL_UPDATE_Server:
         # time: u32
         time = await read_int(reader, 4)
 
@@ -22192,7 +22194,7 @@ class CMSG_CANCEL_CHANNELLING:
     id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CANCEL_CHANNELLING:
         # id: u32
         id = await read_int(reader, 4)
 
@@ -22225,7 +22227,7 @@ class SMSG_AI_REACTION:
     reaction: AiReaction
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_AI_REACTION:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -22261,7 +22263,7 @@ class CMSG_SET_SELECTION:
     target: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SET_SELECTION:
         # target: Guid
         target = await read_int(reader, 8)
 
@@ -22293,7 +22295,7 @@ class CMSG_SET_TARGET_OBSOLETE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SET_TARGET_OBSOLETE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -22325,7 +22327,7 @@ class CMSG_ATTACKSWING:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_ATTACKSWING:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -22356,7 +22358,7 @@ class CMSG_ATTACKSWING:
 class CMSG_ATTACKSTOP:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_ATTACKSTOP:
         return CMSG_ATTACKSTOP()
 
     def write_encrypted_client(
@@ -22382,7 +22384,7 @@ class SMSG_ATTACKSTART:
     victim: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ATTACKSTART:
         # attacker: Guid
         attacker = await read_int(reader, 8)
 
@@ -22420,7 +22422,7 @@ class SMSG_ATTACKSTOP:
     unknown1: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ATTACKSTOP:
         # player: PackedGuid
         player = await read_packed_guid(reader)
 
@@ -22470,7 +22472,7 @@ class SMSG_ATTACKSTOP:
 class SMSG_ATTACKSWING_NOTINRANGE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ATTACKSWING_NOTINRANGE:
         return SMSG_ATTACKSWING_NOTINRANGE()
 
     def write_encrypted_server(
@@ -22494,7 +22496,7 @@ class SMSG_ATTACKSWING_NOTINRANGE:
 class SMSG_ATTACKSWING_BADFACING:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ATTACKSWING_BADFACING:
         return SMSG_ATTACKSWING_BADFACING()
 
     def write_encrypted_server(
@@ -22518,7 +22520,7 @@ class SMSG_ATTACKSWING_BADFACING:
 class SMSG_ATTACKSWING_NOTSTANDING:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ATTACKSWING_NOTSTANDING:
         return SMSG_ATTACKSWING_NOTSTANDING()
 
     def write_encrypted_server(
@@ -22542,7 +22544,7 @@ class SMSG_ATTACKSWING_NOTSTANDING:
 class SMSG_ATTACKSWING_DEADTARGET:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ATTACKSWING_DEADTARGET:
         return SMSG_ATTACKSWING_DEADTARGET()
 
     def write_encrypted_server(
@@ -22566,7 +22568,7 @@ class SMSG_ATTACKSWING_DEADTARGET:
 class SMSG_ATTACKSWING_CANT_ATTACK:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ATTACKSWING_CANT_ATTACK:
         return SMSG_ATTACKSWING_CANT_ATTACK()
 
     def write_encrypted_server(
@@ -22599,7 +22601,7 @@ class SMSG_ATTACKERSTATEUPDATE:
     blocked_amount: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ATTACKERSTATEUPDATE:
         # hit_info: HitInfo
         hit_info = HitInfo(await read_int(reader, 4))
 
@@ -22704,7 +22706,7 @@ class SMSG_ATTACKERSTATEUPDATE:
 class SMSG_CANCEL_COMBAT:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CANCEL_COMBAT:
         return SMSG_CANCEL_COMBAT()
 
     def write_encrypted_server(
@@ -22733,7 +22735,7 @@ class SMSG_SPELLHEALLOG:
     critical: bool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELLHEALLOG:
         # victim: PackedGuid
         victim = await read_packed_guid(reader)
 
@@ -22804,7 +22806,7 @@ class SMSG_SPELLENERGIZELOG:
     damage: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELLENERGIZELOG:
         # victim: PackedGuid
         victim = await read_packed_guid(reader)
 
@@ -22873,7 +22875,7 @@ class SMSG_BINDPOINTUPDATE:
     area: Area
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_BINDPOINTUPDATE:
         # position: Vector3d
         position = await Vector3d.read(reader)
 
@@ -22923,7 +22925,7 @@ class SMSG_PLAYERBOUND:
     area: Area
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PLAYERBOUND:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -22960,7 +22962,7 @@ class SMSG_CLIENT_CONTROL_UPDATE:
     allow_movement: bool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CLIENT_CONTROL_UPDATE:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -23003,7 +23005,7 @@ class SMSG_CLIENT_CONTROL_UPDATE:
 class CMSG_REPOP_REQUEST:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_REPOP_REQUEST:
         return CMSG_REPOP_REQUEST()
 
     def write_encrypted_client(
@@ -23030,7 +23032,7 @@ class SMSG_RESURRECT_REQUEST:
     player: bool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_RESURRECT_REQUEST:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -23074,7 +23076,7 @@ class CMSG_RESURRECT_RESPONSE:
     status: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_RESURRECT_RESPONSE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -23110,7 +23112,7 @@ class CMSG_LOOT:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_LOOT:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -23141,7 +23143,7 @@ class CMSG_LOOT:
 class CMSG_LOOT_MONEY:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_LOOT_MONEY:
         return CMSG_LOOT_MONEY()
 
     def write_encrypted_client(
@@ -23166,7 +23168,7 @@ class CMSG_LOOT_RELEASE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_LOOT_RELEASE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -23202,7 +23204,7 @@ class SMSG_LOOT_RESPONSE:
     loot_error: typing.Optional[LootMethodError] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOOT_RESPONSE:
         loot_error = None
         # guid: Guid
         guid = await read_int(reader, 8)
@@ -23281,7 +23283,7 @@ class SMSG_LOOT_RELEASE_RESPONSE:
     unknown1: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOOT_RELEASE_RESPONSE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -23317,7 +23319,7 @@ class SMSG_LOOT_REMOVED:
     slot: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOOT_REMOVED:
         # slot: u8
         slot = await read_int(reader, 1)
 
@@ -23349,7 +23351,7 @@ class SMSG_LOOT_MONEY_NOTIFY:
     amount: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOOT_MONEY_NOTIFY:
         # amount: u32
         amount = await read_int(reader, 4)
 
@@ -23380,7 +23382,7 @@ class SMSG_LOOT_MONEY_NOTIFY:
 class SMSG_LOOT_CLEAR_MONEY:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOOT_CLEAR_MONEY:
         return SMSG_LOOT_CLEAR_MONEY()
 
     def write_encrypted_server(
@@ -23414,7 +23416,7 @@ class SMSG_ITEM_PUSH_RESULT:
     item_count: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ITEM_PUSH_RESULT:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -23483,7 +23485,7 @@ class SMSG_DUEL_REQUESTED:
     target: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_DUEL_REQUESTED:
         # initiator: Guid
         initiator = await read_int(reader, 8)
 
@@ -23518,7 +23520,7 @@ class SMSG_DUEL_REQUESTED:
 class SMSG_DUEL_OUTOFBOUNDS:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_DUEL_OUTOFBOUNDS:
         return SMSG_DUEL_OUTOFBOUNDS()
 
     def write_encrypted_server(
@@ -23542,7 +23544,7 @@ class SMSG_DUEL_OUTOFBOUNDS:
 class SMSG_DUEL_INBOUNDS:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_DUEL_INBOUNDS:
         return SMSG_DUEL_INBOUNDS()
 
     def write_encrypted_server(
@@ -23567,7 +23569,7 @@ class SMSG_DUEL_COMPLETE:
     ended_without_interruption: bool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_DUEL_COMPLETE:
         # ended_without_interruption: Bool8
         ended_without_interruption = await read_bool(reader, 1)
 
@@ -23601,7 +23603,7 @@ class SMSG_DUEL_WINNER:
     initiator_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_DUEL_WINNER:
         # reason: DuelWinnerReason
         reason = DuelWinnerReason(await read_int(reader, 1))
 
@@ -23644,7 +23646,7 @@ class CMSG_DUEL_ACCEPTED:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_DUEL_ACCEPTED:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -23676,7 +23678,7 @@ class CMSG_DUEL_CANCELLED:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_DUEL_CANCELLED:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -23708,7 +23710,7 @@ class SMSG_MOUNTRESULT:
     result: MountResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MOUNTRESULT:
         # result: MountResult
         result = MountResult(await read_int(reader, 4))
 
@@ -23740,7 +23742,7 @@ class SMSG_DISMOUNTRESULT:
     result: DismountResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_DISMOUNTRESULT:
         # result: DismountResult
         result = DismountResult(await read_int(reader, 4))
 
@@ -23771,7 +23773,7 @@ class SMSG_DISMOUNTRESULT:
 class CMSG_MOUNTSPECIAL_ANIM:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MOUNTSPECIAL_ANIM:
         return CMSG_MOUNTSPECIAL_ANIM()
 
     def write_encrypted_client(
@@ -23796,7 +23798,7 @@ class SMSG_MOUNTSPECIAL_ANIM:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MOUNTSPECIAL_ANIM:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -23828,7 +23830,7 @@ class SMSG_PET_TAME_FAILURE:
     reason: PetTameFailureReason
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PET_TAME_FAILURE:
         # reason: PetTameFailureReason
         reason = PetTameFailureReason(await read_int(reader, 1))
 
@@ -23864,7 +23866,7 @@ class CMSG_PET_SET_ACTION:
     data2: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PET_SET_ACTION:
         position2 = None
         data2 = None
         _size = 0
@@ -23938,7 +23940,7 @@ class CMSG_PET_ACTION:
     target: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PET_ACTION:
         # pet: Guid
         pet = await read_int(reader, 8)
 
@@ -23978,7 +23980,7 @@ class CMSG_PET_ABANDON:
     pet: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PET_ABANDON:
         # pet: Guid
         pet = await read_int(reader, 8)
 
@@ -24011,7 +24013,7 @@ class CMSG_PET_RENAME:
     name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PET_RENAME:
         # pet: Guid
         pet = await read_int(reader, 8)
 
@@ -24049,7 +24051,7 @@ class CMSG_PET_RENAME:
 class SMSG_PET_NAME_INVALID:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PET_NAME_INVALID:
         return SMSG_PET_NAME_INVALID()
 
     def write_encrypted_server(
@@ -24082,7 +24084,7 @@ class SMSG_PET_SPELLS:
     cooldowns: typing.Optional[typing.List[PetSpellCooldown]] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PET_SPELLS:
         duration = None
         react = None
         command = None
@@ -24204,7 +24206,7 @@ class SMSG_PET_MODE:
     pet_enabled: PetEnabled
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PET_MODE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -24252,7 +24254,7 @@ class CMSG_GOSSIP_HELLO:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GOSSIP_HELLO:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -24286,7 +24288,7 @@ class CMSG_GOSSIP_SELECT_OPTION:
     code: typing.Optional[str] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GOSSIP_SELECT_OPTION:
         code = None
         _size = 0
 
@@ -24350,7 +24352,7 @@ class SMSG_GOSSIP_MESSAGE:
     quests: typing.List[QuestItem]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GOSSIP_MESSAGE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -24418,7 +24420,7 @@ class SMSG_GOSSIP_MESSAGE:
 class SMSG_GOSSIP_COMPLETE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GOSSIP_COMPLETE:
         return SMSG_GOSSIP_COMPLETE()
 
     def write_encrypted_server(
@@ -24444,7 +24446,7 @@ class CMSG_NPC_TEXT_QUERY:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_NPC_TEXT_QUERY:
         # text_id: u32
         text_id = await read_int(reader, 4)
 
@@ -24481,7 +24483,7 @@ class SMSG_NPC_TEXT_UPDATE:
     texts: typing.List[NpcTextUpdate]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_NPC_TEXT_UPDATE:
         # text_id: u32
         text_id = await read_int(reader, 4)
 
@@ -24526,7 +24528,7 @@ class CMSG_QUESTGIVER_STATUS_QUERY:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_QUESTGIVER_STATUS_QUERY:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -24559,7 +24561,7 @@ class SMSG_QUESTGIVER_STATUS:
     status: QuestGiverStatus
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUESTGIVER_STATUS:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -24595,7 +24597,7 @@ class CMSG_QUESTGIVER_HELLO:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_QUESTGIVER_HELLO:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -24631,7 +24633,7 @@ class SMSG_QUESTGIVER_QUEST_LIST:
     quest_items: typing.List[QuestItem]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUESTGIVER_QUEST_LIST:
         # npc: Guid
         npc = await read_int(reader, 8)
 
@@ -24692,7 +24694,7 @@ class CMSG_QUESTGIVER_QUERY_QUEST:
     quest_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_QUESTGIVER_QUERY_QUEST:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -24727,7 +24729,7 @@ class CMSG_QUESTGIVER_QUERY_QUEST:
 class CMSG_QUESTGIVER_QUEST_AUTOLAUNCH:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_QUESTGIVER_QUEST_AUTOLAUNCH:
         return CMSG_QUESTGIVER_QUEST_AUTOLAUNCH()
 
     def write_encrypted_client(
@@ -24762,7 +24764,7 @@ class SMSG_QUESTGIVER_QUEST_DETAILS:
     emotes: typing.List[QuestDetailsEmote]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUESTGIVER_QUEST_DETAILS:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -24881,7 +24883,7 @@ class CMSG_QUESTGIVER_ACCEPT_QUEST:
     quest_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_QUESTGIVER_ACCEPT_QUEST:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -24918,7 +24920,7 @@ class CMSG_QUESTGIVER_COMPLETE_QUEST:
     quest_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_QUESTGIVER_COMPLETE_QUEST:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -24966,7 +24968,7 @@ class SMSG_QUESTGIVER_REQUEST_ITEMS:
     flags3: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUESTGIVER_REQUEST_ITEMS:
         # npc: Guid
         npc = await read_int(reader, 8)
 
@@ -25075,7 +25077,7 @@ class CMSG_QUESTGIVER_REQUEST_REWARD:
     quest_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_QUESTGIVER_REQUEST_REWARD:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -25121,7 +25123,7 @@ class SMSG_QUESTGIVER_OFFER_REWARD:
     reward_spell_cast: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUESTGIVER_OFFER_REWARD:
         # npc: Guid
         npc = await read_int(reader, 8)
 
@@ -25245,7 +25247,7 @@ class CMSG_QUESTGIVER_CHOOSE_REWARD:
     reward: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_QUESTGIVER_CHOOSE_REWARD:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -25285,7 +25287,7 @@ class SMSG_QUESTGIVER_QUEST_INVALID:
     msg: QuestFailedReason
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUESTGIVER_QUEST_INVALID:
         # msg: QuestFailedReason
         msg = QuestFailedReason(await read_int(reader, 4))
 
@@ -25316,7 +25318,7 @@ class SMSG_QUESTGIVER_QUEST_INVALID:
 class CMSG_QUESTGIVER_CANCEL:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_QUESTGIVER_CANCEL:
         return CMSG_QUESTGIVER_CANCEL()
 
     def write_encrypted_client(
@@ -25345,7 +25347,7 @@ class SMSG_QUESTGIVER_QUEST_COMPLETE:
     item_rewards: typing.List[QuestItemReward]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUESTGIVER_QUEST_COMPLETE:
         # quest_id: u32
         quest_id = await read_int(reader, 4)
 
@@ -25406,7 +25408,7 @@ class SMSG_QUESTGIVER_QUEST_FAILED:
     reason: QuestFailedReason
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUESTGIVER_QUEST_FAILED:
         # quest_id: u32
         quest_id = await read_int(reader, 4)
 
@@ -25443,7 +25445,7 @@ class CMSG_QUESTLOG_SWAP_QUEST:
     slot2: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_QUESTLOG_SWAP_QUEST:
         # slot1: u8
         slot1 = await read_int(reader, 1)
 
@@ -25479,7 +25481,7 @@ class CMSG_QUESTLOG_REMOVE_QUEST:
     slot: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_QUESTLOG_REMOVE_QUEST:
         # slot: u8
         slot = await read_int(reader, 1)
 
@@ -25510,7 +25512,7 @@ class CMSG_QUESTLOG_REMOVE_QUEST:
 class SMSG_QUESTLOG_FULL:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUESTLOG_FULL:
         return SMSG_QUESTLOG_FULL()
 
     def write_encrypted_server(
@@ -25535,7 +25537,7 @@ class SMSG_QUESTUPDATE_FAILED:
     quest_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUESTUPDATE_FAILED:
         # quest_id: u32
         quest_id = await read_int(reader, 4)
 
@@ -25567,7 +25569,7 @@ class SMSG_QUESTUPDATE_FAILEDTIMER:
     quest_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUESTUPDATE_FAILEDTIMER:
         # quest_id: u32
         quest_id = await read_int(reader, 4)
 
@@ -25599,7 +25601,7 @@ class SMSG_QUESTUPDATE_COMPLETE:
     quest_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUESTUPDATE_COMPLETE:
         # quest_id: u32
         quest_id = await read_int(reader, 4)
 
@@ -25635,7 +25637,7 @@ class SMSG_QUESTUPDATE_ADD_KILL:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUESTUPDATE_ADD_KILL:
         # quest_id: u32
         quest_id = await read_int(reader, 4)
 
@@ -25684,7 +25686,7 @@ class SMSG_QUESTUPDATE_ADD_ITEM:
     items_required: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUESTUPDATE_ADD_ITEM:
         # required_item_id: u32
         required_item_id = await read_int(reader, 4)
 
@@ -25720,7 +25722,7 @@ class CMSG_QUEST_CONFIRM_ACCEPT:
     quest_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_QUEST_CONFIRM_ACCEPT:
         # quest_id: u32
         quest_id = await read_int(reader, 4)
 
@@ -25754,7 +25756,7 @@ class SMSG_QUEST_CONFIRM_ACCEPT:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUEST_CONFIRM_ACCEPT:
         # quest_id: u32
         quest_id = await read_int(reader, 4)
 
@@ -25797,7 +25799,7 @@ class CMSG_PUSHQUESTTOPARTY:
     quest_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PUSHQUESTTOPARTY:
         # quest_id: u32
         quest_id = await read_int(reader, 4)
 
@@ -25829,7 +25831,7 @@ class CMSG_LIST_INVENTORY:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_LIST_INVENTORY:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -25862,7 +25864,7 @@ class SMSG_LIST_INVENTORY:
     items: typing.List[ListInventoryItem]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LIST_INVENTORY:
         # vendor: Guid
         vendor = await read_int(reader, 8)
 
@@ -25912,7 +25914,7 @@ class CMSG_SELL_ITEM:
     amount: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SELL_ITEM:
         # vendor: Guid
         vendor = await read_int(reader, 8)
 
@@ -25954,7 +25956,7 @@ class SMSG_SELL_ITEM:
     result: SellItemResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SELL_ITEM:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -25997,7 +25999,7 @@ class CMSG_BUY_ITEM:
     unknown1: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BUY_ITEM:
         # vendor: Guid
         vendor = await read_int(reader, 8)
 
@@ -26045,7 +26047,7 @@ class CMSG_BUY_ITEM_IN_SLOT:
     amount: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BUY_ITEM_IN_SLOT:
         # vendor: Guid
         vendor = await read_int(reader, 8)
 
@@ -26096,7 +26098,7 @@ class SMSG_BUY_ITEM:
     amount_bought: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_BUY_ITEM:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26142,7 +26144,7 @@ class SMSG_BUY_FAILED:
     result: BuyResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_BUY_FAILED:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26185,7 +26187,7 @@ class SMSG_SHOWTAXINODES:
     nodes: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SHOWTAXINODES:
         _size = 0
 
         # unknown1: u32
@@ -26240,7 +26242,7 @@ class CMSG_TAXINODE_STATUS_QUERY:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_TAXINODE_STATUS_QUERY:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26273,7 +26275,7 @@ class SMSG_TAXINODE_STATUS:
     taxi_mask_node_known: bool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_TAXINODE_STATUS:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26309,7 +26311,7 @@ class CMSG_TAXIQUERYAVAILABLENODES:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_TAXIQUERYAVAILABLENODES:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26343,7 +26345,7 @@ class CMSG_ACTIVATETAXI:
     destination_node: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_ACTIVATETAXI:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26383,7 +26385,7 @@ class SMSG_ACTIVATETAXIREPLY:
     reply: ActivateTaxiReply
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ACTIVATETAXIREPLY:
         # reply: ActivateTaxiReply
         reply = ActivateTaxiReply(await read_int(reader, 4))
 
@@ -26414,7 +26416,7 @@ class SMSG_ACTIVATETAXIREPLY:
 class SMSG_NEW_TAXI_PATH:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_NEW_TAXI_PATH:
         return SMSG_NEW_TAXI_PATH()
 
     def write_encrypted_server(
@@ -26439,7 +26441,7 @@ class CMSG_TRAINER_LIST:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_TRAINER_LIST:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26474,7 +26476,7 @@ class SMSG_TRAINER_LIST:
     greeting: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_TRAINER_LIST:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26535,7 +26537,7 @@ class CMSG_TRAINER_BUY_SPELL:
     id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_TRAINER_BUY_SPELL:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26572,7 +26574,7 @@ class SMSG_TRAINER_BUY_SUCCEEDED:
     id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_TRAINER_BUY_SUCCEEDED:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26610,7 +26612,7 @@ class SMSG_TRAINER_BUY_FAILED:
     error: TrainingFailureReason
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_TRAINER_BUY_FAILED:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26650,7 +26652,7 @@ class CMSG_BINDER_ACTIVATE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BINDER_ACTIVATE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26682,7 +26684,7 @@ class CMSG_BANKER_ACTIVATE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BANKER_ACTIVATE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26714,7 +26716,7 @@ class SMSG_SHOW_BANK:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SHOW_BANK:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26746,7 +26748,7 @@ class CMSG_BUY_BANK_SLOT:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BUY_BANK_SLOT:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26778,7 +26780,7 @@ class SMSG_BUY_BANK_SLOT_RESULT:
     result: BuyBankSlotResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_BUY_BANK_SLOT_RESULT:
         # result: BuyBankSlotResult
         result = BuyBankSlotResult(await read_int(reader, 4))
 
@@ -26810,7 +26812,7 @@ class CMSG_PETITION_SHOWLIST:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PETITION_SHOWLIST:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -26843,7 +26845,7 @@ class SMSG_PETITION_SHOWLIST:
     petitions: typing.List[PetitionShowlist]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PETITION_SHOWLIST:
         # npc: Guid
         npc = await read_int(reader, 8)
 
@@ -26908,7 +26910,7 @@ class CMSG_PETITION_BUY:
     unknown15: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PETITION_BUY:
         # npc: Guid
         npc = await read_int(reader, 8)
 
@@ -27011,7 +27013,7 @@ class CMSG_PETITION_SHOW_SIGNATURES:
     item: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PETITION_SHOW_SIGNATURES:
         # item: Guid
         item = await read_int(reader, 8)
 
@@ -27046,7 +27048,7 @@ class SMSG_PETITION_SHOW_SIGNATURES:
     signatures: typing.List[PetitionSignature]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PETITION_SHOW_SIGNATURES:
         # item: Guid
         item = await read_int(reader, 8)
 
@@ -27103,7 +27105,7 @@ class CMSG_PETITION_SIGN:
     unknown1: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PETITION_SIGN:
         # petition: Guid
         petition = await read_int(reader, 8)
 
@@ -27141,7 +27143,7 @@ class SMSG_PETITION_SIGN_RESULTS:
     result: PetitionResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PETITION_SIGN_RESULTS:
         # petition: Guid
         petition = await read_int(reader, 8)
 
@@ -27181,7 +27183,7 @@ class MSG_PETITION_DECLINE:
     petition: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_PETITION_DECLINE:
         # petition: Guid
         petition = await read_int(reader, 8)
 
@@ -27232,7 +27234,7 @@ class CMSG_OFFER_PETITION:
     target: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_OFFER_PETITION:
         # petition: Guid
         petition = await read_int(reader, 8)
 
@@ -27268,7 +27270,7 @@ class CMSG_TURN_IN_PETITION:
     petition: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_TURN_IN_PETITION:
         # petition: Guid
         petition = await read_int(reader, 8)
 
@@ -27300,7 +27302,7 @@ class SMSG_TURN_IN_PETITION_RESULTS:
     result: PetitionResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_TURN_IN_PETITION_RESULTS:
         # result: PetitionResult
         result = PetitionResult(await read_int(reader, 4))
 
@@ -27333,7 +27335,7 @@ class CMSG_PETITION_QUERY:
     petition: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PETITION_QUERY:
         # guild_id: u32
         guild_id = await read_int(reader, 4)
 
@@ -27385,7 +27387,7 @@ class SMSG_PETITION_QUERY_RESPONSE:
     number_of_choices: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PETITION_QUERY_RESPONSE:
         # petition_id: u32
         petition_id = await read_int(reader, 4)
 
@@ -27483,7 +27485,7 @@ class SMSG_PETITION_QUERY_RESPONSE:
 class SMSG_FISH_NOT_HOOKED:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_FISH_NOT_HOOKED:
         return SMSG_FISH_NOT_HOOKED()
 
     def write_encrypted_server(
@@ -27507,7 +27509,7 @@ class SMSG_FISH_NOT_HOOKED:
 class SMSG_FISH_ESCAPED:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_FISH_ESCAPED:
         return SMSG_FISH_ESCAPED()
 
     def write_encrypted_server(
@@ -27534,7 +27536,7 @@ class CMSG_BUG:
     bug_type: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BUG:
         # suggestion: u32
         suggestion = await read_int(reader, 4)
 
@@ -27577,7 +27579,7 @@ class SMSG_NOTIFICATION:
     notification: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_NOTIFICATION:
         # notification: CString
         notification = await read_cstring(reader)
 
@@ -27611,7 +27613,7 @@ class SMSG_NOTIFICATION:
 class CMSG_PLAYED_TIME:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PLAYED_TIME:
         return CMSG_PLAYED_TIME()
 
     def write_encrypted_client(
@@ -27637,7 +27639,7 @@ class SMSG_PLAYED_TIME:
     level_played_time: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PLAYED_TIME:
         # total_played_time: u32
         total_played_time = await read_int(reader, 4)
 
@@ -27672,7 +27674,7 @@ class SMSG_PLAYED_TIME:
 class CMSG_QUERY_TIME:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_QUERY_TIME:
         return CMSG_QUERY_TIME()
 
     def write_encrypted_client(
@@ -27697,7 +27699,7 @@ class SMSG_QUERY_TIME_RESPONSE:
     time: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_QUERY_TIME_RESPONSE:
         # time: u32
         time = await read_int(reader, 4)
 
@@ -27733,7 +27735,7 @@ class SMSG_LOG_XPGAIN:
     exp_group_bonus: typing.Optional[float] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOG_XPGAIN:
         experience_without_rested = None
         exp_group_bonus = None
         # target: Guid
@@ -27795,7 +27797,7 @@ class CMSG_RECLAIM_CORPSE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_RECLAIM_CORPSE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -27830,7 +27832,7 @@ class CMSG_WRAP_ITEM:
     item_slot: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_WRAP_ITEM:
         # gift_bag_index: u8
         gift_bag_index = await read_int(reader, 1)
 
@@ -27885,7 +27887,7 @@ class SMSG_LEVELUP_INFO:
     spirit: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LEVELUP_INFO:
         # new_level: Level32
         new_level = await read_int(reader, 4)
 
@@ -27962,7 +27964,7 @@ class MSG_MINIMAP_PING_Client:
     position_y: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MINIMAP_PING_Client:
         # position_x: f32
         position_x = await read_float(reader)
 
@@ -28000,7 +28002,7 @@ class MSG_MINIMAP_PING_Server:
     position_y: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MINIMAP_PING_Server:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -28046,7 +28048,7 @@ class SMSG_RESISTLOG:
     unknown5: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_RESISTLOG:
         # guid1: Guid
         guid1 = await read_int(reader, 8)
 
@@ -28106,7 +28108,7 @@ class SMSG_ENCHANTMENTLOG:
     show_affiliation: bool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ENCHANTMENTLOG:
         # target: Guid
         target = await read_int(reader, 8)
 
@@ -28159,7 +28161,7 @@ class SMSG_START_MIRROR_TIMER:
     id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_START_MIRROR_TIMER:
         # timer: TimerType
         timer = TimerType(await read_int(reader, 4))
 
@@ -28212,7 +28214,7 @@ class SMSG_PAUSE_MIRROR_TIMER:
     is_frozen: bool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PAUSE_MIRROR_TIMER:
         # timer: TimerType
         timer = TimerType(await read_int(reader, 4))
 
@@ -28248,7 +28250,7 @@ class SMSG_STOP_MIRROR_TIMER:
     timer: TimerType
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_STOP_MIRROR_TIMER:
         # timer: TimerType
         timer = TimerType(await read_int(reader, 4))
 
@@ -28281,7 +28283,7 @@ class CMSG_PING:
     round_time_in_ms: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PING:
         # sequence_id: u32
         sequence_id = await read_int(reader, 4)
 
@@ -28317,7 +28319,7 @@ class SMSG_PONG:
     sequence_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PONG:
         # sequence_id: u32
         sequence_id = await read_int(reader, 4)
 
@@ -28350,7 +28352,7 @@ class SMSG_CLEAR_COOLDOWN:
     target: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CLEAR_COOLDOWN:
         # id: u32
         id = await read_int(reader, 4)
 
@@ -28386,7 +28388,7 @@ class SMSG_GAMEOBJECT_PAGETEXT:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GAMEOBJECT_PAGETEXT:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -28418,7 +28420,7 @@ class CMSG_SETSHEATHED:
     sheathed: SheathState
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SETSHEATHED:
         # sheathed: SheathState
         sheathed = SheathState(await read_int(reader, 4))
 
@@ -28451,7 +28453,7 @@ class SMSG_SPELL_DELAYED:
     delay_time: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELL_DELAYED:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -28488,7 +28490,7 @@ class SMSG_ITEM_TIME_UPDATE:
     duration: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ITEM_TIME_UPDATE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -28527,7 +28529,7 @@ class SMSG_ITEM_ENCHANT_TIME_UPDATE:
     player: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ITEM_ENCHANT_TIME_UPDATE:
         # item: Guid
         item = await read_int(reader, 8)
 
@@ -28571,7 +28573,7 @@ class SMSG_AUTH_CHALLENGE:
     server_seed: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_AUTH_CHALLENGE:
         # server_seed: u32
         server_seed = await read_int(reader, 4)
 
@@ -28606,7 +28608,7 @@ class CMSG_AUTH_SESSION:
     addon_info: typing.List[AddonInfo]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AUTH_SESSION:
         _size = 0
 
         # build: u32
@@ -28724,7 +28726,7 @@ class SMSG_AUTH_RESPONSE:
     queue_position: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_AUTH_RESPONSE:
         billing_time = None
         billing_flags = None
         billing_rested = None
@@ -28796,7 +28798,7 @@ class CMSG_PET_CAST_SPELL:
     targets: SpellCastTargets
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PET_CAST_SPELL:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -28842,7 +28844,7 @@ class MSG_SAVE_GUILD_EMBLEM_Server:
     result: GuildEmblemResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_SAVE_GUILD_EMBLEM_Server:
         # result: GuildEmblemResult
         result = GuildEmblemResult(await read_int(reader, 4))
 
@@ -28879,7 +28881,7 @@ class MSG_SAVE_GUILD_EMBLEM_Client:
     background_color: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_SAVE_GUILD_EMBLEM_Client:
         # vendor: Guid
         vendor = await read_int(reader, 8)
 
@@ -28931,7 +28933,7 @@ class MSG_TABARDVENDOR_ACTIVATE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_TABARDVENDOR_ACTIVATE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -28982,7 +28984,7 @@ class SMSG_PLAY_SPELL_VISUAL:
     spell_art_kit: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PLAY_SPELL_VISUAL:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -29018,7 +29020,7 @@ class CMSG_ZONEUPDATE:
     area: Area
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_ZONEUPDATE:
         # area: Area
         area = Area(await read_int(reader, 4))
 
@@ -29051,7 +29053,7 @@ class SMSG_PARTYKILLLOG:
     victim: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PARTYKILLLOG:
         # player_with_killing_blow: Guid
         player_with_killing_blow = await read_int(reader, 8)
 
@@ -29088,7 +29090,7 @@ class SMSG_COMPRESSED_UPDATE_OBJECT:
     objects: typing.List[Object]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_COMPRESSED_UPDATE_OBJECT:
         decompressed_size = await read_int(reader, 4)
         compressed_bytes = await reader.readexactly(body_size - 4)
         decompressed_bytes = zlib.decompress(compressed_bytes, bufsize=decompressed_size)
@@ -29174,7 +29176,7 @@ class SMSG_PLAY_SPELL_IMPACT:
     spell_visual_kit: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PLAY_SPELL_IMPACT:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -29211,7 +29213,7 @@ class SMSG_EXPLORATION_EXPERIENCE:
     experience: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_EXPLORATION_EXPERIENCE:
         # area: Area
         area = Area(await read_int(reader, 4))
 
@@ -29248,7 +29250,7 @@ class MSG_RANDOM_ROLL_Client:
     maximum: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_RANDOM_ROLL_Client:
         # minimum: u32
         minimum = await read_int(reader, 4)
 
@@ -29287,7 +29289,7 @@ class MSG_RANDOM_ROLL_Server:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_RANDOM_ROLL_Server:
         # minimum: u32
         minimum = await read_int(reader, 4)
 
@@ -29335,7 +29337,7 @@ class SMSG_ENVIRONMENTAL_DAMAGE_LOG:
     resist: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ENVIRONMENTAL_DAMAGE_LOG:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -29382,7 +29384,7 @@ class SMSG_ENVIRONMENTAL_DAMAGE_LOG:
 class MSG_LOOKING_FOR_GROUP_Client:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_LOOKING_FOR_GROUP_Client:
         return MSG_LOOKING_FOR_GROUP_Client()
 
     def write_encrypted_client(
@@ -29407,7 +29409,7 @@ class MSG_LOOKING_FOR_GROUP_Server:
     unknown1: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_LOOKING_FOR_GROUP_Server:
         # unknown1: u32
         unknown1 = await read_int(reader, 4)
 
@@ -29439,7 +29441,7 @@ class CMSG_UNLEARN_SKILL:
     skill: Skill
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_UNLEARN_SKILL:
         # skill: Skill
         skill = Skill(await read_int(reader, 4))
 
@@ -29471,7 +29473,7 @@ class SMSG_REMOVED_SPELL:
     spell: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_REMOVED_SPELL:
         # spell: u16
         spell = await read_int(reader, 2)
 
@@ -29509,7 +29511,7 @@ class CMSG_GMTICKET_CREATE:
     compressed_chat_data: typing.Optional[typing.List[int]] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GMTICKET_CREATE:
         chat_data_line_count = None
         compressed_chat_data = None
         _size = 0
@@ -29649,7 +29651,7 @@ class SMSG_GMTICKET_CREATE:
     response: GmTicketResponse
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GMTICKET_CREATE:
         # response: GmTicketResponse
         response = GmTicketResponse(await read_int(reader, 4))
 
@@ -29682,7 +29684,7 @@ class CMSG_GMTICKET_UPDATETEXT:
     message: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GMTICKET_UPDATETEXT:
         # ticket_type: GmTicketType
         ticket_type = GmTicketType(await read_int(reader, 1))
 
@@ -29721,7 +29723,7 @@ class SMSG_GMTICKET_UPDATETEXT:
     response: GmTicketResponse
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GMTICKET_UPDATETEXT:
         # response: GmTicketResponse
         response = GmTicketResponse(await read_int(reader, 4))
 
@@ -29753,7 +29755,7 @@ class SMSG_ACCOUNT_DATA_TIMES:
     data: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ACCOUNT_DATA_TIMES:
         # data: u32[32]
         data = []
         for _ in range(0, 32):
@@ -29787,7 +29789,7 @@ class CMSG_REQUEST_ACCOUNT_DATA:
     data_type: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_REQUEST_ACCOUNT_DATA:
         # data_type: u32
         data_type = await read_int(reader, 4)
 
@@ -29820,7 +29822,7 @@ class CMSG_UPDATE_ACCOUNT_DATA:
     compressed_data: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_UPDATE_ACCOUNT_DATA:
         _size = 0
 
         # data_type: AccountDataType
@@ -29913,7 +29915,7 @@ class CMSG_UPDATE_ACCOUNT_DATA:
 class CMSG_GMTICKET_GETTICKET:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GMTICKET_GETTICKET:
         return CMSG_GMTICKET_GETTICKET()
 
     def write_encrypted_client(
@@ -29945,7 +29947,7 @@ class SMSG_GMTICKET_GETTICKET:
     read_by_gm: typing.Optional[bool] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GMTICKET_GETTICKET:
         text = None
         ticket_type = None
         days_since_ticket_creation = None
@@ -30024,7 +30026,7 @@ class SMSG_GAMEOBJECT_SPAWN_ANIM:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GAMEOBJECT_SPAWN_ANIM:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -30056,7 +30058,7 @@ class SMSG_GAMEOBJECT_DESPAWN_ANIM:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GAMEOBJECT_DESPAWN_ANIM:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -30087,7 +30089,7 @@ class SMSG_GAMEOBJECT_DESPAWN_ANIM:
 class MSG_CORPSE_QUERY_Client:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_CORPSE_QUERY_Client:
         return MSG_CORPSE_QUERY_Client()
 
     def write_encrypted_client(
@@ -30115,7 +30117,7 @@ class MSG_CORPSE_QUERY_Server:
     corpse_map: typing.Optional[Map] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_CORPSE_QUERY_Server:
         map = None
         position = None
         corpse_map = None
@@ -30180,7 +30182,7 @@ class MSG_CORPSE_QUERY_Server:
 class CMSG_GMTICKET_DELETETICKET:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GMTICKET_DELETETICKET:
         return CMSG_GMTICKET_DELETETICKET()
 
     def write_encrypted_client(
@@ -30205,7 +30207,7 @@ class SMSG_GMTICKET_DELETETICKET:
     response: GmTicketResponse
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GMTICKET_DELETETICKET:
         # response: GmTicketResponse
         response = GmTicketResponse(await read_int(reader, 4))
 
@@ -30236,7 +30238,7 @@ class SMSG_GMTICKET_DELETETICKET:
 class SMSG_CHAT_WRONG_FACTION:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CHAT_WRONG_FACTION:
         return SMSG_CHAT_WRONG_FACTION()
 
     def write_encrypted_server(
@@ -30260,7 +30262,7 @@ class SMSG_CHAT_WRONG_FACTION:
 class CMSG_GMTICKET_SYSTEMSTATUS:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GMTICKET_SYSTEMSTATUS:
         return CMSG_GMTICKET_SYSTEMSTATUS()
 
     def write_encrypted_client(
@@ -30285,7 +30287,7 @@ class SMSG_GMTICKET_SYSTEMSTATUS:
     will_accept_tickets: GmTicketQueueStatus
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GMTICKET_SYSTEMSTATUS:
         # will_accept_tickets: GmTicketQueueStatus
         will_accept_tickets = GmTicketQueueStatus(await read_int(reader, 4))
 
@@ -30317,7 +30319,7 @@ class CMSG_SPIRIT_HEALER_ACTIVATE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SPIRIT_HEALER_ACTIVATE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -30349,7 +30351,7 @@ class SMSG_SET_REST_START:
     unknown1: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SET_REST_START:
         # unknown1: u32
         unknown1 = await read_int(reader, 4)
 
@@ -30381,7 +30383,7 @@ class SMSG_SPIRIT_HEALER_CONFIRM:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPIRIT_HEALER_CONFIRM:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -30417,7 +30419,7 @@ class SMSG_GOSSIP_POI:
     location_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GOSSIP_POI:
         # flags: u32
         flags = await read_int(reader, 4)
 
@@ -30483,7 +30485,7 @@ class CMSG_CHAT_IGNORED:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHAT_IGNORED:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -30517,7 +30519,7 @@ class CMSG_GUILD_RANK:
     rank_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_RANK:
         # rank_id: u32
         rank_id = await read_int(reader, 4)
 
@@ -30560,7 +30562,7 @@ class CMSG_GUILD_ADD_RANK:
     rank_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_ADD_RANK:
         # rank_name: CString
         rank_name = await read_cstring(reader)
 
@@ -30594,7 +30596,7 @@ class CMSG_GUILD_ADD_RANK:
 class CMSG_GUILD_DEL_RANK:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_DEL_RANK:
         return CMSG_GUILD_DEL_RANK()
 
     def write_encrypted_client(
@@ -30620,7 +30622,7 @@ class CMSG_GUILD_SET_PUBLIC_NOTE:
     note: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_SET_PUBLIC_NOTE:
         # player_name: CString
         player_name = await read_cstring(reader)
 
@@ -30660,7 +30662,7 @@ class CMSG_GUILD_SET_OFFICER_NOTE:
     note: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_SET_OFFICER_NOTE:
         # player_name: CString
         player_name = await read_cstring(reader)
 
@@ -30701,7 +30703,7 @@ class SMSG_LOGIN_VERIFY_WORLD:
     orientation: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOGIN_VERIFY_WORLD:
         # map: Map
         map = Map(await read_int(reader, 4))
 
@@ -30758,7 +30760,7 @@ class CMSG_SEND_MAIL:
     unknown4: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SEND_MAIL:
         # mailbox: Guid
         mailbox = await read_int(reader, 8)
 
@@ -30840,7 +30842,7 @@ class SMSG_SEND_MAIL_RESULT:
     equip_error2: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SEND_MAIL_RESULT:
         result = None
         equip_error = None
         item = None
@@ -30946,7 +30948,7 @@ class CMSG_GET_MAIL_LIST:
     mailbox: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GET_MAIL_LIST:
         # mailbox: Guid
         mailbox = await read_int(reader, 8)
 
@@ -30978,7 +30980,7 @@ class SMSG_MAIL_LIST_RESULT:
     mails: typing.List[Mail]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MAIL_LIST_RESULT:
         # amount_of_mails: u8
         amount_of_mails = await read_int(reader, 1)
 
@@ -31022,7 +31024,7 @@ class CMSG_BATTLEFIELD_LIST:
     map: Map
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BATTLEFIELD_LIST:
         # map: Map
         map = Map(await read_int(reader, 4))
 
@@ -31057,7 +31059,7 @@ class SMSG_BATTLEFIELD_LIST:
     battlegrounds: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_BATTLEFIELD_LIST:
         # battlemaster: Guid
         battlemaster = await read_int(reader, 8)
 
@@ -31109,7 +31111,7 @@ class CMSG_BATTLEFIELD_JOIN:
     map: Map
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BATTLEFIELD_JOIN:
         # map: Map
         map = Map(await read_int(reader, 4))
 
@@ -31143,7 +31145,7 @@ class CMSG_ITEM_TEXT_QUERY:
     unknown1: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_ITEM_TEXT_QUERY:
         # item_text_id: u32
         item_text_id = await read_int(reader, 4)
 
@@ -31184,7 +31186,7 @@ class SMSG_ITEM_TEXT_QUERY_RESPONSE:
     text: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ITEM_TEXT_QUERY_RESPONSE:
         # item_text_id: u32
         item_text_id = await read_int(reader, 4)
 
@@ -31224,7 +31226,7 @@ class CMSG_MAIL_TAKE_MONEY:
     mail_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MAIL_TAKE_MONEY:
         # mailbox: Guid
         mailbox = await read_int(reader, 8)
 
@@ -31261,7 +31263,7 @@ class CMSG_MAIL_TAKE_ITEM:
     mail_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MAIL_TAKE_ITEM:
         # mailbox: Guid
         mailbox = await read_int(reader, 8)
 
@@ -31298,7 +31300,7 @@ class CMSG_MAIL_MARK_AS_READ:
     mail_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MAIL_MARK_AS_READ:
         # mailbox: Guid
         mailbox = await read_int(reader, 8)
 
@@ -31335,7 +31337,7 @@ class CMSG_MAIL_RETURN_TO_SENDER:
     mail_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MAIL_RETURN_TO_SENDER:
         # mailbox_id: Guid
         mailbox_id = await read_int(reader, 8)
 
@@ -31372,7 +31374,7 @@ class CMSG_MAIL_DELETE:
     mail_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MAIL_DELETE:
         # mailbox_id: Guid
         mailbox_id = await read_int(reader, 8)
 
@@ -31410,7 +31412,7 @@ class CMSG_MAIL_CREATE_TEXT_ITEM:
     mail_template_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MAIL_CREATE_TEXT_ITEM:
         # mailbox: Guid
         mailbox = await read_int(reader, 8)
 
@@ -31453,7 +31455,7 @@ class SMSG_SPELLLOGMISS:
     targets: typing.List[SpellLogMiss]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELLLOGMISS:
         # id: u32
         id = await read_int(reader, 4)
 
@@ -31511,7 +31513,7 @@ class SMSG_SPELLLOGEXECUTE:
     logs: typing.List[SpellLog]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELLLOGEXECUTE:
         # caster: PackedGuid
         caster = await read_packed_guid(reader)
 
@@ -31575,7 +31577,7 @@ class SMSG_PERIODICAURALOG:
     auras: typing.List[AuraLog]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PERIODICAURALOG:
         # target: PackedGuid
         target = await read_packed_guid(reader)
 
@@ -31646,7 +31648,7 @@ class SMSG_SPELLDAMAGESHIELD:
     school: SpellSchool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELLDAMAGESHIELD:
         # victim: Guid
         victim = await read_int(reader, 8)
 
@@ -31701,7 +31703,7 @@ class SMSG_SPELLNONMELEEDAMAGELOG:
     extend_flag: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELLNONMELEEDAMAGELOG:
         # target: PackedGuid
         target = await read_packed_guid(reader)
 
@@ -31825,7 +31827,7 @@ class CMSG_LEARN_TALENT:
     requested_rank: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_LEARN_TALENT:
         # talent: Talent
         talent = Talent(await read_int(reader, 4))
 
@@ -31861,7 +31863,7 @@ class CMSG_TOGGLE_PVP:
     enable_pvp: typing.Optional[bool] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_TOGGLE_PVP:
         enable_pvp = None
         _size = 0
 
@@ -31910,7 +31912,7 @@ class SMSG_ZONE_UNDER_ATTACK:
     zone_id: Area
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ZONE_UNDER_ATTACK:
         # zone_id: Area
         zone_id = Area(await read_int(reader, 4))
 
@@ -31942,7 +31944,7 @@ class MSG_AUCTION_HELLO_Client:
     auctioneer: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_AUCTION_HELLO_Client:
         # auctioneer: Guid
         auctioneer = await read_int(reader, 8)
 
@@ -31975,7 +31977,7 @@ class MSG_AUCTION_HELLO_Server:
     auction_house: AuctionHouse
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_AUCTION_HELLO_Server:
         # auctioneer: Guid
         auctioneer = await read_int(reader, 8)
 
@@ -32015,7 +32017,7 @@ class CMSG_AUCTION_SELL_ITEM:
     auction_duration_in_minutes: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AUCTION_SELL_ITEM:
         # auctioneer: Guid
         auctioneer = await read_int(reader, 8)
 
@@ -32064,7 +32066,7 @@ class CMSG_AUCTION_REMOVE_ITEM:
     auction_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AUCTION_REMOVE_ITEM:
         # auctioneer: Guid
         auctioneer = await read_int(reader, 8)
 
@@ -32109,7 +32111,7 @@ class CMSG_AUCTION_LIST_ITEMS:
     usable: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AUCTION_LIST_ITEMS:
         # auctioneer: Guid
         auctioneer = await read_int(reader, 8)
 
@@ -32181,7 +32183,7 @@ class CMSG_AUCTION_LIST_OWNER_ITEMS:
     list_from: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AUCTION_LIST_OWNER_ITEMS:
         # auctioneer: Guid
         auctioneer = await read_int(reader, 8)
 
@@ -32219,7 +32221,7 @@ class CMSG_AUCTION_PLACE_BID:
     price: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AUCTION_PLACE_BID:
         # auctioneer: Guid
         auctioneer = await read_int(reader, 8)
 
@@ -32271,7 +32273,7 @@ class SMSG_AUCTION_COMMAND_RESULT:
     auction_outbid3: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_AUCTION_COMMAND_RESULT:
         result = None
         auction_outbid1 = None
         inventory_result = None
@@ -32415,7 +32417,7 @@ class SMSG_AUCTION_LIST_RESULT:
     total_amount_of_auctions: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_AUCTION_LIST_RESULT:
         # count: u32
         count = await read_int(reader, 4)
 
@@ -32468,7 +32470,7 @@ class SMSG_AUCTION_OWNER_LIST_RESULT:
     total_amount_of_auctions: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_AUCTION_OWNER_LIST_RESULT:
         # count: u32
         count = await read_int(reader, 4)
 
@@ -32526,7 +32528,7 @@ class SMSG_AUCTION_BIDDER_NOTIFICATION:
     item_random_property_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_AUCTION_BIDDER_NOTIFICATION:
         # auction_house: AuctionHouse
         auction_house = AuctionHouse(await read_int(reader, 4))
 
@@ -32587,7 +32589,7 @@ class SMSG_AUCTION_OWNER_NOTIFICATION:
     item_random_property_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_AUCTION_OWNER_NOTIFICATION:
         # auction_id: u32
         auction_id = await read_int(reader, 4)
 
@@ -32642,7 +32644,7 @@ class SMSG_PROCRESIST:
     log_format: LogFormat
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PROCRESIST:
         # caster: Guid
         caster = await read_int(reader, 8)
 
@@ -32688,7 +32690,7 @@ class SMSG_DISPEL_FAILED:
     spells: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_DISPEL_FAILED:
         _size = 0
 
         # caster: Guid
@@ -32741,7 +32743,7 @@ class SMSG_SPELLORDAMAGE_IMMUNE:
     debug_log_format: bool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELLORDAMAGE_IMMUNE:
         # caster: Guid
         caster = await read_int(reader, 8)
 
@@ -32787,7 +32789,7 @@ class CMSG_AUCTION_LIST_BIDDER_ITEMS:
     outbid_item_ids: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AUCTION_LIST_BIDDER_ITEMS:
         # auctioneer: Guid
         auctioneer = await read_int(reader, 8)
 
@@ -32836,7 +32838,7 @@ class SMSG_AUCTION_BIDDER_LIST_RESULT:
     total_amount_of_auctions: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_AUCTION_BIDDER_LIST_RESULT:
         # count: u32
         count = await read_int(reader, 4)
 
@@ -32890,7 +32892,7 @@ class SMSG_SET_FLAT_SPELL_MODIFIER:
     value: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SET_FLAT_SPELL_MODIFIER:
         # eff: u8
         eff = await read_int(reader, 1)
 
@@ -32932,7 +32934,7 @@ class SMSG_SET_PCT_SPELL_MODIFIER:
     value: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SET_PCT_SPELL_MODIFIER:
         # eff: u8
         eff = await read_int(reader, 1)
 
@@ -32972,7 +32974,7 @@ class CMSG_SET_AMMO:
     item: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SET_AMMO:
         # item: u32
         item = await read_int(reader, 4)
 
@@ -33004,7 +33006,7 @@ class SMSG_CORPSE_RECLAIM_DELAY:
     delay: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CORPSE_RECLAIM_DELAY:
         # delay: Seconds
         delay = await read_int(reader, 4)
 
@@ -33036,7 +33038,7 @@ class CMSG_SET_ACTIVE_MOVER:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SET_ACTIVE_MOVER:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -33069,7 +33071,7 @@ class CMSG_PET_CANCEL_AURA:
     id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PET_CANCEL_AURA:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -33104,7 +33106,7 @@ class CMSG_PET_CANCEL_AURA:
 class CMSG_CANCEL_AUTO_REPEAT_SPELL:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CANCEL_AUTO_REPEAT_SPELL:
         return CMSG_CANCEL_AUTO_REPEAT_SPELL()
 
     def write_encrypted_client(
@@ -33129,7 +33131,7 @@ class MSG_LIST_STABLED_PETS_Client:
     npc: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_LIST_STABLED_PETS_Client:
         # npc: Guid
         npc = await read_int(reader, 8)
 
@@ -33163,7 +33165,7 @@ class MSG_LIST_STABLED_PETS_Server:
     pets: typing.List[StabledPet]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_LIST_STABLED_PETS_Server:
         # npc: Guid
         npc = await read_int(reader, 8)
 
@@ -33215,7 +33217,7 @@ class CMSG_STABLE_PET:
     stable_master: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_STABLE_PET:
         # stable_master: Guid
         stable_master = await read_int(reader, 8)
 
@@ -33248,7 +33250,7 @@ class CMSG_UNSTABLE_PET:
     pet_number: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_UNSTABLE_PET:
         # stable_master: Guid
         stable_master = await read_int(reader, 8)
 
@@ -33284,7 +33286,7 @@ class CMSG_BUY_STABLE_SLOT:
     npc: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BUY_STABLE_SLOT:
         # npc: Guid
         npc = await read_int(reader, 8)
 
@@ -33316,7 +33318,7 @@ class SMSG_STABLE_RESULT:
     result: StableResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_STABLE_RESULT:
         # result: StableResult
         result = StableResult(await read_int(reader, 1))
 
@@ -33349,7 +33351,7 @@ class CMSG_STABLE_SWAP_PET:
     pet_slot: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_STABLE_SWAP_PET:
         # npc: Guid
         npc = await read_int(reader, 8)
 
@@ -33386,7 +33388,7 @@ class MSG_QUEST_PUSH_RESULT:
     message: QuestPartyMessage
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_QUEST_PUSH_RESULT:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -33440,7 +33442,7 @@ class SMSG_PLAY_MUSIC:
     sound_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PLAY_MUSIC:
         # sound_id: u32
         sound_id = await read_int(reader, 4)
 
@@ -33473,7 +33475,7 @@ class SMSG_PLAY_OBJECT_SOUND:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PLAY_OBJECT_SOUND:
         # sound_id: u32
         sound_id = await read_int(reader, 4)
 
@@ -33508,7 +33510,7 @@ class SMSG_PLAY_OBJECT_SOUND:
 class CMSG_REQUEST_PET_INFO:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_REQUEST_PET_INFO:
         return CMSG_REQUEST_PET_INFO()
 
     def write_encrypted_client(
@@ -33533,7 +33535,7 @@ class CMSG_FAR_SIGHT:
     operation: FarSightOperation
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_FAR_SIGHT:
         # operation: FarSightOperation
         operation = FarSightOperation(await read_int(reader, 1))
 
@@ -33567,7 +33569,7 @@ class SMSG_SPELLDISPELLOG:
     spells: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELLDISPELLOG:
         # victim: PackedGuid
         victim = await read_packed_guid(reader)
 
@@ -33628,7 +33630,7 @@ class CMSG_GROUP_CHANGE_SUB_GROUP:
     group_number: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GROUP_CHANGE_SUB_GROUP:
         # name: CString
         name = await read_cstring(reader)
 
@@ -33667,7 +33669,7 @@ class CMSG_REQUEST_PARTY_MEMBER_STATS:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_REQUEST_PARTY_MEMBER_STATS:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -33700,7 +33702,7 @@ class CMSG_GROUP_SWAP_SUB_GROUP:
     swap_with_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GROUP_SWAP_SUB_GROUP:
         # name: CString
         name = await read_cstring(reader)
 
@@ -33740,7 +33742,7 @@ class CMSG_AUTOSTORE_BANK_ITEM:
     slot_index: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AUTOSTORE_BANK_ITEM:
         # bag_index: u8
         bag_index = await read_int(reader, 1)
 
@@ -33777,7 +33779,7 @@ class CMSG_AUTOBANK_ITEM:
     slot_index: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AUTOBANK_ITEM:
         # bag_index: u8
         bag_index = await read_int(reader, 1)
 
@@ -33813,7 +33815,7 @@ class MSG_QUERY_NEXT_MAIL_TIME_Server:
     unread_mails: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_QUERY_NEXT_MAIL_TIME_Server:
         # unread_mails: f32
         unread_mails = await read_float(reader)
 
@@ -33844,7 +33846,7 @@ class MSG_QUERY_NEXT_MAIL_TIME_Server:
 class MSG_QUERY_NEXT_MAIL_TIME_Client:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_QUERY_NEXT_MAIL_TIME_Client:
         return MSG_QUERY_NEXT_MAIL_TIME_Client()
 
     def write_encrypted_client(
@@ -33869,7 +33871,7 @@ class SMSG_RECEIVED_MAIL:
     unknown1: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_RECEIVED_MAIL:
         # unknown1: u32
         unknown1 = await read_int(reader, 4)
 
@@ -33902,7 +33904,7 @@ class SMSG_RAID_GROUP_ONLY:
     error: RaidGroupError
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_RAID_GROUP_ONLY:
         # homebind_timer: u32
         homebind_timer = await read_int(reader, 4)
 
@@ -33940,7 +33942,7 @@ class SMSG_PVP_CREDIT:
     rank: PvpRank
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PVP_CREDIT:
         # honor_points: u32
         honor_points = await read_int(reader, 4)
 
@@ -33982,7 +33984,7 @@ class SMSG_AUCTION_REMOVED_NOTIFICATION:
     random_property_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_AUCTION_REMOVED_NOTIFICATION:
         # item: u32
         item = await read_int(reader, 4)
 
@@ -34021,7 +34023,7 @@ class SMSG_AUCTION_REMOVED_NOTIFICATION:
 class CMSG_GROUP_RAID_CONVERT:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GROUP_RAID_CONVERT:
         return CMSG_GROUP_RAID_CONVERT()
 
     def write_encrypted_client(
@@ -34047,7 +34049,7 @@ class CMSG_GROUP_ASSISTANT_LEADER:
     set_assistant: bool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GROUP_ASSISTANT_LEADER:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -34084,7 +34086,7 @@ class CMSG_BUYBACK_ITEM:
     slot: BuybackSlot
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BUYBACK_ITEM:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -34121,7 +34123,7 @@ class SMSG_SERVER_MESSAGE:
     message: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SERVER_MESSAGE:
         # message_type: ServerMessageType
         message_type = ServerMessageType(await read_int(reader, 4))
 
@@ -34160,7 +34162,7 @@ class CMSG_MEETINGSTONE_JOIN:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MEETINGSTONE_JOIN:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -34191,7 +34193,7 @@ class CMSG_MEETINGSTONE_JOIN:
 class CMSG_MEETINGSTONE_LEAVE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MEETINGSTONE_LEAVE:
         return CMSG_MEETINGSTONE_LEAVE()
 
     def write_encrypted_client(
@@ -34217,7 +34219,7 @@ class SMSG_MEETINGSTONE_SETQUEUE:
     status: MeetingStoneStatus
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MEETINGSTONE_SETQUEUE:
         # area: Area
         area = Area(await read_int(reader, 4))
 
@@ -34252,7 +34254,7 @@ class SMSG_MEETINGSTONE_SETQUEUE:
 class CMSG_MEETINGSTONE_INFO:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MEETINGSTONE_INFO:
         return CMSG_MEETINGSTONE_INFO()
 
     def write_encrypted_client(
@@ -34276,7 +34278,7 @@ class CMSG_MEETINGSTONE_INFO:
 class SMSG_MEETINGSTONE_COMPLETE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MEETINGSTONE_COMPLETE:
         return SMSG_MEETINGSTONE_COMPLETE()
 
     def write_encrypted_server(
@@ -34300,7 +34302,7 @@ class SMSG_MEETINGSTONE_COMPLETE:
 class SMSG_MEETINGSTONE_IN_PROGRESS:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MEETINGSTONE_IN_PROGRESS:
         return SMSG_MEETINGSTONE_IN_PROGRESS()
 
     def write_encrypted_server(
@@ -34325,7 +34327,7 @@ class SMSG_MEETINGSTONE_MEMBER_ADDED:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MEETINGSTONE_MEMBER_ADDED:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -34356,7 +34358,7 @@ class SMSG_MEETINGSTONE_MEMBER_ADDED:
 class CMSG_CANCEL_GROWTH_AURA:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CANCEL_GROWTH_AURA:
         return CMSG_CANCEL_GROWTH_AURA()
 
     def write_encrypted_client(
@@ -34380,7 +34382,7 @@ class CMSG_CANCEL_GROWTH_AURA:
 class SMSG_CANCEL_AUTO_REPEAT:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CANCEL_AUTO_REPEAT:
         return SMSG_CANCEL_AUTO_REPEAT()
 
     def write_encrypted_server(
@@ -34405,7 +34407,7 @@ class SMSG_STANDSTATE_UPDATE:
     state: UnitStandState
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_STANDSTATE_UPDATE:
         # state: UnitStandState
         state = UnitStandState(await read_int(reader, 1))
 
@@ -34441,7 +34443,7 @@ class SMSG_LOOT_ALL_PASSED:
     item_random_suffix_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOOT_ALL_PASSED:
         # looted_target: Guid
         looted_target = await read_int(reader, 8)
 
@@ -34496,7 +34498,7 @@ class SMSG_LOOT_ROLL_WON:
     vote: RollVote
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOOT_ROLL_WON:
         # looted_target: Guid
         looted_target = await read_int(reader, 8)
 
@@ -34558,7 +34560,7 @@ class CMSG_LOOT_ROLL:
     vote: RollVote
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_LOOT_ROLL:
         # item: Guid
         item = await read_int(reader, 8)
 
@@ -34603,7 +34605,7 @@ class SMSG_LOOT_START_ROLL:
     countdown_time: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOOT_START_ROLL:
         # creature: Guid
         creature = await read_int(reader, 8)
 
@@ -34662,7 +34664,7 @@ class SMSG_LOOT_ROLL:
     vote: RollVote
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOOT_ROLL:
         # creature: Guid
         creature = await read_int(reader, 8)
 
@@ -34724,7 +34726,7 @@ class CMSG_LOOT_MASTER_GIVE:
     player: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_LOOT_MASTER_GIVE:
         # loot: Guid
         loot = await read_int(reader, 8)
 
@@ -34764,7 +34766,7 @@ class SMSG_LOOT_MASTER_LIST:
     guids: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LOOT_MASTER_LIST:
         # amount_of_players: u8
         amount_of_players = await read_int(reader, 1)
 
@@ -34804,7 +34806,7 @@ class SMSG_SET_FORCED_REACTIONS:
     reactions: typing.List[ForcedReaction]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SET_FORCED_REACTIONS:
         # amount_of_reactions: u32
         amount_of_reactions = await read_int(reader, 4)
 
@@ -34849,7 +34851,7 @@ class SMSG_SPELL_FAILED_OTHER:
     id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELL_FAILED_OTHER:
         # caster: Guid
         caster = await read_int(reader, 8)
 
@@ -34885,7 +34887,7 @@ class SMSG_GAMEOBJECT_RESET_STATE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GAMEOBJECT_RESET_STATE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -34918,7 +34920,7 @@ class CMSG_REPAIR_ITEM:
     item: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_REPAIR_ITEM:
         # npc: Guid
         npc = await read_int(reader, 8)
 
@@ -34954,7 +34956,7 @@ class SMSG_CHAT_PLAYER_NOT_FOUND:
     name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CHAT_PLAYER_NOT_FOUND:
         # name: CString
         name = await read_cstring(reader)
 
@@ -34989,7 +34991,7 @@ class MSG_TALENT_WIPE_CONFIRM_Client:
     wiping_npc: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_TALENT_WIPE_CONFIRM_Client:
         # wiping_npc: Guid
         wiping_npc = await read_int(reader, 8)
 
@@ -35022,7 +35024,7 @@ class MSG_TALENT_WIPE_CONFIRM_Server:
     cost_in_copper: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_TALENT_WIPE_CONFIRM_Server:
         # wiping_npc: Guid
         wiping_npc = await read_int(reader, 8)
 
@@ -35060,7 +35062,7 @@ class SMSG_SUMMON_REQUEST:
     auto_decline_time: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SUMMON_REQUEST:
         # summoner: Guid
         summoner = await read_int(reader, 8)
 
@@ -35100,7 +35102,7 @@ class CMSG_SUMMON_RESPONSE:
     summoner: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SUMMON_RESPONSE:
         # summoner: Guid
         summoner = await read_int(reader, 8)
 
@@ -35142,7 +35144,7 @@ class SMSG_MONSTER_MOVE_TRANSPORT:
     position: typing.Optional[Vector3d] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MONSTER_MOVE_TRANSPORT:
         target = None
         angle = None
         position = None
@@ -35267,7 +35269,7 @@ class SMSG_MONSTER_MOVE_TRANSPORT:
 class SMSG_PET_BROKEN:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PET_BROKEN:
         return SMSG_PET_BROKEN()
 
     def write_encrypted_server(
@@ -35293,7 +35295,7 @@ class MSG_MOVE_FEATHER_FALL_Server:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_FEATHER_FALL_Server:
         # player: PackedGuid
         player = await read_packed_guid(reader)
 
@@ -35337,7 +35339,7 @@ class MSG_MOVE_WATER_WALK:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_WATER_WALK:
         # player: PackedGuid
         player = await read_packed_guid(reader)
 
@@ -35401,7 +35403,7 @@ class MSG_MOVE_WATER_WALK:
 class CMSG_SELF_RES:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SELF_RES:
         return CMSG_SELF_RES()
 
     def write_encrypted_client(
@@ -35425,7 +35427,7 @@ class CMSG_SELF_RES:
 class SMSG_FEIGN_DEATH_RESISTED:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_FEIGN_DEATH_RESISTED:
         return SMSG_FEIGN_DEATH_RESISTED()
 
     def write_encrypted_server(
@@ -35450,7 +35452,7 @@ class SMSG_DUEL_COUNTDOWN:
     time: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_DUEL_COUNTDOWN:
         # time: Seconds
         time = await read_int(reader, 4)
 
@@ -35482,7 +35484,7 @@ class SMSG_AREA_TRIGGER_MESSAGE:
     message: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_AREA_TRIGGER_MESSAGE:
         # message: SizedCString
         message = await read_sized_cstring(reader)
 
@@ -35516,7 +35518,7 @@ class SMSG_AREA_TRIGGER_MESSAGE:
 class CMSG_TOGGLE_HELM:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_TOGGLE_HELM:
         return CMSG_TOGGLE_HELM()
 
     def write_encrypted_client(
@@ -35540,7 +35542,7 @@ class CMSG_TOGGLE_HELM:
 class CMSG_TOGGLE_CLOAK:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_TOGGLE_CLOAK:
         return CMSG_TOGGLE_CLOAK()
 
     def write_encrypted_client(
@@ -35565,7 +35567,7 @@ class SMSG_MEETINGSTONE_JOINFAILED:
     reason: MeetingStoneFailure
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MEETINGSTONE_JOINFAILED:
         # reason: MeetingStoneFailure
         reason = MeetingStoneFailure(await read_int(reader, 1))
 
@@ -35597,7 +35599,7 @@ class SMSG_PLAYER_SKINNED:
     spirit_released: bool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PLAYER_SKINNED:
         # spirit_released: Bool8
         spirit_released = await read_bool(reader, 1)
 
@@ -35628,7 +35630,7 @@ class SMSG_PLAYER_SKINNED:
 class SMSG_DURABILITY_DAMAGE_DEATH:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_DURABILITY_DAMAGE_DEATH:
         return SMSG_DURABILITY_DAMAGE_DEATH()
 
     def write_encrypted_server(
@@ -35653,7 +35655,7 @@ class CMSG_SET_ACTIONBAR_TOGGLES:
     action_bar: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SET_ACTIONBAR_TOGGLES:
         # action_bar: u8
         action_bar = await read_int(reader, 1)
 
@@ -35686,7 +35688,7 @@ class MSG_PETITION_RENAME:
     new_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_PETITION_RENAME:
         # petition: Guid
         petition = await read_int(reader, 8)
 
@@ -35745,7 +35747,7 @@ class SMSG_INIT_WORLD_STATES:
     states: typing.List[WorldState]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_INIT_WORLD_STATES:
         # map: Map
         map = Map(await read_int(reader, 4))
 
@@ -35797,7 +35799,7 @@ class SMSG_UPDATE_WORLD_STATE:
     state: WorldState
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_UPDATE_WORLD_STATE:
         # state: WorldState
         state = await WorldState.read(reader)
 
@@ -35831,7 +35833,7 @@ class CMSG_ITEM_NAME_QUERY:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_ITEM_NAME_QUERY:
         # item: u32
         item = await read_int(reader, 4)
 
@@ -35868,7 +35870,7 @@ class SMSG_ITEM_NAME_QUERY_RESPONSE:
     item_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ITEM_NAME_QUERY_RESPONSE:
         # item: u32
         item = await read_int(reader, 4)
 
@@ -35907,7 +35909,7 @@ class SMSG_PET_ACTION_FEEDBACK:
     feedback: PetFeedback
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PET_ACTION_FEEDBACK:
         # feedback: PetFeedback
         feedback = PetFeedback(await read_int(reader, 1))
 
@@ -35940,7 +35942,7 @@ class CMSG_CHAR_RENAME:
     new_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CHAR_RENAME:
         # character: Guid
         character = await read_int(reader, 8)
 
@@ -35981,7 +35983,7 @@ class SMSG_CHAR_RENAME:
     new_name: typing.Optional[str] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CHAR_RENAME:
         character = None
         new_name = None
         # result: WorldResult
@@ -36037,7 +36039,7 @@ class CMSG_MOVE_SPLINE_DONE:
     unknown1: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MOVE_SPLINE_DONE:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -36089,7 +36091,7 @@ class CMSG_MOVE_FALL_RESET:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MOVE_FALL_RESET:
         # info: MovementInfo
         info = await MovementInfo.read(reader)
 
@@ -36125,7 +36127,7 @@ class SMSG_INSTANCE_SAVE_CREATED:
     unknown: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_INSTANCE_SAVE_CREATED:
         # unknown: u32
         unknown = await read_int(reader, 4)
 
@@ -36157,7 +36159,7 @@ class SMSG_RAID_INSTANCE_INFO:
     raid_infos: typing.List[RaidInfo]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_RAID_INSTANCE_INFO:
         # amount_of_raid_infos: u32
         amount_of_raid_infos = await read_int(reader, 4)
 
@@ -36200,7 +36202,7 @@ class SMSG_RAID_INSTANCE_INFO:
 class CMSG_REQUEST_RAID_INFO:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_REQUEST_RAID_INFO:
         return CMSG_REQUEST_RAID_INFO()
 
     def write_encrypted_client(
@@ -36226,7 +36228,7 @@ class CMSG_MOVE_TIME_SKIPPED:
     lag: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MOVE_TIME_SKIPPED:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -36265,7 +36267,7 @@ class CMSG_MOVE_FEATHER_FALL_ACK:
     apply: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MOVE_FEATHER_FALL_ACK:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -36322,7 +36324,7 @@ class CMSG_MOVE_WATER_WALK_ACK:
     apply: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MOVE_WATER_WALK_ACK:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -36377,7 +36379,7 @@ class CMSG_MOVE_NOT_ACTIVE_MOVER:
     info: MovementInfo
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_MOVE_NOT_ACTIVE_MOVER:
         # old_mover: Guid
         old_mover = await read_int(reader, 8)
 
@@ -36419,7 +36421,7 @@ class SMSG_PLAY_SOUND:
     sound_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PLAY_SOUND:
         # sound_id: u32
         sound_id = await read_int(reader, 4)
 
@@ -36450,7 +36452,7 @@ class SMSG_PLAY_SOUND:
 class CMSG_BATTLEFIELD_STATUS:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BATTLEFIELD_STATUS:
         return CMSG_BATTLEFIELD_STATUS()
 
     def write_encrypted_client(
@@ -36484,7 +36486,7 @@ class SMSG_BATTLEFIELD_STATUS:
     time_to_bg_start_in_ms: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_BATTLEFIELD_STATUS:
         bracket = None
         client_instance_id = None
         status_id = None
@@ -36593,7 +36595,7 @@ class CMSG_BATTLEFIELD_PORT:
     action: BattlefieldPortAction
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BATTLEFIELD_PORT:
         # map: Map
         map = Map(await read_int(reader, 4))
 
@@ -36629,7 +36631,7 @@ class MSG_INSPECT_HONOR_STATS_Client:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_INSPECT_HONOR_STATS_Client:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -36676,7 +36678,7 @@ class MSG_INSPECT_HONOR_STATS_Server:
     rank_progress_bar: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_INSPECT_HONOR_STATS_Server:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -36768,7 +36770,7 @@ class CMSG_BATTLEMASTER_HELLO:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BATTLEMASTER_HELLO:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -36802,7 +36804,7 @@ class SMSG_FORCE_WALK_SPEED_CHANGE:
     speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_FORCE_WALK_SPEED_CHANGE:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -36857,7 +36859,7 @@ class CMSG_FORCE_WALK_SPEED_CHANGE_ACK:
     new_speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_FORCE_WALK_SPEED_CHANGE_ACK:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -36913,7 +36915,7 @@ class SMSG_FORCE_SWIM_BACK_SPEED_CHANGE:
     speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_FORCE_SWIM_BACK_SPEED_CHANGE:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -36968,7 +36970,7 @@ class CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK:
     new_speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -37024,7 +37026,7 @@ class SMSG_FORCE_TURN_RATE_CHANGE:
     speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_FORCE_TURN_RATE_CHANGE:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -37079,7 +37081,7 @@ class CMSG_FORCE_TURN_RATE_CHANGE_ACK:
     new_speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_FORCE_TURN_RATE_CHANGE_ACK:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -37132,7 +37134,7 @@ class CMSG_FORCE_TURN_RATE_CHANGE_ACK:
 class MSG_PVP_LOG_DATA_Client:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_PVP_LOG_DATA_Client:
         return MSG_PVP_LOG_DATA_Client()
 
     def write_encrypted_client(
@@ -37159,7 +37161,7 @@ class MSG_PVP_LOG_DATA_Server:
     winner: typing.Optional[BattlegroundWinner] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_PVP_LOG_DATA_Server:
         winner = None
         # status: BattlegroundEndStatus
         status = BattlegroundEndStatus(await read_int(reader, 1))
@@ -37225,7 +37227,7 @@ class CMSG_LEAVE_BATTLEFIELD:
     map: Map
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_LEAVE_BATTLEFIELD:
         # map: Map
         map = Map(await read_int(reader, 4))
 
@@ -37257,7 +37259,7 @@ class CMSG_AREA_SPIRIT_HEALER_QUERY:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AREA_SPIRIT_HEALER_QUERY:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -37289,7 +37291,7 @@ class CMSG_AREA_SPIRIT_HEALER_QUEUE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_AREA_SPIRIT_HEALER_QUEUE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -37322,7 +37324,7 @@ class SMSG_AREA_SPIRIT_HEALER_TIME:
     next_resurrect_time: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_AREA_SPIRIT_HEALER_TIME:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -37358,7 +37360,7 @@ class SMSG_WARDEN_DATA:
     encrypted_data: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_WARDEN_DATA:
         _size = 0
 
         # encrypted_data: u8[-]
@@ -37398,7 +37400,7 @@ class CMSG_WARDEN_DATA:
     encrypted_data: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_WARDEN_DATA:
         _size = 0
 
         # encrypted_data: u8[-]
@@ -37438,7 +37440,7 @@ class SMSG_GROUP_JOINED_BATTLEGROUND:
     id: BgTypeId
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GROUP_JOINED_BATTLEGROUND:
         # id: BgTypeId
         id = BgTypeId(await read_int(reader, 4))
 
@@ -37469,7 +37471,7 @@ class SMSG_GROUP_JOINED_BATTLEGROUND:
 class MSG_BATTLEGROUND_PLAYER_POSITIONS_Client:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_BATTLEGROUND_PLAYER_POSITIONS_Client:
         return MSG_BATTLEGROUND_PLAYER_POSITIONS_Client()
 
     def write_encrypted_client(
@@ -37495,7 +37497,7 @@ class MSG_BATTLEGROUND_PLAYER_POSITIONS_Server:
     carriers: typing.List[BattlegroundPlayerPosition]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_BATTLEGROUND_PLAYER_POSITIONS_Server:
         # amount_of_teammates: u32
         amount_of_teammates = await read_int(reader, 4)
 
@@ -37556,7 +37558,7 @@ class CMSG_PET_STOP_ATTACK:
     pet: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PET_STOP_ATTACK:
         # pet: Guid
         pet = await read_int(reader, 8)
 
@@ -37588,7 +37590,7 @@ class SMSG_BINDER_CONFIRM:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_BINDER_CONFIRM:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -37620,7 +37622,7 @@ class SMSG_BATTLEGROUND_PLAYER_JOINED:
     player: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_BATTLEGROUND_PLAYER_JOINED:
         # player: Guid
         player = await read_int(reader, 8)
 
@@ -37652,7 +37654,7 @@ class SMSG_BATTLEGROUND_PLAYER_LEFT:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_BATTLEGROUND_PLAYER_LEFT:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -37687,7 +37689,7 @@ class CMSG_BATTLEMASTER_JOIN:
     join_as_group: bool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_BATTLEMASTER_JOIN:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -37731,7 +37733,7 @@ class SMSG_ADDON_INFO:
     addons: typing.List[Addon]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ADDON_INFO:
         _size = 0
 
         # addons: Addon[-]
@@ -37773,7 +37775,7 @@ class CMSG_PET_UNLEARN:
     pet: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PET_UNLEARN:
         # pet: Guid
         pet = await read_int(reader, 8)
 
@@ -37806,7 +37808,7 @@ class SMSG_PET_UNLEARN_CONFIRM:
     talent_reset_cost: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PET_UNLEARN_CONFIRM:
         # pet: Guid
         pet = await read_int(reader, 8)
 
@@ -37863,7 +37865,7 @@ class SMSG_PARTY_MEMBER_STATS_FULL:
     pet_auras: typing.Optional[AuraMask] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PARTY_MEMBER_STATS_FULL:
         status = None
         current_health = None
         max_health = None
@@ -38146,7 +38148,7 @@ class CMSG_PET_SPELL_AUTOCAST:
     autocast_enabled: bool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_PET_SPELL_AUTOCAST:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -38189,7 +38191,7 @@ class SMSG_WEATHER:
     change: WeatherChangeType
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_WEATHER:
         # weather_type: WeatherType
         weather_type = WeatherType(await read_int(reader, 4))
 
@@ -38235,7 +38237,7 @@ class SMSG_RAID_INSTANCE_MESSAGE:
     time_left: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_RAID_INSTANCE_MESSAGE:
         # message_type: RaidInstanceMessage
         message_type = RaidInstanceMessage(await read_int(reader, 4))
 
@@ -38275,7 +38277,7 @@ class SMSG_COMPRESSED_MOVES:
     moves: typing.List[CompressedMove]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_COMPRESSED_MOVES:
         decompressed_size = await read_int(reader, 4)
         compressed_bytes = await reader.readexactly(body_size - 4)
         decompressed_bytes = zlib.decompress(compressed_bytes, bufsize=decompressed_size)
@@ -38346,7 +38348,7 @@ class CMSG_GUILD_INFO_TEXT:
     guild_info: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GUILD_INFO_TEXT:
         # guild_info: CString
         guild_info = await read_cstring(reader)
 
@@ -38380,7 +38382,7 @@ class CMSG_GUILD_INFO_TEXT:
 class SMSG_CHAT_RESTRICTED:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CHAT_RESTRICTED:
         return SMSG_CHAT_RESTRICTED()
 
     def write_encrypted_server(
@@ -38406,7 +38408,7 @@ class SMSG_SPLINE_SET_RUN_SPEED:
     speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_SET_RUN_SPEED:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38451,7 +38453,7 @@ class SMSG_SPLINE_SET_RUN_BACK_SPEED:
     speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_SET_RUN_BACK_SPEED:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38496,7 +38498,7 @@ class SMSG_SPLINE_SET_SWIM_SPEED:
     speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_SET_SWIM_SPEED:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38541,7 +38543,7 @@ class SMSG_SPLINE_SET_WALK_SPEED:
     speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_SET_WALK_SPEED:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38586,7 +38588,7 @@ class SMSG_SPLINE_SET_SWIM_BACK_SPEED:
     speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_SET_SWIM_BACK_SPEED:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38631,7 +38633,7 @@ class SMSG_SPLINE_SET_TURN_RATE:
     speed: float
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_SET_TURN_RATE:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38675,7 +38677,7 @@ class SMSG_SPLINE_MOVE_UNROOT:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_MOVE_UNROOT:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38711,7 +38713,7 @@ class SMSG_SPLINE_MOVE_FEATHER_FALL:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_MOVE_FEATHER_FALL:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38747,7 +38749,7 @@ class SMSG_SPLINE_MOVE_NORMAL_FALL:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_MOVE_NORMAL_FALL:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38783,7 +38785,7 @@ class SMSG_SPLINE_MOVE_SET_HOVER:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_MOVE_SET_HOVER:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38819,7 +38821,7 @@ class SMSG_SPLINE_MOVE_UNSET_HOVER:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_MOVE_UNSET_HOVER:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38855,7 +38857,7 @@ class SMSG_SPLINE_MOVE_WATER_WALK:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_MOVE_WATER_WALK:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38891,7 +38893,7 @@ class SMSG_SPLINE_MOVE_LAND_WALK:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_MOVE_LAND_WALK:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38927,7 +38929,7 @@ class SMSG_SPLINE_MOVE_START_SWIM:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_MOVE_START_SWIM:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38963,7 +38965,7 @@ class SMSG_SPLINE_MOVE_STOP_SWIM:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_MOVE_STOP_SWIM:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -38999,7 +39001,7 @@ class SMSG_SPLINE_MOVE_SET_RUN_MODE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_MOVE_SET_RUN_MODE:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -39035,7 +39037,7 @@ class SMSG_SPLINE_MOVE_SET_WALK_MODE:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_MOVE_SET_WALK_MODE:
         # guid: PackedGuid
         guid = await read_packed_guid(reader)
 
@@ -39073,7 +39075,7 @@ class CMSG_ACTIVATETAXIEXPRESS:
     nodes: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_ACTIVATETAXIEXPRESS:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -39122,7 +39124,7 @@ class CMSG_SET_FACTION_INACTIVE:
     inactive: bool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SET_FACTION_INACTIVE:
         # faction: Faction
         faction = Faction(await read_int(reader, 2))
 
@@ -39158,7 +39160,7 @@ class CMSG_SET_WATCHED_FACTION:
     faction: Faction
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SET_WATCHED_FACTION:
         # faction: Faction
         faction = Faction(await read_int(reader, 2))
 
@@ -39191,7 +39193,7 @@ class MSG_MOVE_TIME_SKIPPED_Server:
     time_skipped: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_MOVE_TIME_SKIPPED_Server:
         # player: PackedGuid
         player = await read_packed_guid(reader)
 
@@ -39235,7 +39237,7 @@ class SMSG_SPLINE_MOVE_ROOT:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPLINE_MOVE_ROOT:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -39267,7 +39269,7 @@ class SMSG_INVALIDATE_PLAYER:
     guid: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_INVALIDATE_PLAYER:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -39298,7 +39300,7 @@ class SMSG_INVALIDATE_PLAYER:
 class CMSG_RESET_INSTANCES:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_RESET_INSTANCES:
         return CMSG_RESET_INSTANCES()
 
     def write_encrypted_client(
@@ -39323,7 +39325,7 @@ class SMSG_INSTANCE_RESET:
     map: Map
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_INSTANCE_RESET:
         # map: Map
         map = Map(await read_int(reader, 4))
 
@@ -39356,7 +39358,7 @@ class SMSG_INSTANCE_RESET_FAILED:
     map: Map
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_INSTANCE_RESET_FAILED:
         # reason: InstanceResetFailedReason
         reason = InstanceResetFailedReason(await read_int(reader, 4))
 
@@ -39392,7 +39394,7 @@ class SMSG_UPDATE_LAST_INSTANCE:
     map: Map
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_UPDATE_LAST_INSTANCE:
         # map: Map
         map = Map(await read_int(reader, 4))
 
@@ -39425,7 +39427,7 @@ class MSG_RAID_TARGET_UPDATE_Client:
     target: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_RAID_TARGET_UPDATE_Client:
         target = None
         # target_index: RaidTargetIndex
         target_index = RaidTargetIndex(await read_int(reader, 1))
@@ -39476,7 +39478,7 @@ class MSG_RAID_TARGET_UPDATE_Server:
     raid_target: typing.Optional[RaidTargetUpdate] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_RAID_TARGET_UPDATE_Server:
         raid_targets = None
         raid_target = None
         # update_type: RaidTargetUpdateType
@@ -39541,7 +39543,7 @@ class MSG_RAID_READY_CHECK_Client:
     state: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_RAID_READY_CHECK_Client:
         state = None
         _size = 0
 
@@ -39591,7 +39593,7 @@ class MSG_RAID_READY_CHECK_Server:
     state: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_RAID_READY_CHECK_Server:
         guid = None
         state = None
         _size = 0
@@ -39647,7 +39649,7 @@ class SMSG_PET_ACTION_SOUND:
     reason: PetTalkReason
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PET_ACTION_SOUND:
         # guid: Guid
         guid = await read_int(reader, 8)
 
@@ -39684,7 +39686,7 @@ class SMSG_PET_DISMISS_SOUND:
     position: Vector3d
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PET_DISMISS_SOUND:
         # sound_id: u32
         sound_id = await read_int(reader, 4)
 
@@ -39723,7 +39725,7 @@ class SMSG_GM_TICKET_STATUS_UPDATE:
     response: GmTicketStatusResponse
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GM_TICKET_STATUS_UPDATE:
         # response: GmTicketStatusResponse
         response = GmTicketStatusResponse(await read_int(reader, 4))
 
@@ -39757,7 +39759,7 @@ class CMSG_GMSURVEY_SUBMIT:
     answer_comment: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_GMSURVEY_SUBMIT:
         # survey_id: u32
         survey_id = await read_int(reader, 4)
 
@@ -39810,7 +39812,7 @@ class SMSG_UPDATE_INSTANCE_OWNERSHIP:
     player_is_saved_to_a_raid: bool
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_UPDATE_INSTANCE_OWNERSHIP:
         # player_is_saved_to_a_raid: Bool32
         player_is_saved_to_a_raid = await read_bool(reader, 4)
 
@@ -39843,7 +39845,7 @@ class SMSG_SPELLINSTAKILLLOG:
     spell: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELLINSTAKILLLOG:
         # target: Guid
         target = await read_int(reader, 8)
 
@@ -39881,7 +39883,7 @@ class SMSG_SPELL_UPDATE_CHAIN_TARGETS:
     targets: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELL_UPDATE_CHAIN_TARGETS:
         # caster: Guid
         caster = await read_int(reader, 8)
 
@@ -39929,7 +39931,7 @@ class SMSG_EXPECTED_SPAM_RECORDS:
     records: typing.List[str]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_EXPECTED_SPAM_RECORDS:
         # amount_of_records: u32
         amount_of_records = await read_int(reader, 4)
 
@@ -39976,7 +39978,7 @@ class SMSG_DEFENSE_MESSAGE:
     message: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader, body_size: int):
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_DEFENSE_MESSAGE:
         # area: Area
         area = Area(await read_int(reader, 4))
 

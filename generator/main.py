@@ -35,12 +35,14 @@ LOGIN_UTIL_FILE = f"{LOGIN_MESSAGE_DIR}/util.py"
 
 
 def print_includes(s: Writer, world: typing.Optional[model.WorldVersion]):
+    s.wln("from __future__ import annotations")
     s.wln("import asyncio")
     s.wln("import dataclasses")
     s.wln("import enum")
     s.wln("import struct")
     s.wln("import typing")
     s.wln("import zlib")
+    s.newline()
 
     if world is not None:
         s.wln("import wow_srp")

@@ -1,9 +1,11 @@
+from __future__ import annotations
 import asyncio
 import dataclasses
 import enum
 import struct
 import typing
 import zlib
+
 from .util import read_string
 from .util import read_bool
 from .util import read_int
@@ -66,7 +68,7 @@ class Version:
     build: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> Version:
         # major: u8
         major = await read_int(reader, 1)
 
@@ -104,7 +106,7 @@ class CMD_AUTH_LOGON_CHALLENGE_Client:
     account_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_AUTH_LOGON_CHALLENGE_Client:
         # protocol_version: ProtocolVersion
         protocol_version = ProtocolVersion(await read_int(reader, 1))
 
@@ -202,7 +204,7 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Client:
     account_name: str
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_AUTH_RECONNECT_CHALLENGE_Client:
         # protocol_version: ProtocolVersion
         protocol_version = ProtocolVersion(await read_int(reader, 1))
 

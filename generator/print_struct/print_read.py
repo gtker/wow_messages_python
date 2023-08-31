@@ -304,9 +304,9 @@ def print_read(s: Writer, container: Container):
 
     match container.object_type:
         case model.ObjectTypeCmsg() | model.ObjectTypeSmsg() | model.ObjectTypeMsg():
-            s.wln("async def read(reader: asyncio.StreamReader, body_size: int):")
+            s.wln(f"async def read(reader: asyncio.StreamReader, body_size: int) -> {container.name}:")
         case _:
-            s.wln("async def read(reader: asyncio.StreamReader):")
+            s.wln(f"async def read(reader: asyncio.StreamReader) -> {container.name}:")
     s.inc_indent()
 
     print_optional_names(s, container)

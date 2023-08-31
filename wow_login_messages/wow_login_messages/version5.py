@@ -1,9 +1,11 @@
+from __future__ import annotations
 import asyncio
 import dataclasses
 import enum
 import struct
 import typing
 import zlib
+
 from .util import read_string
 from .util import read_bool
 from .util import read_int
@@ -68,7 +70,7 @@ class Realm:
     realm_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> Realm:
         # realm_type: RealmType
         realm_type = RealmType(await read_int(reader, 1))
 
@@ -125,7 +127,7 @@ class CMD_AUTH_LOGON_PROOF_Server:
     unknown: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_AUTH_LOGON_PROOF_Server:
         server_proof = None
         hardware_survey_id = None
         unknown = None
@@ -173,7 +175,7 @@ class CMD_AUTH_RECONNECT_PROOF_Server:
     result: LoginResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_AUTH_RECONNECT_PROOF_Server:
         # result: LoginResult
         result = LoginResult(await read_int(reader, 1))
 
@@ -203,7 +205,7 @@ class CMD_REALM_LIST_Server:
     realms: typing.List[Realm]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_REALM_LIST_Server:
         # size: u16
         _size = await read_int(reader, 2)
 

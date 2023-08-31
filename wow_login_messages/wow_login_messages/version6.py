@@ -1,9 +1,11 @@
+from __future__ import annotations
 import asyncio
 import dataclasses
 import enum
 import struct
 import typing
 import zlib
+
 from .util import read_string
 from .util import read_bool
 from .util import read_int
@@ -63,7 +65,7 @@ class CMD_REALM_LIST_Server:
     realms: typing.List[Realm]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_REALM_LIST_Server:
         # size: u16
         _size = await read_int(reader, 2)
 

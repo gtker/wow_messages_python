@@ -1,9 +1,11 @@
+from __future__ import annotations
 import asyncio
 import dataclasses
 import enum
 import struct
 import typing
 import zlib
+
 from .util import read_string
 from .util import read_bool
 from .util import read_int
@@ -74,7 +76,7 @@ class CMD_AUTH_LOGON_CHALLENGE_Server:
     pin_salt: typing.Optional[typing.List[int]] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_AUTH_LOGON_CHALLENGE_Server:
         server_public_key = None
         generator_length = None
         generator = None
@@ -178,7 +180,7 @@ class CMD_AUTH_LOGON_PROOF_Client:
     pin_hash: typing.Optional[typing.List[int]] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_AUTH_LOGON_PROOF_Client:
         pin_salt = None
         pin_hash = None
         # client_public_key: u8[32]
@@ -260,7 +262,7 @@ class CMD_SURVEY_RESULT:
     data: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_SURVEY_RESULT:
         # survey_id: u32
         survey_id = await read_int(reader, 4)
 
@@ -299,7 +301,7 @@ class CMD_SURVEY_RESULT:
 class CMD_XFER_INITIATE:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_XFER_INITIATE:
         return CMD_XFER_INITIATE()
 
     def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
@@ -319,7 +321,7 @@ class CMD_XFER_DATA:
     data: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_XFER_DATA:
         # size: u16
         size = await read_int(reader, 2)
 
@@ -350,7 +352,7 @@ class CMD_XFER_DATA:
 class CMD_XFER_ACCEPT:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_XFER_ACCEPT:
         return CMD_XFER_ACCEPT()
 
     def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
@@ -370,7 +372,7 @@ class CMD_XFER_RESUME:
     offset: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_XFER_RESUME:
         # offset: u64
         offset = await read_int(reader, 8)
 
@@ -396,7 +398,7 @@ class CMD_XFER_RESUME:
 class CMD_XFER_CANCEL:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_XFER_CANCEL:
         return CMD_XFER_CANCEL()
 
     def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):

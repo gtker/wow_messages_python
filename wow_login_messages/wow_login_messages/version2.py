@@ -1,9 +1,11 @@
+from __future__ import annotations
 import asyncio
 import dataclasses
 import enum
 import struct
 import typing
 import zlib
+
 from .util import read_string
 from .util import read_bool
 from .util import read_int
@@ -98,7 +100,7 @@ class Realm:
     realm_id: int
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> Realm:
         # realm_type: RealmType
         realm_type = RealmType(await read_int(reader, 4))
 
@@ -151,7 +153,7 @@ class TelemetryKey:
     cd_key_proof: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> TelemetryKey:
         # unknown1: u16
         unknown1 = await read_int(reader, 2)
 
@@ -191,7 +193,7 @@ class CMD_AUTH_LOGON_CHALLENGE_Server:
     crc_salt: typing.Optional[typing.List[int]] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_AUTH_LOGON_CHALLENGE_Server:
         server_public_key = None
         generator_length = None
         generator = None
@@ -271,7 +273,7 @@ class CMD_AUTH_LOGON_PROOF_Client:
     telemetry_keys: typing.List[TelemetryKey]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_AUTH_LOGON_PROOF_Client:
         # client_public_key: u8[32]
         client_public_key = []
         for _ in range(0, 32):
@@ -327,7 +329,7 @@ class CMD_AUTH_LOGON_PROOF_Server:
     hardware_survey_id: typing.Optional[int] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_AUTH_LOGON_PROOF_Server:
         server_proof = None
         hardware_survey_id = None
         # result: LoginResult
@@ -372,7 +374,7 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Server:
     checksum_salt: typing.Optional[typing.List[int]] = None
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_AUTH_RECONNECT_CHALLENGE_Server:
         challenge_data = None
         checksum_salt = None
         # result: LoginResult
@@ -417,7 +419,7 @@ class CMD_AUTH_RECONNECT_PROOF_Server:
     result: LoginResult
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_AUTH_RECONNECT_PROOF_Server:
         # result: LoginResult
         result = LoginResult(await read_int(reader, 1))
 
@@ -446,7 +448,7 @@ class CMD_AUTH_RECONNECT_PROOF_Client:
     client_checksum: typing.List[int]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_AUTH_RECONNECT_PROOF_Client:
         # proof_data: u8[16]
         proof_data = []
         for _ in range(0, 16):
@@ -490,7 +492,7 @@ class CMD_REALM_LIST_Server:
     realms: typing.List[Realm]
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_REALM_LIST_Server:
         # size: u16
         _size = await read_int(reader, 2)
 
@@ -541,7 +543,7 @@ class CMD_REALM_LIST_Server:
 class CMD_REALM_LIST_Client:
 
     @staticmethod
-    async def read(reader: asyncio.StreamReader):
+    async def read(reader: asyncio.StreamReader) -> CMD_REALM_LIST_Client:
         # padding: u32
         _padding = await read_int(reader, 4)
 
