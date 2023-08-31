@@ -913,7 +913,7 @@ __all__ = [
     "SMSG_SPELL_UPDATE_CHAIN_TARGETS",
     "SMSG_EXPECTED_SPAM_RECORDS",
     "SMSG_DEFENSE_MESSAGE",
-    ]
+]
 
 
 @dataclasses.dataclass
@@ -40319,7 +40319,7 @@ ClientOpcode = typing.Union[
     MSG_RAID_TARGET_UPDATE_Client,
     MSG_RAID_READY_CHECK_Client,
     CMSG_GMSURVEY_SUBMIT,
-    ]
+]
 
 ServerOpcode = typing.Union[
     SMSG_CHAR_CREATE,

@@ -1060,7 +1060,7 @@ __all__ = [
     "SMSG_REFER_A_FRIEND_FAILURE",
     "SMSG_SPLINE_MOVE_SET_FLYING",
     "SMSG_SPLINE_MOVE_UNSET_FLYING",
-    ]
+]
 
 
 @dataclasses.dataclass
@@ -49074,7 +49074,7 @@ ClientOpcode = typing.Union[
     CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY,
     CMSG_SET_PLAYER_DECLINED_NAMES,
     CMSG_ACCEPT_LEVEL_GRANT,
-    ]
+]
 
 ServerOpcode = typing.Union[
     SMSG_CHAR_CREATE,

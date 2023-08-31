@@ -421,7 +421,7 @@ ClientOpcode = typing.Union[
     CMD_XFER_ACCEPT,
     CMD_XFER_RESUME,
     CMD_XFER_CANCEL,
-    ]
+]
 
 
 async def read_client_opcode(reader: asyncio.StreamReader) -> typing.Optional[ClientOpcode]:
@@ -460,7 +460,7 @@ ServerOpcode = typing.Union[
     CMD_REALM_LIST_Server,
     CMD_XFER_INITIATE,
     CMD_XFER_DATA,
-    ]
+]
 
 
 async def read_server_opcode(reader: asyncio.StreamReader) -> typing.Optional[ServerOpcode]:

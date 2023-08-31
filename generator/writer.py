@@ -20,9 +20,9 @@ class Writer:
         self.inc_indent()
 
     def close(self, s: typing.Optional[str] = None):
+        self.dec_indent()
         if s is not None:
             self.wln(s)
-        self.dec_indent()
 
     def write_block(self, s: str):
         for i, line in enumerate(s.splitlines()):

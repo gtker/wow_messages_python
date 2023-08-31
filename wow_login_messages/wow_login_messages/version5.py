@@ -257,7 +257,7 @@ ClientOpcode = typing.Union[
     CMD_AUTH_RECONNECT_CHALLENGE_Client,
     CMD_AUTH_RECONNECT_PROOF_Client,
     CMD_REALM_LIST_Client,
-    ]
+]
 
 
 async def read_client_opcode(reader: asyncio.StreamReader) -> typing.Optional[ClientOpcode]:
@@ -290,7 +290,7 @@ ServerOpcode = typing.Union[
     CMD_AUTH_RECONNECT_CHALLENGE_Server,
     CMD_AUTH_RECONNECT_PROOF_Server,
     CMD_REALM_LIST_Server,
-    ]
+]
 
 
 async def read_server_opcode(reader: asyncio.StreamReader) -> typing.Optional[ServerOpcode]:

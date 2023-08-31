@@ -292,7 +292,7 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Client:
 ClientOpcode = typing.Union[
     CMD_AUTH_LOGON_CHALLENGE_Client,
     CMD_AUTH_RECONNECT_CHALLENGE_Client,
-    ]
+]
 
 
 async def read_client_opcode(reader: asyncio.StreamReader) -> typing.Optional[ClientOpcode]:
