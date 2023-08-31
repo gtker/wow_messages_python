@@ -41,7 +41,8 @@ def print_includes(s: Writer, world: typing.Optional[model.WorldVersion]):
     s.wln("import enum")
     s.wln("import struct")
     s.wln("import typing")
-    s.wln("import zlib")
+    if world is not None:
+        s.wln("import zlib")
     s.newline()
 
     if world is not None:
