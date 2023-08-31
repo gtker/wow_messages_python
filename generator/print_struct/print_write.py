@@ -262,7 +262,7 @@ def print_write(s: Writer, container: Container, object_type: model.ObjectType):
             if unencrypted:
                 s.wln(f"def write_unencrypted(self, {writer}):")
             else:
-                version_string = "vanilla"
+                version_string = "Vanilla"
                 match object_type:
                     case model.ObjectTypeCmsg():
                         s.wln("def write_encrypted_client(")
@@ -273,7 +273,7 @@ def print_write(s: Writer, container: Container, object_type: model.ObjectType):
                 s.inc_indent()
                 s.wln("self,")
                 s.wln(f"{writer},")
-                s.wln(f"header_crypto: wow_srp.{version_string}_header.HeaderCrypto,")
+                s.wln(f"header_crypto: wow_srp.{version_string}HeaderCrypto,")
                 s.dec_indent()
                 s.wln("):")
         case _:

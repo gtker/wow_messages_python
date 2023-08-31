@@ -1,5 +1,5 @@
 import model
-from util import should_print_container, world_version_to_module_name
+from util import should_print_container, world_version_to_title_name
 from writer import Writer
 
 
@@ -51,7 +51,7 @@ def expect_function(
     s.wln(f"opcode: typing.Type[{opcode}],")
     if encryption == "encrypted":
         s.wln(
-            f"header_crypto: wow_srp.{world_version_to_module_name(v)}_header.HeaderCrypto,"
+            f"header_crypto: wow_srp.{world_version_to_title_name(v)}HeaderCrypto,"
         )
     s.dec_indent()
     s.wln(f") -> typing.Optional[{opcode}]:")
@@ -124,7 +124,7 @@ def read_functions(
 
     s.wln("reader: asyncio.StreamReader,")
     s.wln(
-        f"header_crypto: wow_srp.{world_version_to_module_name(v)}_header.HeaderCrypto,"
+        f"header_crypto: wow_srp.{world_version_to_title_name(v)}HeaderCrypto,"
     )
     s.dec_indent()
 

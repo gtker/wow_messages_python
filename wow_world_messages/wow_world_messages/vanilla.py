@@ -11082,7 +11082,7 @@ class CMSG_BOOTME:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0001))
         _fmt = "<6s"
@@ -11112,7 +11112,7 @@ class CMSG_DBLOOKUP:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0002))
         _fmt = "<6s"
@@ -11162,7 +11162,7 @@ class CMSG_WORLD_TELEPORT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(24 + 4, 0x0008))
         _fmt = "<6s"
@@ -11201,7 +11201,7 @@ class CMSG_TELEPORT_TO_UNIT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0009))
         _fmt = "<6s"
@@ -11279,7 +11279,7 @@ class CMSG_CHAR_CREATE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0036))
         _fmt = "<6s"
@@ -11308,7 +11308,7 @@ class CMSG_CHAR_ENUM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0037))
         _fmt = "<6s"
@@ -11338,7 +11338,7 @@ class CMSG_CHAR_DELETE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0038))
         _fmt = "<6s"
@@ -11370,7 +11370,7 @@ class SMSG_CHAR_CREATE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 2, 0x003A))
         _fmt = "<4s"
@@ -11407,7 +11407,7 @@ class SMSG_CHAR_ENUM:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x003B))
         _fmt = "<4s"
@@ -11446,7 +11446,7 @@ class SMSG_CHAR_DELETE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 2, 0x003C))
         _fmt = "<4s"
@@ -11478,7 +11478,7 @@ class CMSG_PLAYER_LOGIN:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x003D))
         _fmt = "<6s"
@@ -11520,7 +11520,7 @@ class SMSG_NEW_WORLD:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(20 + 2, 0x003E))
         _fmt = "<4s"
@@ -11578,7 +11578,7 @@ class SMSG_TRANSFER_PENDING:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x003F))
         _fmt = "<4s"
@@ -11633,7 +11633,7 @@ class SMSG_TRANSFER_ABORTED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(6 + 2, 0x0040))
         _fmt = "<4s"
@@ -11665,7 +11665,7 @@ class SMSG_CHARACTER_LOGIN_FAILED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 2, 0x0041))
         _fmt = "<4s"
@@ -11702,7 +11702,7 @@ class SMSG_LOGIN_SETTIMESPEED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x0042))
         _fmt = "<4s"
@@ -11728,7 +11728,7 @@ class CMSG_PLAYER_LOGOUT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x004A))
         _fmt = "<6s"
@@ -11752,7 +11752,7 @@ class CMSG_LOGOUT_REQUEST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x004B))
         _fmt = "<6s"
@@ -11787,7 +11787,7 @@ class SMSG_LOGOUT_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(5 + 2, 0x004C))
         _fmt = "<4s"
@@ -11813,7 +11813,7 @@ class SMSG_LOGOUT_COMPLETE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x004D))
         _fmt = "<4s"
@@ -11837,7 +11837,7 @@ class CMSG_LOGOUT_CANCEL:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x004E))
         _fmt = "<6s"
@@ -11861,7 +11861,7 @@ class SMSG_LOGOUT_CANCEL_ACK:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x004F))
         _fmt = "<4s"
@@ -11891,7 +11891,7 @@ class CMSG_NAME_QUERY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0050))
         _fmt = "<6s"
@@ -11948,7 +11948,7 @@ class SMSG_NAME_QUERY_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0051))
         _fmt = "<4s"
@@ -11988,7 +11988,7 @@ class CMSG_PET_NAME_QUERY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0052))
         _fmt = "<6s"
@@ -12030,7 +12030,7 @@ class SMSG_PET_NAME_QUERY_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0053))
         _fmt = "<4s"
@@ -12065,7 +12065,7 @@ class CMSG_GUILD_QUERY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x0054))
         _fmt = "<6s"
@@ -12134,7 +12134,7 @@ class SMSG_GUILD_QUERY_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0055))
         _fmt = "<4s"
@@ -12200,7 +12200,7 @@ class CMSG_ITEM_QUERY_SINGLE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0056))
         _fmt = "<6s"
@@ -12621,7 +12621,7 @@ class SMSG_ITEM_QUERY_SINGLE_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0058))
         _fmt = "<4s"
@@ -12782,7 +12782,7 @@ class CMSG_PAGE_TEXT_QUERY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x005A))
         _fmt = "<6s"
@@ -12824,7 +12824,7 @@ class SMSG_PAGE_TEXT_QUERY_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x005B))
         _fmt = "<4s"
@@ -12859,7 +12859,7 @@ class CMSG_QUEST_QUERY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x005C))
         _fmt = "<6s"
@@ -13024,7 +13024,7 @@ class SMSG_QUEST_QUERY_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x005D))
         _fmt = "<4s"
@@ -13109,7 +13109,7 @@ class CMSG_GAMEOBJECT_QUERY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x005E))
         _fmt = "<6s"
@@ -13204,7 +13204,7 @@ class SMSG_GAMEOBJECT_QUERY_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x005F))
         _fmt = "<4s"
@@ -13254,7 +13254,7 @@ class CMSG_CREATURE_QUERY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0060))
         _fmt = "<6s"
@@ -13389,7 +13389,7 @@ class SMSG_CREATURE_QUERY_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0061))
         _fmt = "<4s"
@@ -13479,7 +13479,7 @@ class CMSG_WHO:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0062))
         _fmt = "<6s"
@@ -13530,7 +13530,7 @@ class SMSG_WHO:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0063))
         _fmt = "<4s"
@@ -13569,7 +13569,7 @@ class CMSG_WHOIS:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0064))
         _fmt = "<6s"
@@ -13604,7 +13604,7 @@ class SMSG_WHOIS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0065))
         _fmt = "<4s"
@@ -13633,7 +13633,7 @@ class CMSG_FRIEND_LIST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0066))
         _fmt = "<6s"
@@ -13668,7 +13668,7 @@ class SMSG_FRIEND_LIST:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0067))
         _fmt = "<4s"
@@ -13712,7 +13712,7 @@ class SMSG_FRIEND_STATUS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(9 + 2, 0x0068))
         _fmt = "<4s"
@@ -13744,7 +13744,7 @@ class CMSG_ADD_FRIEND:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0069))
         _fmt = "<6s"
@@ -13779,7 +13779,7 @@ class CMSG_DEL_FRIEND:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x006A))
         _fmt = "<6s"
@@ -13816,7 +13816,7 @@ class SMSG_IGNORE_LIST:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x006B))
         _fmt = "<4s"
@@ -13851,7 +13851,7 @@ class CMSG_ADD_IGNORE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x006C))
         _fmt = "<6s"
@@ -13886,7 +13886,7 @@ class CMSG_DEL_IGNORE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x006D))
         _fmt = "<6s"
@@ -13918,7 +13918,7 @@ class CMSG_GROUP_INVITE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x006E))
         _fmt = "<6s"
@@ -13953,7 +13953,7 @@ class SMSG_GROUP_INVITE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x006F))
         _fmt = "<4s"
@@ -13982,7 +13982,7 @@ class CMSG_GROUP_ACCEPT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0072))
         _fmt = "<6s"
@@ -14006,7 +14006,7 @@ class CMSG_GROUP_DECLINE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0073))
         _fmt = "<6s"
@@ -14036,7 +14036,7 @@ class SMSG_GROUP_DECLINE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0074))
         _fmt = "<4s"
@@ -14071,7 +14071,7 @@ class CMSG_GROUP_UNINVITE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0075))
         _fmt = "<6s"
@@ -14106,7 +14106,7 @@ class CMSG_GROUP_UNINVITE_GUID:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0076))
         _fmt = "<6s"
@@ -14132,7 +14132,7 @@ class SMSG_GROUP_UNINVITE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x0077))
         _fmt = "<4s"
@@ -14162,7 +14162,7 @@ class CMSG_GROUP_SET_LEADER:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0078))
         _fmt = "<6s"
@@ -14194,7 +14194,7 @@ class SMSG_GROUP_SET_LEADER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0079))
         _fmt = "<4s"
@@ -14239,7 +14239,7 @@ class CMSG_LOOT_METHOD:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 4, 0x007A))
         _fmt = "<6s"
@@ -14265,7 +14265,7 @@ class CMSG_GROUP_DISBAND:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x007B))
         _fmt = "<6s"
@@ -14289,7 +14289,7 @@ class SMSG_GROUP_DESTROYED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x007C))
         _fmt = "<4s"
@@ -14369,7 +14369,7 @@ class SMSG_GROUP_LIST:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x007D))
         _fmt = "<4s"
@@ -14573,7 +14573,7 @@ class SMSG_PARTY_MEMBER_STATS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x007E))
         _fmt = "<4s"
@@ -14748,7 +14748,7 @@ class SMSG_PARTY_COMMAND_RESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x007F))
         _fmt = "<4s"
@@ -14783,7 +14783,7 @@ class CMSG_GUILD_CREATE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0081))
         _fmt = "<6s"
@@ -14818,7 +14818,7 @@ class CMSG_GUILD_INVITE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0082))
         _fmt = "<6s"
@@ -14858,7 +14858,7 @@ class SMSG_GUILD_INVITE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0083))
         _fmt = "<4s"
@@ -14887,7 +14887,7 @@ class CMSG_GUILD_ACCEPT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0084))
         _fmt = "<6s"
@@ -14911,7 +14911,7 @@ class CMSG_GUILD_DECLINE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0085))
         _fmt = "<6s"
@@ -14935,7 +14935,7 @@ class CMSG_GUILD_INFO:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0087))
         _fmt = "<6s"
@@ -14990,7 +14990,7 @@ class SMSG_GUILD_INFO:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0088))
         _fmt = "<4s"
@@ -15019,7 +15019,7 @@ class CMSG_GUILD_ROSTER:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0089))
         _fmt = "<6s"
@@ -15074,7 +15074,7 @@ class SMSG_GUILD_ROSTER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x008A))
         _fmt = "<4s"
@@ -15113,7 +15113,7 @@ class CMSG_GUILD_PROMOTE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x008B))
         _fmt = "<6s"
@@ -15148,7 +15148,7 @@ class CMSG_GUILD_DEMOTE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x008C))
         _fmt = "<6s"
@@ -15177,7 +15177,7 @@ class CMSG_GUILD_LEAVE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x008D))
         _fmt = "<6s"
@@ -15207,7 +15207,7 @@ class CMSG_GUILD_REMOVE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x008E))
         _fmt = "<6s"
@@ -15236,7 +15236,7 @@ class CMSG_GUILD_DISBAND:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x008F))
         _fmt = "<6s"
@@ -15266,7 +15266,7 @@ class CMSG_GUILD_LEADER:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0090))
         _fmt = "<6s"
@@ -15301,7 +15301,7 @@ class CMSG_GUILD_MOTD:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0091))
         _fmt = "<6s"
@@ -15346,7 +15346,7 @@ class SMSG_GUILD_EVENT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0092))
         _fmt = "<4s"
@@ -15397,7 +15397,7 @@ class SMSG_GUILD_COMMAND_RESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0093))
         _fmt = "<4s"
@@ -15456,7 +15456,7 @@ class CMSG_MESSAGECHAT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0095))
         _fmt = "<6s"
@@ -15594,7 +15594,7 @@ class SMSG_MESSAGECHAT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0096))
         _fmt = "<4s"
@@ -15670,7 +15670,7 @@ class CMSG_JOIN_CHANNEL:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0097))
         _fmt = "<6s"
@@ -15705,7 +15705,7 @@ class CMSG_LEAVE_CHANNEL:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0098))
         _fmt = "<6s"
@@ -15745,7 +15745,7 @@ class SMSG_CHANNEL_NOTIFY:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0099))
         _fmt = "<4s"
@@ -15780,7 +15780,7 @@ class CMSG_CHANNEL_LIST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x009A))
         _fmt = "<6s"
@@ -15830,7 +15830,7 @@ class SMSG_CHANNEL_LIST:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x009B))
         _fmt = "<4s"
@@ -15874,7 +15874,7 @@ class CMSG_CHANNEL_PASSWORD:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x009C))
         _fmt = "<6s"
@@ -15914,7 +15914,7 @@ class CMSG_CHANNEL_SET_OWNER:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x009D))
         _fmt = "<6s"
@@ -15949,7 +15949,7 @@ class CMSG_CHANNEL_OWNER:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x009E))
         _fmt = "<6s"
@@ -15989,7 +15989,7 @@ class CMSG_CHANNEL_MODERATOR:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x009F))
         _fmt = "<6s"
@@ -16029,7 +16029,7 @@ class CMSG_CHANNEL_UNMODERATOR:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00A0))
         _fmt = "<6s"
@@ -16069,7 +16069,7 @@ class CMSG_CHANNEL_MUTE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00A1))
         _fmt = "<6s"
@@ -16109,7 +16109,7 @@ class CMSG_CHANNEL_UNMUTE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00A2))
         _fmt = "<6s"
@@ -16149,7 +16149,7 @@ class CMSG_CHANNEL_INVITE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00A3))
         _fmt = "<6s"
@@ -16189,7 +16189,7 @@ class CMSG_CHANNEL_KICK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00A4))
         _fmt = "<6s"
@@ -16229,7 +16229,7 @@ class CMSG_CHANNEL_BAN:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00A5))
         _fmt = "<6s"
@@ -16269,7 +16269,7 @@ class CMSG_CHANNEL_UNBAN:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00A6))
         _fmt = "<6s"
@@ -16304,7 +16304,7 @@ class CMSG_CHANNEL_ANNOUNCEMENTS:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00A7))
         _fmt = "<6s"
@@ -16339,7 +16339,7 @@ class CMSG_CHANNEL_MODERATE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00A8))
         _fmt = "<6s"
@@ -16384,7 +16384,7 @@ class SMSG_UPDATE_OBJECT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00A9))
         _fmt = "<4s"
@@ -16423,7 +16423,7 @@ class SMSG_DESTROY_OBJECT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x00AA))
         _fmt = "<4s"
@@ -16470,7 +16470,7 @@ class CMSG_USE_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00AB))
         _fmt = "<6s"
@@ -16513,7 +16513,7 @@ class CMSG_OPEN_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(2 + 4, 0x00AC))
         _fmt = "<6s"
@@ -16550,7 +16550,7 @@ class CMSG_READ_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(2 + 4, 0x00AD))
         _fmt = "<6s"
@@ -16582,7 +16582,7 @@ class SMSG_READ_ITEM_OK:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x00AE))
         _fmt = "<4s"
@@ -16614,7 +16614,7 @@ class SMSG_READ_ITEM_FAILED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x00AF))
         _fmt = "<4s"
@@ -16651,7 +16651,7 @@ class SMSG_ITEM_COOLDOWN:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x00B0))
         _fmt = "<4s"
@@ -16683,7 +16683,7 @@ class CMSG_GAMEOBJ_USE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x00B1))
         _fmt = "<6s"
@@ -16720,7 +16720,7 @@ class SMSG_GAMEOBJECT_CUSTOM_ANIM:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x00B3))
         _fmt = "<4s"
@@ -16752,7 +16752,7 @@ class CMSG_AREATRIGGER:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x00B4))
         _fmt = "<6s"
@@ -16784,7 +16784,7 @@ class MSG_MOVE_START_FORWARD_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00B5))
         _fmt = "<6s"
@@ -16825,7 +16825,7 @@ class MSG_MOVE_START_FORWARD_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00B5))
         _fmt = "<4s"
@@ -16864,7 +16864,7 @@ class MSG_MOVE_START_BACKWARD_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00B6))
         _fmt = "<6s"
@@ -16905,7 +16905,7 @@ class MSG_MOVE_START_BACKWARD_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00B6))
         _fmt = "<4s"
@@ -16944,7 +16944,7 @@ class MSG_MOVE_STOP_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00B7))
         _fmt = "<6s"
@@ -16985,7 +16985,7 @@ class MSG_MOVE_STOP_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00B7))
         _fmt = "<4s"
@@ -17024,7 +17024,7 @@ class MSG_MOVE_START_STRAFE_LEFT_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00B8))
         _fmt = "<6s"
@@ -17065,7 +17065,7 @@ class MSG_MOVE_START_STRAFE_LEFT_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00B8))
         _fmt = "<4s"
@@ -17104,7 +17104,7 @@ class MSG_MOVE_START_STRAFE_RIGHT_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00B9))
         _fmt = "<6s"
@@ -17145,7 +17145,7 @@ class MSG_MOVE_START_STRAFE_RIGHT_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00B9))
         _fmt = "<4s"
@@ -17184,7 +17184,7 @@ class MSG_MOVE_STOP_STRAFE_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00BA))
         _fmt = "<6s"
@@ -17225,7 +17225,7 @@ class MSG_MOVE_STOP_STRAFE_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00BA))
         _fmt = "<4s"
@@ -17264,7 +17264,7 @@ class MSG_MOVE_JUMP_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00BB))
         _fmt = "<6s"
@@ -17305,7 +17305,7 @@ class MSG_MOVE_JUMP_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00BB))
         _fmt = "<4s"
@@ -17344,7 +17344,7 @@ class MSG_MOVE_START_TURN_LEFT_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00BC))
         _fmt = "<6s"
@@ -17385,7 +17385,7 @@ class MSG_MOVE_START_TURN_LEFT_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00BC))
         _fmt = "<4s"
@@ -17424,7 +17424,7 @@ class MSG_MOVE_START_TURN_RIGHT_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00BD))
         _fmt = "<6s"
@@ -17465,7 +17465,7 @@ class MSG_MOVE_START_TURN_RIGHT_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00BD))
         _fmt = "<4s"
@@ -17504,7 +17504,7 @@ class MSG_MOVE_STOP_TURN_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00BE))
         _fmt = "<6s"
@@ -17545,7 +17545,7 @@ class MSG_MOVE_STOP_TURN_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00BE))
         _fmt = "<4s"
@@ -17584,7 +17584,7 @@ class MSG_MOVE_START_PITCH_UP_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00BF))
         _fmt = "<6s"
@@ -17625,7 +17625,7 @@ class MSG_MOVE_START_PITCH_UP_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00BF))
         _fmt = "<4s"
@@ -17664,7 +17664,7 @@ class MSG_MOVE_START_PITCH_DOWN_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00C0))
         _fmt = "<6s"
@@ -17705,7 +17705,7 @@ class MSG_MOVE_START_PITCH_DOWN_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00C0))
         _fmt = "<4s"
@@ -17744,7 +17744,7 @@ class MSG_MOVE_STOP_PITCH_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00C1))
         _fmt = "<6s"
@@ -17785,7 +17785,7 @@ class MSG_MOVE_STOP_PITCH_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00C1))
         _fmt = "<4s"
@@ -17824,7 +17824,7 @@ class MSG_MOVE_SET_RUN_MODE_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00C2))
         _fmt = "<6s"
@@ -17865,7 +17865,7 @@ class MSG_MOVE_SET_RUN_MODE_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00C2))
         _fmt = "<4s"
@@ -17904,7 +17904,7 @@ class MSG_MOVE_SET_WALK_MODE_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00C3))
         _fmt = "<6s"
@@ -17945,7 +17945,7 @@ class MSG_MOVE_SET_WALK_MODE_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00C3))
         _fmt = "<4s"
@@ -17994,7 +17994,7 @@ class MSG_MOVE_TELEPORT_ACK_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00C7))
         _fmt = "<6s"
@@ -18048,7 +18048,7 @@ class MSG_MOVE_TELEPORT_ACK_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00C7))
         _fmt = "<4s"
@@ -18091,7 +18091,7 @@ class MSG_MOVE_FALL_LAND_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00C9))
         _fmt = "<6s"
@@ -18132,7 +18132,7 @@ class MSG_MOVE_FALL_LAND_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00C9))
         _fmt = "<4s"
@@ -18171,7 +18171,7 @@ class MSG_MOVE_START_SWIM_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00CA))
         _fmt = "<6s"
@@ -18212,7 +18212,7 @@ class MSG_MOVE_START_SWIM_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00CA))
         _fmt = "<4s"
@@ -18251,7 +18251,7 @@ class MSG_MOVE_STOP_SWIM_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00CB))
         _fmt = "<6s"
@@ -18292,7 +18292,7 @@ class MSG_MOVE_STOP_SWIM_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00CB))
         _fmt = "<4s"
@@ -18331,7 +18331,7 @@ class MSG_MOVE_SET_FACING_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00DA))
         _fmt = "<6s"
@@ -18372,7 +18372,7 @@ class MSG_MOVE_SET_FACING_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00DA))
         _fmt = "<4s"
@@ -18411,7 +18411,7 @@ class MSG_MOVE_SET_PITCH_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00DB))
         _fmt = "<6s"
@@ -18452,7 +18452,7 @@ class MSG_MOVE_SET_PITCH_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00DB))
         _fmt = "<4s"
@@ -18485,7 +18485,7 @@ class MSG_MOVE_WORLDPORT_ACK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x00DC))
         _fmt = "<6s"
@@ -18501,7 +18501,7 @@ class MSG_MOVE_WORLDPORT_ACK:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x00DC))
         _fmt = "<4s"
@@ -18582,7 +18582,7 @@ class SMSG_MONSTER_MOVE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00DD))
         _fmt = "<4s"
@@ -18664,7 +18664,7 @@ class SMSG_MOVE_WATER_WALK:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00DE))
         _fmt = "<4s"
@@ -18709,7 +18709,7 @@ class SMSG_MOVE_LAND_WALK:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00DF))
         _fmt = "<4s"
@@ -18754,7 +18754,7 @@ class CMSG_MOVE_SET_RAW_POSITION:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 4, 0x00E1))
         _fmt = "<6s"
@@ -18801,7 +18801,7 @@ class SMSG_FORCE_RUN_SPEED_CHANGE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00E2))
         _fmt = "<4s"
@@ -18860,7 +18860,7 @@ class CMSG_FORCE_RUN_SPEED_CHANGE_ACK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00E3))
         _fmt = "<6s"
@@ -18912,7 +18912,7 @@ class SMSG_FORCE_RUN_BACK_SPEED_CHANGE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00E4))
         _fmt = "<4s"
@@ -18971,7 +18971,7 @@ class CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00E5))
         _fmt = "<6s"
@@ -19023,7 +19023,7 @@ class SMSG_FORCE_SWIM_SPEED_CHANGE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00E6))
         _fmt = "<4s"
@@ -19082,7 +19082,7 @@ class CMSG_FORCE_SWIM_SPEED_CHANGE_ACK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00E7))
         _fmt = "<6s"
@@ -19129,7 +19129,7 @@ class SMSG_FORCE_MOVE_ROOT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x00E8))
         _fmt = "<4s"
@@ -19171,7 +19171,7 @@ class CMSG_FORCE_MOVE_ROOT_ACK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00E9))
         _fmt = "<6s"
@@ -19214,7 +19214,7 @@ class SMSG_FORCE_MOVE_UNROOT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x00EA))
         _fmt = "<4s"
@@ -19256,7 +19256,7 @@ class CMSG_FORCE_MOVE_UNROOT_ACK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00EB))
         _fmt = "<6s"
@@ -19294,7 +19294,7 @@ class MSG_MOVE_HEARTBEAT_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00EE))
         _fmt = "<6s"
@@ -19335,7 +19335,7 @@ class MSG_MOVE_HEARTBEAT_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00EE))
         _fmt = "<4s"
@@ -19399,7 +19399,7 @@ class SMSG_MOVE_KNOCK_BACK:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00EF))
         _fmt = "<4s"
@@ -19465,7 +19465,7 @@ class CMSG_MOVE_KNOCK_BACK_ACK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00F0))
         _fmt = "<6s"
@@ -19508,7 +19508,7 @@ class SMSG_MOVE_FEATHER_FALL:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00F2))
         _fmt = "<4s"
@@ -19553,7 +19553,7 @@ class SMSG_MOVE_NORMAL_FALL:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00F3))
         _fmt = "<4s"
@@ -19598,7 +19598,7 @@ class SMSG_MOVE_SET_HOVER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00F4))
         _fmt = "<4s"
@@ -19643,7 +19643,7 @@ class SMSG_MOVE_UNSET_HOVER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x00F5))
         _fmt = "<4s"
@@ -19698,7 +19698,7 @@ class CMSG_MOVE_HOVER_ACK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x00F6))
         _fmt = "<6s"
@@ -19740,7 +19740,7 @@ class SMSG_TRIGGER_CINEMATIC:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x00FA))
         _fmt = "<4s"
@@ -19766,7 +19766,7 @@ class CMSG_NEXT_CINEMATIC_CAMERA:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x00FB))
         _fmt = "<6s"
@@ -19790,7 +19790,7 @@ class CMSG_COMPLETE_CINEMATIC:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x00FC))
         _fmt = "<6s"
@@ -19822,7 +19822,7 @@ class SMSG_TUTORIAL_FLAGS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(32 + 2, 0x00FD))
         _fmt = "<4s"
@@ -19854,7 +19854,7 @@ class CMSG_TUTORIAL_FLAG:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x00FE))
         _fmt = "<6s"
@@ -19880,7 +19880,7 @@ class CMSG_TUTORIAL_CLEAR:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x00FF))
         _fmt = "<6s"
@@ -19904,7 +19904,7 @@ class CMSG_TUTORIAL_RESET:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0100))
         _fmt = "<6s"
@@ -19934,7 +19934,7 @@ class CMSG_STANDSTATECHANGE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x0101))
         _fmt = "<6s"
@@ -19966,7 +19966,7 @@ class CMSG_EMOTE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x0102))
         _fmt = "<6s"
@@ -20003,7 +20003,7 @@ class SMSG_EMOTE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x0103))
         _fmt = "<4s"
@@ -20045,7 +20045,7 @@ class CMSG_TEXT_EMOTE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 4, 0x0104))
         _fmt = "<6s"
@@ -20092,7 +20092,7 @@ class SMSG_TEXT_EMOTE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0105))
         _fmt = "<4s"
@@ -20127,7 +20127,7 @@ class CMSG_AUTOSTORE_LOOT_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 4, 0x0108))
         _fmt = "<6s"
@@ -20164,7 +20164,7 @@ class CMSG_AUTOEQUIP_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(2 + 4, 0x010A))
         _fmt = "<6s"
@@ -20206,7 +20206,7 @@ class CMSG_AUTOSTORE_BAG_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(3 + 4, 0x010B))
         _fmt = "<6s"
@@ -20253,7 +20253,7 @@ class CMSG_SWAP_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x010C))
         _fmt = "<6s"
@@ -20290,7 +20290,7 @@ class CMSG_SWAP_INV_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(2 + 4, 0x010D))
         _fmt = "<6s"
@@ -20342,7 +20342,7 @@ class CMSG_SPLIT_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(5 + 4, 0x010E))
         _fmt = "<6s"
@@ -20379,7 +20379,7 @@ class CMSG_AUTOEQUIP_ITEM_SLOT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(9 + 4, 0x010F))
         _fmt = "<6s"
@@ -20436,7 +20436,7 @@ class CMSG_DESTROYITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(6 + 4, 0x0111))
         _fmt = "<6s"
@@ -20494,7 +20494,7 @@ class SMSG_INVENTORY_CHANGE_FAILURE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0112))
         _fmt = "<4s"
@@ -20543,7 +20543,7 @@ class SMSG_OPEN_CONTAINER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x0113))
         _fmt = "<4s"
@@ -20575,7 +20575,7 @@ class CMSG_INSPECT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0114))
         _fmt = "<6s"
@@ -20607,7 +20607,7 @@ class SMSG_INSPECT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x0115))
         _fmt = "<4s"
@@ -20639,7 +20639,7 @@ class CMSG_INITIATE_TRADE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0116))
         _fmt = "<6s"
@@ -20665,7 +20665,7 @@ class CMSG_BEGIN_TRADE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0117))
         _fmt = "<6s"
@@ -20689,7 +20689,7 @@ class CMSG_BUSY_TRADE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0118))
         _fmt = "<6s"
@@ -20713,7 +20713,7 @@ class CMSG_IGNORE_TRADE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0119))
         _fmt = "<6s"
@@ -20743,7 +20743,7 @@ class CMSG_ACCEPT_TRADE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x011A))
         _fmt = "<6s"
@@ -20769,7 +20769,7 @@ class CMSG_UNACCEPT_TRADE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x011B))
         _fmt = "<6s"
@@ -20793,7 +20793,7 @@ class CMSG_CANCEL_TRADE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x011C))
         _fmt = "<6s"
@@ -20833,7 +20833,7 @@ class CMSG_SET_TRADE_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(3 + 4, 0x011D))
         _fmt = "<6s"
@@ -20865,7 +20865,7 @@ class CMSG_CLEAR_TRADE_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 4, 0x011E))
         _fmt = "<6s"
@@ -20897,7 +20897,7 @@ class CMSG_SET_TRADE_GOLD:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x011F))
         _fmt = "<6s"
@@ -20962,7 +20962,7 @@ class SMSG_TRADE_STATUS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0120))
         _fmt = "<4s"
@@ -21042,7 +21042,7 @@ class SMSG_TRADE_STATUS_EXTENDED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(444 + 2, 0x0121))
         _fmt = "<4s"
@@ -21083,7 +21083,7 @@ class SMSG_INITIALIZE_FACTIONS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0122))
         _fmt = "<4s"
@@ -21122,7 +21122,7 @@ class SMSG_SET_FACTION_VISIBLE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(2 + 2, 0x0123))
         _fmt = "<4s"
@@ -21159,7 +21159,7 @@ class SMSG_SET_FACTION_STANDING:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0124))
         _fmt = "<4s"
@@ -21203,7 +21203,7 @@ class CMSG_SET_FACTION_ATWAR:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(3 + 4, 0x0125))
         _fmt = "<6s"
@@ -21240,7 +21240,7 @@ class SMSG_SET_PROFICIENCY:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(5 + 2, 0x0127))
         _fmt = "<4s"
@@ -21287,7 +21287,7 @@ class CMSG_SET_ACTION_BUTTON:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(5 + 4, 0x0128))
         _fmt = "<6s"
@@ -21321,7 +21321,7 @@ class SMSG_ACTION_BUTTONS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(480 + 2, 0x0129))
         _fmt = "<4s"
@@ -21373,7 +21373,7 @@ class SMSG_INITIAL_SPELLS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x012A))
         _fmt = "<4s"
@@ -21420,7 +21420,7 @@ class SMSG_LEARNED_SPELL:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x012B))
         _fmt = "<4s"
@@ -21457,7 +21457,7 @@ class SMSG_SUPERCEDED_SPELL:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x012C))
         _fmt = "<4s"
@@ -21494,7 +21494,7 @@ class CMSG_CAST_SPELL:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x012E))
         _fmt = "<6s"
@@ -21532,7 +21532,7 @@ class CMSG_CANCEL_CAST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x012F))
         _fmt = "<6s"
@@ -21609,7 +21609,7 @@ class SMSG_CAST_RESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0130))
         _fmt = "<4s"
@@ -21707,7 +21707,7 @@ class SMSG_SPELL_START:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0131))
         _fmt = "<4s"
@@ -21822,7 +21822,7 @@ class SMSG_SPELL_GO:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0132))
         _fmt = "<4s"
@@ -21906,7 +21906,7 @@ class SMSG_SPELL_FAILURE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(13 + 2, 0x0133))
         _fmt = "<4s"
@@ -21949,7 +21949,7 @@ class SMSG_SPELL_COOLDOWN:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0134))
         _fmt = "<4s"
@@ -21993,7 +21993,7 @@ class SMSG_COOLDOWN_EVENT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x0135))
         _fmt = "<4s"
@@ -22025,7 +22025,7 @@ class CMSG_CANCEL_AURA:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x0136))
         _fmt = "<6s"
@@ -22062,7 +22062,7 @@ class SMSG_UPDATE_AURA_DURATION:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(5 + 2, 0x0137))
         _fmt = "<4s"
@@ -22104,7 +22104,7 @@ class SMSG_PET_CAST_FAILED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(6 + 2, 0x0138))
         _fmt = "<4s"
@@ -22141,7 +22141,7 @@ class MSG_CHANNEL_START_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x0139))
         _fmt = "<4s"
@@ -22173,7 +22173,7 @@ class MSG_CHANNEL_UPDATE_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x013A))
         _fmt = "<4s"
@@ -22205,7 +22205,7 @@ class CMSG_CANCEL_CHANNELLING:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x013B))
         _fmt = "<6s"
@@ -22242,7 +22242,7 @@ class SMSG_AI_REACTION:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x013C))
         _fmt = "<4s"
@@ -22274,7 +22274,7 @@ class CMSG_SET_SELECTION:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x013D))
         _fmt = "<6s"
@@ -22306,7 +22306,7 @@ class CMSG_SET_TARGET_OBSOLETE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x013E))
         _fmt = "<6s"
@@ -22338,7 +22338,7 @@ class CMSG_ATTACKSWING:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0141))
         _fmt = "<6s"
@@ -22364,7 +22364,7 @@ class CMSG_ATTACKSTOP:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0142))
         _fmt = "<6s"
@@ -22399,7 +22399,7 @@ class SMSG_ATTACKSTART:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 2, 0x0143))
         _fmt = "<4s"
@@ -22441,7 +22441,7 @@ class SMSG_ATTACKSTOP:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0144))
         _fmt = "<4s"
@@ -22478,7 +22478,7 @@ class SMSG_ATTACKSWING_NOTINRANGE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x0145))
         _fmt = "<4s"
@@ -22502,7 +22502,7 @@ class SMSG_ATTACKSWING_BADFACING:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x0146))
         _fmt = "<4s"
@@ -22526,7 +22526,7 @@ class SMSG_ATTACKSWING_NOTSTANDING:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x0147))
         _fmt = "<4s"
@@ -22550,7 +22550,7 @@ class SMSG_ATTACKSWING_DEADTARGET:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x0148))
         _fmt = "<4s"
@@ -22574,7 +22574,7 @@ class SMSG_ATTACKSWING_CANT_ATTACK:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x0149))
         _fmt = "<4s"
@@ -22649,7 +22649,7 @@ class SMSG_ATTACKERSTATEUPDATE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x014A))
         _fmt = "<4s"
@@ -22712,7 +22712,7 @@ class SMSG_CANCEL_COMBAT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x014E))
         _fmt = "<4s"
@@ -22762,7 +22762,7 @@ class SMSG_SPELLHEALLOG:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0150))
         _fmt = "<4s"
@@ -22833,7 +22833,7 @@ class SMSG_SPELLENERGIZELOG:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0151))
         _fmt = "<4s"
@@ -22894,7 +22894,7 @@ class SMSG_BINDPOINTUPDATE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(20 + 2, 0x0155))
         _fmt = "<4s"
@@ -22940,7 +22940,7 @@ class SMSG_PLAYERBOUND:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x0158))
         _fmt = "<4s"
@@ -22977,7 +22977,7 @@ class SMSG_CLIENT_CONTROL_UPDATE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0159))
         _fmt = "<4s"
@@ -23011,7 +23011,7 @@ class CMSG_REPOP_REQUEST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x015A))
         _fmt = "<6s"
@@ -23051,7 +23051,7 @@ class SMSG_RESURRECT_REQUEST:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x015B))
         _fmt = "<4s"
@@ -23091,7 +23091,7 @@ class CMSG_RESURRECT_RESPONSE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(9 + 4, 0x015C))
         _fmt = "<6s"
@@ -23123,7 +23123,7 @@ class CMSG_LOOT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x015D))
         _fmt = "<6s"
@@ -23149,7 +23149,7 @@ class CMSG_LOOT_MONEY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x015E))
         _fmt = "<6s"
@@ -23179,7 +23179,7 @@ class CMSG_LOOT_RELEASE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x015F))
         _fmt = "<6s"
@@ -23238,7 +23238,7 @@ class SMSG_LOOT_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0160))
         _fmt = "<4s"
@@ -23298,7 +23298,7 @@ class SMSG_LOOT_RELEASE_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(9 + 2, 0x0161))
         _fmt = "<4s"
@@ -23330,7 +23330,7 @@ class SMSG_LOOT_REMOVED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 2, 0x0162))
         _fmt = "<4s"
@@ -23362,7 +23362,7 @@ class SMSG_LOOT_MONEY_NOTIFY:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x0163))
         _fmt = "<4s"
@@ -23388,7 +23388,7 @@ class SMSG_LOOT_CLEAR_MONEY:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x0165))
         _fmt = "<4s"
@@ -23463,7 +23463,7 @@ class SMSG_ITEM_PUSH_RESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(41 + 2, 0x0166))
         _fmt = "<4s"
@@ -23500,7 +23500,7 @@ class SMSG_DUEL_REQUESTED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 2, 0x0167))
         _fmt = "<4s"
@@ -23526,7 +23526,7 @@ class SMSG_DUEL_OUTOFBOUNDS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x0168))
         _fmt = "<4s"
@@ -23550,7 +23550,7 @@ class SMSG_DUEL_INBOUNDS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x0169))
         _fmt = "<4s"
@@ -23580,7 +23580,7 @@ class SMSG_DUEL_COMPLETE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 2, 0x016A))
         _fmt = "<4s"
@@ -23622,7 +23622,7 @@ class SMSG_DUEL_WINNER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x016B))
         _fmt = "<4s"
@@ -23657,7 +23657,7 @@ class CMSG_DUEL_ACCEPTED:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x016C))
         _fmt = "<6s"
@@ -23689,7 +23689,7 @@ class CMSG_DUEL_CANCELLED:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x016D))
         _fmt = "<6s"
@@ -23721,7 +23721,7 @@ class SMSG_MOUNTRESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x016E))
         _fmt = "<4s"
@@ -23753,7 +23753,7 @@ class SMSG_DISMOUNTRESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x016F))
         _fmt = "<4s"
@@ -23779,7 +23779,7 @@ class CMSG_MOUNTSPECIAL_ANIM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0171))
         _fmt = "<6s"
@@ -23809,7 +23809,7 @@ class SMSG_MOUNTSPECIAL_ANIM:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x0172))
         _fmt = "<4s"
@@ -23841,7 +23841,7 @@ class SMSG_PET_TAME_FAILURE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 2, 0x0173))
         _fmt = "<4s"
@@ -23904,7 +23904,7 @@ class CMSG_PET_SET_ACTION:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0174))
         _fmt = "<6s"
@@ -23959,7 +23959,7 @@ class CMSG_PET_ACTION:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(20 + 4, 0x0175))
         _fmt = "<6s"
@@ -23991,7 +23991,7 @@ class CMSG_PET_ABANDON:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0176))
         _fmt = "<6s"
@@ -24028,7 +24028,7 @@ class CMSG_PET_RENAME:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0177))
         _fmt = "<6s"
@@ -24057,7 +24057,7 @@ class SMSG_PET_NAME_INVALID:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x0178))
         _fmt = "<4s"
@@ -24164,7 +24164,7 @@ class SMSG_PET_SPELLS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0179))
         _fmt = "<4s"
@@ -24233,7 +24233,7 @@ class SMSG_PET_MODE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x017A))
         _fmt = "<4s"
@@ -24265,7 +24265,7 @@ class CMSG_GOSSIP_HELLO:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x017B))
         _fmt = "<6s"
@@ -24315,7 +24315,7 @@ class CMSG_GOSSIP_SELECT_OPTION:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x017C))
         _fmt = "<6s"
@@ -24385,7 +24385,7 @@ class SMSG_GOSSIP_MESSAGE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x017D))
         _fmt = "<4s"
@@ -24426,7 +24426,7 @@ class SMSG_GOSSIP_COMPLETE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x017E))
         _fmt = "<4s"
@@ -24461,7 +24461,7 @@ class CMSG_NPC_TEXT_QUERY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x017F))
         _fmt = "<6s"
@@ -24500,7 +24500,7 @@ class SMSG_NPC_TEXT_UPDATE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0180))
         _fmt = "<4s"
@@ -24539,7 +24539,7 @@ class CMSG_QUESTGIVER_STATUS_QUERY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0182))
         _fmt = "<6s"
@@ -24576,7 +24576,7 @@ class SMSG_QUESTGIVER_STATUS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x0183))
         _fmt = "<4s"
@@ -24608,7 +24608,7 @@ class CMSG_QUESTGIVER_HELLO:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0184))
         _fmt = "<6s"
@@ -24665,7 +24665,7 @@ class SMSG_QUESTGIVER_QUEST_LIST:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0185))
         _fmt = "<4s"
@@ -24709,7 +24709,7 @@ class CMSG_QUESTGIVER_QUERY_QUEST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0186))
         _fmt = "<6s"
@@ -24735,7 +24735,7 @@ class CMSG_QUESTGIVER_QUEST_AUTOLAUNCH:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0187))
         _fmt = "<6s"
@@ -24830,7 +24830,7 @@ class SMSG_QUESTGIVER_QUEST_DETAILS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0188))
         _fmt = "<4s"
@@ -24898,7 +24898,7 @@ class CMSG_QUESTGIVER_ACCEPT_QUEST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0189))
         _fmt = "<6s"
@@ -24935,7 +24935,7 @@ class CMSG_QUESTGIVER_COMPLETE_QUEST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x018A))
         _fmt = "<6s"
@@ -25032,7 +25032,7 @@ class SMSG_QUESTGIVER_REQUEST_ITEMS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x018B))
         _fmt = "<4s"
@@ -25092,7 +25092,7 @@ class CMSG_QUESTGIVER_REQUEST_REWARD:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x018C))
         _fmt = "<6s"
@@ -25189,7 +25189,7 @@ class SMSG_QUESTGIVER_OFFER_REWARD:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x018D))
         _fmt = "<4s"
@@ -25266,7 +25266,7 @@ class CMSG_QUESTGIVER_CHOOSE_REWARD:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 4, 0x018E))
         _fmt = "<6s"
@@ -25298,7 +25298,7 @@ class SMSG_QUESTGIVER_QUEST_INVALID:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x018F))
         _fmt = "<4s"
@@ -25324,7 +25324,7 @@ class CMSG_QUESTGIVER_CANCEL:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0190))
         _fmt = "<6s"
@@ -25379,7 +25379,7 @@ class SMSG_QUESTGIVER_QUEST_COMPLETE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0191))
         _fmt = "<4s"
@@ -25423,7 +25423,7 @@ class SMSG_QUESTGIVER_QUEST_FAILED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x0192))
         _fmt = "<4s"
@@ -25460,7 +25460,7 @@ class CMSG_QUESTLOG_SWAP_QUEST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(2 + 4, 0x0193))
         _fmt = "<6s"
@@ -25492,7 +25492,7 @@ class CMSG_QUESTLOG_REMOVE_QUEST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 4, 0x0194))
         _fmt = "<6s"
@@ -25518,7 +25518,7 @@ class SMSG_QUESTLOG_FULL:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x0195))
         _fmt = "<4s"
@@ -25548,7 +25548,7 @@ class SMSG_QUESTUPDATE_FAILED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x0196))
         _fmt = "<4s"
@@ -25580,7 +25580,7 @@ class SMSG_QUESTUPDATE_FAILEDTIMER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x0197))
         _fmt = "<4s"
@@ -25612,7 +25612,7 @@ class SMSG_QUESTUPDATE_COMPLETE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x0198))
         _fmt = "<4s"
@@ -25664,7 +25664,7 @@ class SMSG_QUESTUPDATE_ADD_KILL:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(24 + 2, 0x0199))
         _fmt = "<4s"
@@ -25701,7 +25701,7 @@ class SMSG_QUESTUPDATE_ADD_ITEM:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x019A))
         _fmt = "<4s"
@@ -25733,7 +25733,7 @@ class CMSG_QUEST_CONFIRM_ACCEPT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x019B))
         _fmt = "<6s"
@@ -25775,7 +25775,7 @@ class SMSG_QUEST_CONFIRM_ACCEPT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x019C))
         _fmt = "<4s"
@@ -25810,7 +25810,7 @@ class CMSG_PUSHQUESTTOPARTY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x019D))
         _fmt = "<6s"
@@ -25842,7 +25842,7 @@ class CMSG_LIST_INVENTORY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x019E))
         _fmt = "<6s"
@@ -25884,7 +25884,7 @@ class SMSG_LIST_INVENTORY:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x019F))
         _fmt = "<4s"
@@ -25933,7 +25933,7 @@ class CMSG_SELL_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(17 + 4, 0x01A0))
         _fmt = "<6s"
@@ -25975,7 +25975,7 @@ class SMSG_SELL_ITEM:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(17 + 2, 0x01A1))
         _fmt = "<4s"
@@ -26022,7 +26022,7 @@ class CMSG_BUY_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(14 + 4, 0x01A2))
         _fmt = "<6s"
@@ -26074,7 +26074,7 @@ class CMSG_BUY_ITEM_IN_SLOT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(22 + 4, 0x01A3))
         _fmt = "<6s"
@@ -26121,7 +26121,7 @@ class SMSG_BUY_ITEM:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(20 + 2, 0x01A4))
         _fmt = "<4s"
@@ -26163,7 +26163,7 @@ class SMSG_BUY_FAILED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(13 + 2, 0x01A5))
         _fmt = "<4s"
@@ -26218,7 +26218,7 @@ class SMSG_SHOWTAXINODES:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x01A9))
         _fmt = "<4s"
@@ -26253,7 +26253,7 @@ class CMSG_TAXINODE_STATUS_QUERY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01AA))
         _fmt = "<6s"
@@ -26290,7 +26290,7 @@ class SMSG_TAXINODE_STATUS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(9 + 2, 0x01AB))
         _fmt = "<4s"
@@ -26322,7 +26322,7 @@ class CMSG_TAXIQUERYAVAILABLENODES:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01AC))
         _fmt = "<6s"
@@ -26364,7 +26364,7 @@ class CMSG_ACTIVATETAXI:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 4, 0x01AD))
         _fmt = "<6s"
@@ -26396,7 +26396,7 @@ class SMSG_ACTIVATETAXIREPLY:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x01AE))
         _fmt = "<4s"
@@ -26422,7 +26422,7 @@ class SMSG_NEW_TAXI_PATH:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x01AF))
         _fmt = "<4s"
@@ -26452,7 +26452,7 @@ class CMSG_TRAINER_LIST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01B0))
         _fmt = "<6s"
@@ -26504,7 +26504,7 @@ class SMSG_TRAINER_LIST:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x01B1))
         _fmt = "<4s"
@@ -26552,7 +26552,7 @@ class CMSG_TRAINER_BUY_SPELL:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x01B2))
         _fmt = "<6s"
@@ -26589,7 +26589,7 @@ class SMSG_TRAINER_BUY_SUCCEEDED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x01B3))
         _fmt = "<4s"
@@ -26631,7 +26631,7 @@ class SMSG_TRAINER_BUY_FAILED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 2, 0x01B4))
         _fmt = "<4s"
@@ -26663,7 +26663,7 @@ class CMSG_BINDER_ACTIVATE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01B5))
         _fmt = "<6s"
@@ -26695,7 +26695,7 @@ class CMSG_BANKER_ACTIVATE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01B7))
         _fmt = "<6s"
@@ -26727,7 +26727,7 @@ class SMSG_SHOW_BANK:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x01B8))
         _fmt = "<4s"
@@ -26759,7 +26759,7 @@ class CMSG_BUY_BANK_SLOT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01B9))
         _fmt = "<6s"
@@ -26791,7 +26791,7 @@ class SMSG_BUY_BANK_SLOT_RESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x01BA))
         _fmt = "<4s"
@@ -26823,7 +26823,7 @@ class CMSG_PETITION_SHOWLIST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01BB))
         _fmt = "<6s"
@@ -26865,7 +26865,7 @@ class SMSG_PETITION_SHOWLIST:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x01BC))
         _fmt = "<4s"
@@ -26989,7 +26989,7 @@ class CMSG_PETITION_BUY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x01BD))
         _fmt = "<6s"
@@ -27024,7 +27024,7 @@ class CMSG_PETITION_SHOW_SIGNATURES:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01BE))
         _fmt = "<6s"
@@ -27076,7 +27076,7 @@ class SMSG_PETITION_SHOW_SIGNATURES:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x01BF))
         _fmt = "<4s"
@@ -27120,7 +27120,7 @@ class CMSG_PETITION_SIGN:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(9 + 4, 0x01C0))
         _fmt = "<6s"
@@ -27162,7 +27162,7 @@ class SMSG_PETITION_SIGN_RESULTS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(20 + 2, 0x01C1))
         _fmt = "<4s"
@@ -27194,7 +27194,7 @@ class MSG_PETITION_DECLINE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01C2))
         _fmt = "<6s"
@@ -27212,7 +27212,7 @@ class MSG_PETITION_DECLINE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x01C2))
         _fmt = "<4s"
@@ -27249,7 +27249,7 @@ class CMSG_OFFER_PETITION:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 4, 0x01C3))
         _fmt = "<6s"
@@ -27281,7 +27281,7 @@ class CMSG_TURN_IN_PETITION:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01C4))
         _fmt = "<6s"
@@ -27313,7 +27313,7 @@ class SMSG_TURN_IN_PETITION_RESULTS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x01C5))
         _fmt = "<4s"
@@ -27350,7 +27350,7 @@ class CMSG_PETITION_QUERY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x01C6))
         _fmt = "<6s"
@@ -27462,7 +27462,7 @@ class SMSG_PETITION_QUERY_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x01C7))
         _fmt = "<4s"
@@ -27491,7 +27491,7 @@ class SMSG_FISH_NOT_HOOKED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x01C8))
         _fmt = "<4s"
@@ -27515,7 +27515,7 @@ class SMSG_FISH_ESCAPED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x01C9))
         _fmt = "<4s"
@@ -27555,7 +27555,7 @@ class CMSG_BUG:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x01CA))
         _fmt = "<6s"
@@ -27590,7 +27590,7 @@ class SMSG_NOTIFICATION:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x01CB))
         _fmt = "<4s"
@@ -27619,7 +27619,7 @@ class CMSG_PLAYED_TIME:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x01CC))
         _fmt = "<6s"
@@ -27654,7 +27654,7 @@ class SMSG_PLAYED_TIME:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x01CD))
         _fmt = "<4s"
@@ -27680,7 +27680,7 @@ class CMSG_QUERY_TIME:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x01CE))
         _fmt = "<6s"
@@ -27710,7 +27710,7 @@ class SMSG_QUERY_TIME_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x01CF))
         _fmt = "<4s"
@@ -27765,7 +27765,7 @@ class SMSG_LOG_XPGAIN:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x01D0))
         _fmt = "<4s"
@@ -27808,7 +27808,7 @@ class CMSG_RECLAIM_CORPSE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01D2))
         _fmt = "<6s"
@@ -27855,7 +27855,7 @@ class CMSG_WRAP_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x01D3))
         _fmt = "<6s"
@@ -27942,7 +27942,7 @@ class SMSG_LEVELUP_INFO:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(48 + 2, 0x01D4))
         _fmt = "<4s"
@@ -27979,7 +27979,7 @@ class MSG_MINIMAP_PING_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01D5))
         _fmt = "<6s"
@@ -28021,7 +28021,7 @@ class MSG_MINIMAP_PING_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 2, 0x01D5))
         _fmt = "<4s"
@@ -28083,7 +28083,7 @@ class SMSG_RESISTLOG:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(36 + 2, 0x01D6))
         _fmt = "<4s"
@@ -28135,7 +28135,7 @@ class SMSG_ENCHANTMENTLOG:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(25 + 2, 0x01D7))
         _fmt = "<4s"
@@ -28192,7 +28192,7 @@ class SMSG_START_MIRROR_TIMER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(21 + 2, 0x01D9))
         _fmt = "<4s"
@@ -28229,7 +28229,7 @@ class SMSG_PAUSE_MIRROR_TIMER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(5 + 2, 0x01DA))
         _fmt = "<4s"
@@ -28261,7 +28261,7 @@ class SMSG_STOP_MIRROR_TIMER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x01DB))
         _fmt = "<4s"
@@ -28298,7 +28298,7 @@ class CMSG_PING:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01DC))
         _fmt = "<6s"
@@ -28330,7 +28330,7 @@ class SMSG_PONG:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x01DD))
         _fmt = "<4s"
@@ -28367,7 +28367,7 @@ class SMSG_CLEAR_COOLDOWN:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x01DE))
         _fmt = "<4s"
@@ -28399,7 +28399,7 @@ class SMSG_GAMEOBJECT_PAGETEXT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x01DF))
         _fmt = "<4s"
@@ -28431,7 +28431,7 @@ class CMSG_SETSHEATHED:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x01E0))
         _fmt = "<6s"
@@ -28468,7 +28468,7 @@ class SMSG_SPELL_DELAYED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x01E2))
         _fmt = "<4s"
@@ -28505,7 +28505,7 @@ class SMSG_ITEM_TIME_UPDATE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x01EA))
         _fmt = "<4s"
@@ -28552,7 +28552,7 @@ class SMSG_ITEM_ENCHANT_TIME_UPDATE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(24 + 2, 0x01EB))
         _fmt = "<4s"
@@ -28759,7 +28759,7 @@ class SMSG_AUTH_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x01EE))
         _fmt = "<4s"
@@ -28817,7 +28817,7 @@ class CMSG_PET_CAST_SPELL:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x01F0))
         _fmt = "<6s"
@@ -28855,7 +28855,7 @@ class MSG_SAVE_GUILD_EMBLEM_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x01F1))
         _fmt = "<4s"
@@ -28912,7 +28912,7 @@ class MSG_SAVE_GUILD_EMBLEM_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(28 + 4, 0x01F1))
         _fmt = "<6s"
@@ -28944,7 +28944,7 @@ class MSG_TABARDVENDOR_ACTIVATE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01F2))
         _fmt = "<6s"
@@ -28962,7 +28962,7 @@ class MSG_TABARDVENDOR_ACTIVATE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x01F2))
         _fmt = "<4s"
@@ -28999,7 +28999,7 @@ class SMSG_PLAY_SPELL_VISUAL:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x01F3))
         _fmt = "<4s"
@@ -29031,7 +29031,7 @@ class CMSG_ZONEUPDATE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x01F4))
         _fmt = "<6s"
@@ -29068,7 +29068,7 @@ class SMSG_PARTYKILLLOG:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 2, 0x01F5))
         _fmt = "<4s"
@@ -29118,7 +29118,7 @@ class SMSG_COMPRESSED_UPDATE_OBJECT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x01F6))
         _fmt = "<4s"
@@ -29191,7 +29191,7 @@ class SMSG_PLAY_SPELL_IMPACT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x01F7))
         _fmt = "<4s"
@@ -29228,7 +29228,7 @@ class SMSG_EXPLORATION_EXPERIENCE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x01F8))
         _fmt = "<4s"
@@ -29265,7 +29265,7 @@ class MSG_RANDOM_ROLL_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x01FB))
         _fmt = "<6s"
@@ -29312,7 +29312,7 @@ class MSG_RANDOM_ROLL_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(20 + 2, 0x01FB))
         _fmt = "<4s"
@@ -29364,7 +29364,7 @@ class SMSG_ENVIRONMENTAL_DAMAGE_LOG:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(21 + 2, 0x01FC))
         _fmt = "<4s"
@@ -29390,7 +29390,7 @@ class MSG_LOOKING_FOR_GROUP_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x01FF))
         _fmt = "<6s"
@@ -29420,7 +29420,7 @@ class MSG_LOOKING_FOR_GROUP_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x01FF))
         _fmt = "<4s"
@@ -29452,7 +29452,7 @@ class CMSG_UNLEARN_SKILL:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x0202))
         _fmt = "<6s"
@@ -29484,7 +29484,7 @@ class SMSG_REMOVED_SPELL:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(2 + 2, 0x0203))
         _fmt = "<4s"
@@ -29573,7 +29573,7 @@ class CMSG_GMTICKET_CREATE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0205))
         _fmt = "<6s"
@@ -29662,7 +29662,7 @@ class SMSG_GMTICKET_CREATE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x0206))
         _fmt = "<4s"
@@ -29699,7 +29699,7 @@ class CMSG_GMTICKET_UPDATETEXT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0207))
         _fmt = "<6s"
@@ -29734,7 +29734,7 @@ class SMSG_GMTICKET_UPDATETEXT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x0208))
         _fmt = "<4s"
@@ -29768,7 +29768,7 @@ class SMSG_ACCOUNT_DATA_TIMES:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(128 + 2, 0x0209))
         _fmt = "<4s"
@@ -29800,7 +29800,7 @@ class CMSG_REQUEST_ACCOUNT_DATA:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x020A))
         _fmt = "<6s"
@@ -29856,7 +29856,7 @@ class CMSG_UPDATE_ACCOUNT_DATA:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x020B))
         _fmt = "<6s"
@@ -29921,7 +29921,7 @@ class CMSG_GMTICKET_GETTICKET:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0211))
         _fmt = "<6s"
@@ -29994,7 +29994,7 @@ class SMSG_GMTICKET_GETTICKET:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0212))
         _fmt = "<4s"
@@ -30037,7 +30037,7 @@ class SMSG_GAMEOBJECT_SPAWN_ANIM:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x0214))
         _fmt = "<4s"
@@ -30069,7 +30069,7 @@ class SMSG_GAMEOBJECT_DESPAWN_ANIM:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x0215))
         _fmt = "<4s"
@@ -30095,7 +30095,7 @@ class MSG_CORPSE_QUERY_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0216))
         _fmt = "<6s"
@@ -30144,7 +30144,7 @@ class MSG_CORPSE_QUERY_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0216))
         _fmt = "<4s"
@@ -30188,7 +30188,7 @@ class CMSG_GMTICKET_DELETETICKET:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0217))
         _fmt = "<6s"
@@ -30218,7 +30218,7 @@ class SMSG_GMTICKET_DELETETICKET:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x0218))
         _fmt = "<4s"
@@ -30244,7 +30244,7 @@ class SMSG_CHAT_WRONG_FACTION:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x0219))
         _fmt = "<4s"
@@ -30268,7 +30268,7 @@ class CMSG_GMTICKET_SYSTEMSTATUS:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x021A))
         _fmt = "<6s"
@@ -30298,7 +30298,7 @@ class SMSG_GMTICKET_SYSTEMSTATUS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x021B))
         _fmt = "<4s"
@@ -30330,7 +30330,7 @@ class CMSG_SPIRIT_HEALER_ACTIVATE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x021C))
         _fmt = "<6s"
@@ -30362,7 +30362,7 @@ class SMSG_SET_REST_START:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x021E))
         _fmt = "<4s"
@@ -30394,7 +30394,7 @@ class SMSG_SPIRIT_HEALER_CONFIRM:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x0222))
         _fmt = "<4s"
@@ -30446,7 +30446,7 @@ class SMSG_GOSSIP_POI:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0224))
         _fmt = "<4s"
@@ -30496,7 +30496,7 @@ class CMSG_CHAT_IGNORED:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0225))
         _fmt = "<6s"
@@ -30538,7 +30538,7 @@ class CMSG_GUILD_RANK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0231))
         _fmt = "<6s"
@@ -30573,7 +30573,7 @@ class CMSG_GUILD_ADD_RANK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0232))
         _fmt = "<6s"
@@ -30602,7 +30602,7 @@ class CMSG_GUILD_DEL_RANK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0233))
         _fmt = "<6s"
@@ -30637,7 +30637,7 @@ class CMSG_GUILD_SET_PUBLIC_NOTE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0234))
         _fmt = "<6s"
@@ -30677,7 +30677,7 @@ class CMSG_GUILD_SET_OFFICER_NOTE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0235))
         _fmt = "<6s"
@@ -30722,7 +30722,7 @@ class SMSG_LOGIN_VERIFY_WORLD:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(20 + 2, 0x0236))
         _fmt = "<4s"
@@ -30811,7 +30811,7 @@ class CMSG_SEND_MAIL:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0238))
         _fmt = "<6s"
@@ -30892,7 +30892,7 @@ class SMSG_SEND_MAIL_RESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0239))
         _fmt = "<4s"
@@ -30959,7 +30959,7 @@ class CMSG_GET_MAIL_LIST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x023A))
         _fmt = "<6s"
@@ -30996,7 +30996,7 @@ class SMSG_MAIL_LIST_RESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x023B))
         _fmt = "<4s"
@@ -31035,7 +31035,7 @@ class CMSG_BATTLEFIELD_LIST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x023C))
         _fmt = "<6s"
@@ -31087,7 +31087,7 @@ class SMSG_BATTLEFIELD_LIST:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x023D))
         _fmt = "<4s"
@@ -31122,7 +31122,7 @@ class CMSG_BATTLEFIELD_JOIN:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x023E))
         _fmt = "<6s"
@@ -31164,7 +31164,7 @@ class CMSG_ITEM_TEXT_QUERY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0243))
         _fmt = "<6s"
@@ -31201,7 +31201,7 @@ class SMSG_ITEM_TEXT_QUERY_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0244))
         _fmt = "<4s"
@@ -31241,7 +31241,7 @@ class CMSG_MAIL_TAKE_MONEY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0245))
         _fmt = "<6s"
@@ -31278,7 +31278,7 @@ class CMSG_MAIL_TAKE_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0246))
         _fmt = "<6s"
@@ -31315,7 +31315,7 @@ class CMSG_MAIL_MARK_AS_READ:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0247))
         _fmt = "<6s"
@@ -31352,7 +31352,7 @@ class CMSG_MAIL_RETURN_TO_SENDER:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0248))
         _fmt = "<6s"
@@ -31389,7 +31389,7 @@ class CMSG_MAIL_DELETE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0249))
         _fmt = "<6s"
@@ -31431,7 +31431,7 @@ class CMSG_MAIL_CREATE_TEXT_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 4, 0x024A))
         _fmt = "<6s"
@@ -31483,7 +31483,7 @@ class SMSG_SPELLLOGMISS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x024B))
         _fmt = "<4s"
@@ -31537,7 +31537,7 @@ class SMSG_SPELLLOGEXECUTE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x024C))
         _fmt = "<4s"
@@ -31605,7 +31605,7 @@ class SMSG_PERIODICAURALOG:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x024E))
         _fmt = "<4s"
@@ -31671,7 +31671,7 @@ class SMSG_SPELLDAMAGESHIELD:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(24 + 2, 0x024F))
         _fmt = "<4s"
@@ -31758,7 +31758,7 @@ class SMSG_SPELLNONMELEEDAMAGELOG:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0250))
         _fmt = "<4s"
@@ -31842,7 +31842,7 @@ class CMSG_LEARN_TALENT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0251))
         _fmt = "<6s"
@@ -31880,7 +31880,7 @@ class CMSG_TOGGLE_PVP:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0253))
         _fmt = "<6s"
@@ -31923,7 +31923,7 @@ class SMSG_ZONE_UNDER_ATTACK:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x0254))
         _fmt = "<4s"
@@ -31955,7 +31955,7 @@ class MSG_AUCTION_HELLO_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0255))
         _fmt = "<6s"
@@ -31992,7 +31992,7 @@ class MSG_AUCTION_HELLO_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x0255))
         _fmt = "<4s"
@@ -32044,7 +32044,7 @@ class CMSG_AUCTION_SELL_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(28 + 4, 0x0256))
         _fmt = "<6s"
@@ -32081,7 +32081,7 @@ class CMSG_AUCTION_REMOVE_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0257))
         _fmt = "<6s"
@@ -32158,7 +32158,7 @@ class CMSG_AUCTION_LIST_ITEMS:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0258))
         _fmt = "<6s"
@@ -32198,7 +32198,7 @@ class CMSG_AUCTION_LIST_OWNER_ITEMS:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0259))
         _fmt = "<6s"
@@ -32240,7 +32240,7 @@ class CMSG_AUCTION_PLACE_BID:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 4, 0x025A))
         _fmt = "<6s"
@@ -32350,7 +32350,7 @@ class SMSG_AUCTION_COMMAND_RESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x025B))
         _fmt = "<4s"
@@ -32437,7 +32437,7 @@ class SMSG_AUCTION_LIST_RESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x025C))
         _fmt = "<4s"
@@ -32490,7 +32490,7 @@ class SMSG_AUCTION_OWNER_LIST_RESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x025D))
         _fmt = "<4s"
@@ -32563,7 +32563,7 @@ class SMSG_AUCTION_BIDDER_NOTIFICATION:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(32 + 2, 0x025E))
         _fmt = "<4s"
@@ -32620,7 +32620,7 @@ class SMSG_AUCTION_OWNER_NOTIFICATION:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(28 + 2, 0x025F))
         _fmt = "<4s"
@@ -32667,7 +32667,7 @@ class SMSG_PROCRESIST:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(21 + 2, 0x0260))
         _fmt = "<4s"
@@ -32716,7 +32716,7 @@ class SMSG_DISPEL_FAILED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0262))
         _fmt = "<4s"
@@ -32766,7 +32766,7 @@ class SMSG_SPELLORDAMAGE_IMMUNE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(21 + 2, 0x0263))
         _fmt = "<4s"
@@ -32813,7 +32813,7 @@ class CMSG_AUCTION_LIST_BIDDER_ITEMS:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0264))
         _fmt = "<6s"
@@ -32858,7 +32858,7 @@ class SMSG_AUCTION_BIDDER_LIST_RESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0265))
         _fmt = "<4s"
@@ -32911,7 +32911,7 @@ class SMSG_SET_FLAT_SPELL_MODIFIER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(6 + 2, 0x0266))
         _fmt = "<4s"
@@ -32953,7 +32953,7 @@ class SMSG_SET_PCT_SPELL_MODIFIER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(6 + 2, 0x0267))
         _fmt = "<4s"
@@ -32985,7 +32985,7 @@ class CMSG_SET_AMMO:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x0268))
         _fmt = "<6s"
@@ -33017,7 +33017,7 @@ class SMSG_CORPSE_RECLAIM_DELAY:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x0269))
         _fmt = "<4s"
@@ -33049,7 +33049,7 @@ class CMSG_SET_ACTIVE_MOVER:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x026A))
         _fmt = "<6s"
@@ -33086,7 +33086,7 @@ class CMSG_PET_CANCEL_AURA:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x026B))
         _fmt = "<6s"
@@ -33112,7 +33112,7 @@ class CMSG_CANCEL_AUTO_REPEAT_SPELL:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x026D))
         _fmt = "<6s"
@@ -33142,7 +33142,7 @@ class MSG_LIST_STABLED_PETS_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x026F))
         _fmt = "<6s"
@@ -33189,7 +33189,7 @@ class MSG_LIST_STABLED_PETS_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x026F))
         _fmt = "<4s"
@@ -33228,7 +33228,7 @@ class CMSG_STABLE_PET:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0270))
         _fmt = "<6s"
@@ -33265,7 +33265,7 @@ class CMSG_UNSTABLE_PET:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0271))
         _fmt = "<6s"
@@ -33297,7 +33297,7 @@ class CMSG_BUY_STABLE_SLOT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0272))
         _fmt = "<6s"
@@ -33329,7 +33329,7 @@ class SMSG_STABLE_RESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 2, 0x0273))
         _fmt = "<4s"
@@ -33366,7 +33366,7 @@ class CMSG_STABLE_SWAP_PET:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0275))
         _fmt = "<6s"
@@ -33403,7 +33403,7 @@ class MSG_QUEST_PUSH_RESULT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(9 + 4, 0x0276))
         _fmt = "<6s"
@@ -33421,7 +33421,7 @@ class MSG_QUEST_PUSH_RESULT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(9 + 2, 0x0276))
         _fmt = "<4s"
@@ -33453,7 +33453,7 @@ class SMSG_PLAY_MUSIC:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x0277))
         _fmt = "<4s"
@@ -33490,7 +33490,7 @@ class SMSG_PLAY_OBJECT_SOUND:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x0278))
         _fmt = "<4s"
@@ -33516,7 +33516,7 @@ class CMSG_REQUEST_PET_INFO:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0279))
         _fmt = "<6s"
@@ -33546,7 +33546,7 @@ class CMSG_FAR_SIGHT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 4, 0x027A))
         _fmt = "<6s"
@@ -33593,7 +33593,7 @@ class SMSG_SPELLDISPELLOG:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x027B))
         _fmt = "<4s"
@@ -33645,7 +33645,7 @@ class CMSG_GROUP_CHANGE_SUB_GROUP:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x027E))
         _fmt = "<6s"
@@ -33680,7 +33680,7 @@ class CMSG_REQUEST_PARTY_MEMBER_STATS:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x027F))
         _fmt = "<6s"
@@ -33717,7 +33717,7 @@ class CMSG_GROUP_SWAP_SUB_GROUP:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0280))
         _fmt = "<6s"
@@ -33757,7 +33757,7 @@ class CMSG_AUTOSTORE_BANK_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(2 + 4, 0x0282))
         _fmt = "<6s"
@@ -33794,7 +33794,7 @@ class CMSG_AUTOBANK_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(2 + 4, 0x0283))
         _fmt = "<6s"
@@ -33826,7 +33826,7 @@ class MSG_QUERY_NEXT_MAIL_TIME_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x0284))
         _fmt = "<4s"
@@ -33852,7 +33852,7 @@ class MSG_QUERY_NEXT_MAIL_TIME_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0284))
         _fmt = "<6s"
@@ -33882,7 +33882,7 @@ class SMSG_RECEIVED_MAIL:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x0285))
         _fmt = "<4s"
@@ -33919,7 +33919,7 @@ class SMSG_RAID_GROUP_ONLY:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x0286))
         _fmt = "<4s"
@@ -33961,7 +33961,7 @@ class SMSG_PVP_CREDIT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 2, 0x028C))
         _fmt = "<4s"
@@ -34003,7 +34003,7 @@ class SMSG_AUCTION_REMOVED_NOTIFICATION:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x028D))
         _fmt = "<4s"
@@ -34029,7 +34029,7 @@ class CMSG_GROUP_RAID_CONVERT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x028E))
         _fmt = "<6s"
@@ -34064,7 +34064,7 @@ class CMSG_GROUP_ASSISTANT_LEADER:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(9 + 4, 0x028F))
         _fmt = "<6s"
@@ -34101,7 +34101,7 @@ class CMSG_BUYBACK_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x0290))
         _fmt = "<6s"
@@ -34138,7 +34138,7 @@ class SMSG_SERVER_MESSAGE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0291))
         _fmt = "<4s"
@@ -34173,7 +34173,7 @@ class CMSG_MEETINGSTONE_JOIN:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x0292))
         _fmt = "<6s"
@@ -34199,7 +34199,7 @@ class CMSG_MEETINGSTONE_LEAVE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0293))
         _fmt = "<6s"
@@ -34234,7 +34234,7 @@ class SMSG_MEETINGSTONE_SETQUEUE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(5 + 2, 0x0295))
         _fmt = "<4s"
@@ -34260,7 +34260,7 @@ class CMSG_MEETINGSTONE_INFO:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x0296))
         _fmt = "<6s"
@@ -34284,7 +34284,7 @@ class SMSG_MEETINGSTONE_COMPLETE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x0297))
         _fmt = "<4s"
@@ -34308,7 +34308,7 @@ class SMSG_MEETINGSTONE_IN_PROGRESS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x0298))
         _fmt = "<4s"
@@ -34338,7 +34338,7 @@ class SMSG_MEETINGSTONE_MEMBER_ADDED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x0299))
         _fmt = "<4s"
@@ -34364,7 +34364,7 @@ class CMSG_CANCEL_GROWTH_AURA:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x029B))
         _fmt = "<6s"
@@ -34388,7 +34388,7 @@ class SMSG_CANCEL_AUTO_REPEAT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x029C))
         _fmt = "<4s"
@@ -34418,7 +34418,7 @@ class SMSG_STANDSTATE_UPDATE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 2, 0x029D))
         _fmt = "<4s"
@@ -34470,7 +34470,7 @@ class SMSG_LOOT_ALL_PASSED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(24 + 2, 0x029E))
         _fmt = "<4s"
@@ -34537,7 +34537,7 @@ class SMSG_LOOT_ROLL_WON:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(34 + 2, 0x029F))
         _fmt = "<4s"
@@ -34579,7 +34579,7 @@ class CMSG_LOOT_ROLL:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(13 + 4, 0x02A0))
         _fmt = "<6s"
@@ -34636,7 +34636,7 @@ class SMSG_LOOT_START_ROLL:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(28 + 2, 0x02A1))
         _fmt = "<4s"
@@ -34703,7 +34703,7 @@ class SMSG_LOOT_ROLL:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(34 + 2, 0x02A2))
         _fmt = "<4s"
@@ -34745,7 +34745,7 @@ class CMSG_LOOT_MASTER_GIVE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(17 + 4, 0x02A3))
         _fmt = "<6s"
@@ -34782,7 +34782,7 @@ class SMSG_LOOT_MASTER_LIST:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02A4))
         _fmt = "<4s"
@@ -34822,7 +34822,7 @@ class SMSG_SET_FORCED_REACTIONS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02A5))
         _fmt = "<4s"
@@ -34866,7 +34866,7 @@ class SMSG_SPELL_FAILED_OTHER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x02A6))
         _fmt = "<4s"
@@ -34898,7 +34898,7 @@ class SMSG_GAMEOBJECT_RESET_STATE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x02A7))
         _fmt = "<4s"
@@ -34935,7 +34935,7 @@ class CMSG_REPAIR_ITEM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 4, 0x02A8))
         _fmt = "<6s"
@@ -34967,7 +34967,7 @@ class SMSG_CHAT_PLAYER_NOT_FOUND:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02A9))
         _fmt = "<4s"
@@ -35002,7 +35002,7 @@ class MSG_TALENT_WIPE_CONFIRM_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x02AA))
         _fmt = "<6s"
@@ -35039,7 +35039,7 @@ class MSG_TALENT_WIPE_CONFIRM_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x02AA))
         _fmt = "<4s"
@@ -35081,7 +35081,7 @@ class SMSG_SUMMON_REQUEST:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 2, 0x02AB))
         _fmt = "<4s"
@@ -35113,7 +35113,7 @@ class CMSG_SUMMON_RESPONSE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x02AC))
         _fmt = "<6s"
@@ -35201,7 +35201,7 @@ class SMSG_MONSTER_MOVE_TRANSPORT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02AE))
         _fmt = "<4s"
@@ -35275,7 +35275,7 @@ class SMSG_PET_BROKEN:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x02AF))
         _fmt = "<4s"
@@ -35310,7 +35310,7 @@ class MSG_MOVE_FEATHER_FALL_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02B0))
         _fmt = "<4s"
@@ -35354,7 +35354,7 @@ class MSG_MOVE_WATER_WALK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x02B1))
         _fmt = "<6s"
@@ -35376,7 +35376,7 @@ class MSG_MOVE_WATER_WALK:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02B1))
         _fmt = "<4s"
@@ -35409,7 +35409,7 @@ class CMSG_SELF_RES:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x02B3))
         _fmt = "<6s"
@@ -35433,7 +35433,7 @@ class SMSG_FEIGN_DEATH_RESISTED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x02B4))
         _fmt = "<4s"
@@ -35463,7 +35463,7 @@ class SMSG_DUEL_COUNTDOWN:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x02B7))
         _fmt = "<4s"
@@ -35495,7 +35495,7 @@ class SMSG_AREA_TRIGGER_MESSAGE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02B8))
         _fmt = "<4s"
@@ -35524,7 +35524,7 @@ class CMSG_TOGGLE_HELM:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x02B9))
         _fmt = "<6s"
@@ -35548,7 +35548,7 @@ class CMSG_TOGGLE_CLOAK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x02BA))
         _fmt = "<6s"
@@ -35578,7 +35578,7 @@ class SMSG_MEETINGSTONE_JOINFAILED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 2, 0x02BB))
         _fmt = "<4s"
@@ -35610,7 +35610,7 @@ class SMSG_PLAYER_SKINNED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 2, 0x02BC))
         _fmt = "<4s"
@@ -35636,7 +35636,7 @@ class SMSG_DURABILITY_DAMAGE_DEATH:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x02BD))
         _fmt = "<4s"
@@ -35666,7 +35666,7 @@ class CMSG_SET_ACTIONBAR_TOGGLES:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 4, 0x02BF))
         _fmt = "<6s"
@@ -35703,7 +35703,7 @@ class MSG_PETITION_RENAME:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x02C1))
         _fmt = "<6s"
@@ -35721,7 +35721,7 @@ class MSG_PETITION_RENAME:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02C1))
         _fmt = "<4s"
@@ -35771,7 +35771,7 @@ class SMSG_INIT_WORLD_STATES:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02C2))
         _fmt = "<4s"
@@ -35810,7 +35810,7 @@ class SMSG_UPDATE_WORLD_STATE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x02C3))
         _fmt = "<4s"
@@ -35848,7 +35848,7 @@ class CMSG_ITEM_NAME_QUERY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x02C4))
         _fmt = "<6s"
@@ -35885,7 +35885,7 @@ class SMSG_ITEM_NAME_QUERY_RESPONSE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02C5))
         _fmt = "<4s"
@@ -35920,7 +35920,7 @@ class SMSG_PET_ACTION_FEEDBACK:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(1 + 2, 0x02C6))
         _fmt = "<4s"
@@ -35957,7 +35957,7 @@ class CMSG_CHAR_RENAME:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x02C7))
         _fmt = "<6s"
@@ -36005,7 +36005,7 @@ class SMSG_CHAR_RENAME:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02C8))
         _fmt = "<4s"
@@ -36058,7 +36058,7 @@ class CMSG_MOVE_SPLINE_DONE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x02C9))
         _fmt = "<6s"
@@ -36102,7 +36102,7 @@ class CMSG_MOVE_FALL_RESET:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x02CA))
         _fmt = "<6s"
@@ -36138,7 +36138,7 @@ class SMSG_INSTANCE_SAVE_CREATED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x02CB))
         _fmt = "<4s"
@@ -36175,7 +36175,7 @@ class SMSG_RAID_INSTANCE_INFO:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02CC))
         _fmt = "<4s"
@@ -36208,7 +36208,7 @@ class CMSG_REQUEST_RAID_INFO:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x02CD))
         _fmt = "<6s"
@@ -36243,7 +36243,7 @@ class CMSG_MOVE_TIME_SKIPPED:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 4, 0x02CE))
         _fmt = "<6s"
@@ -36290,7 +36290,7 @@ class CMSG_MOVE_FEATHER_FALL_ACK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x02CF))
         _fmt = "<6s"
@@ -36347,7 +36347,7 @@ class CMSG_MOVE_WATER_WALK_ACK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x02D0))
         _fmt = "<6s"
@@ -36394,7 +36394,7 @@ class CMSG_MOVE_NOT_ACTIVE_MOVER:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x02D1))
         _fmt = "<6s"
@@ -36432,7 +36432,7 @@ class SMSG_PLAY_SOUND:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x02D2))
         _fmt = "<4s"
@@ -36458,7 +36458,7 @@ class CMSG_BATTLEFIELD_STATUS:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x02D3))
         _fmt = "<6s"
@@ -36545,7 +36545,7 @@ class SMSG_BATTLEFIELD_STATUS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02D4))
         _fmt = "<4s"
@@ -36610,7 +36610,7 @@ class CMSG_BATTLEFIELD_PORT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(5 + 4, 0x02D5))
         _fmt = "<6s"
@@ -36642,7 +36642,7 @@ class MSG_INSPECT_HONOR_STATS_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x02D6))
         _fmt = "<6s"
@@ -36749,7 +36749,7 @@ class MSG_INSPECT_HONOR_STATS_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(50 + 2, 0x02D6))
         _fmt = "<4s"
@@ -36781,7 +36781,7 @@ class CMSG_BATTLEMASTER_HELLO:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x02D7))
         _fmt = "<6s"
@@ -36823,7 +36823,7 @@ class SMSG_FORCE_WALK_SPEED_CHANGE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02DA))
         _fmt = "<4s"
@@ -36882,7 +36882,7 @@ class CMSG_FORCE_WALK_SPEED_CHANGE_ACK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x02DB))
         _fmt = "<6s"
@@ -36934,7 +36934,7 @@ class SMSG_FORCE_SWIM_BACK_SPEED_CHANGE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02DC))
         _fmt = "<4s"
@@ -36993,7 +36993,7 @@ class CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x02DD))
         _fmt = "<6s"
@@ -37045,7 +37045,7 @@ class SMSG_FORCE_TURN_RATE_CHANGE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02DE))
         _fmt = "<4s"
@@ -37104,7 +37104,7 @@ class CMSG_FORCE_TURN_RATE_CHANGE_ACK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x02DF))
         _fmt = "<6s"
@@ -37140,7 +37140,7 @@ class MSG_PVP_LOG_DATA_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x02E0))
         _fmt = "<6s"
@@ -37187,7 +37187,7 @@ class MSG_PVP_LOG_DATA_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02E0))
         _fmt = "<4s"
@@ -37238,7 +37238,7 @@ class CMSG_LEAVE_BATTLEFIELD:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 4, 0x02E1))
         _fmt = "<6s"
@@ -37270,7 +37270,7 @@ class CMSG_AREA_SPIRIT_HEALER_QUERY:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x02E2))
         _fmt = "<6s"
@@ -37302,7 +37302,7 @@ class CMSG_AREA_SPIRIT_HEALER_QUEUE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x02E3))
         _fmt = "<6s"
@@ -37339,7 +37339,7 @@ class SMSG_AREA_SPIRIT_HEALER_TIME:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x02E4))
         _fmt = "<4s"
@@ -37376,7 +37376,7 @@ class SMSG_WARDEN_DATA:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02E6))
         _fmt = "<4s"
@@ -37416,7 +37416,7 @@ class CMSG_WARDEN_DATA:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x02E7))
         _fmt = "<6s"
@@ -37451,7 +37451,7 @@ class SMSG_GROUP_JOINED_BATTLEGROUND:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x02E8))
         _fmt = "<4s"
@@ -37477,7 +37477,7 @@ class MSG_BATTLEGROUND_PLAYER_POSITIONS_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x02E9))
         _fmt = "<6s"
@@ -37522,7 +37522,7 @@ class MSG_BATTLEGROUND_PLAYER_POSITIONS_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02E9))
         _fmt = "<4s"
@@ -37569,7 +37569,7 @@ class CMSG_PET_STOP_ATTACK:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x02EA))
         _fmt = "<6s"
@@ -37601,7 +37601,7 @@ class SMSG_BINDER_CONFIRM:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x02EB))
         _fmt = "<4s"
@@ -37633,7 +37633,7 @@ class SMSG_BATTLEGROUND_PLAYER_JOINED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x02EC))
         _fmt = "<4s"
@@ -37665,7 +37665,7 @@ class SMSG_BATTLEGROUND_PLAYER_LEFT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x02ED))
         _fmt = "<4s"
@@ -37712,7 +37712,7 @@ class CMSG_BATTLEMASTER_JOIN:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(17 + 4, 0x02EE))
         _fmt = "<6s"
@@ -37749,7 +37749,7 @@ class SMSG_ADDON_INFO:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02EF))
         _fmt = "<4s"
@@ -37786,7 +37786,7 @@ class CMSG_PET_UNLEARN:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 4, 0x02F0))
         _fmt = "<6s"
@@ -37823,7 +37823,7 @@ class SMSG_PET_UNLEARN_CONFIRM:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x02F1))
         _fmt = "<4s"
@@ -37999,7 +37999,7 @@ class SMSG_PARTY_MEMBER_STATS_FULL:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02F2))
         _fmt = "<4s"
@@ -38167,7 +38167,7 @@ class CMSG_PET_SPELL_AUTOCAST:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(13 + 4, 0x02F3))
         _fmt = "<6s"
@@ -38214,7 +38214,7 @@ class SMSG_WEATHER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(13 + 2, 0x02F4))
         _fmt = "<4s"
@@ -38256,7 +38256,7 @@ class SMSG_RAID_INSTANCE_MESSAGE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x02FA))
         _fmt = "<4s"
@@ -38301,7 +38301,7 @@ class SMSG_COMPRESSED_MOVES:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02FB))
         _fmt = "<4s"
@@ -38359,7 +38359,7 @@ class CMSG_GUILD_INFO_TEXT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x02FC))
         _fmt = "<6s"
@@ -38388,7 +38388,7 @@ class SMSG_CHAT_RESTRICTED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 2, 0x02FD))
         _fmt = "<4s"
@@ -38423,7 +38423,7 @@ class SMSG_SPLINE_SET_RUN_SPEED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02FE))
         _fmt = "<4s"
@@ -38468,7 +38468,7 @@ class SMSG_SPLINE_SET_RUN_BACK_SPEED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02FF))
         _fmt = "<4s"
@@ -38513,7 +38513,7 @@ class SMSG_SPLINE_SET_SWIM_SPEED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0300))
         _fmt = "<4s"
@@ -38558,7 +38558,7 @@ class SMSG_SPLINE_SET_WALK_SPEED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0301))
         _fmt = "<4s"
@@ -38603,7 +38603,7 @@ class SMSG_SPLINE_SET_SWIM_BACK_SPEED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0302))
         _fmt = "<4s"
@@ -38648,7 +38648,7 @@ class SMSG_SPLINE_SET_TURN_RATE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0303))
         _fmt = "<4s"
@@ -38688,7 +38688,7 @@ class SMSG_SPLINE_MOVE_UNROOT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0304))
         _fmt = "<4s"
@@ -38724,7 +38724,7 @@ class SMSG_SPLINE_MOVE_FEATHER_FALL:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0305))
         _fmt = "<4s"
@@ -38760,7 +38760,7 @@ class SMSG_SPLINE_MOVE_NORMAL_FALL:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0306))
         _fmt = "<4s"
@@ -38796,7 +38796,7 @@ class SMSG_SPLINE_MOVE_SET_HOVER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0307))
         _fmt = "<4s"
@@ -38832,7 +38832,7 @@ class SMSG_SPLINE_MOVE_UNSET_HOVER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0308))
         _fmt = "<4s"
@@ -38868,7 +38868,7 @@ class SMSG_SPLINE_MOVE_WATER_WALK:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0309))
         _fmt = "<4s"
@@ -38904,7 +38904,7 @@ class SMSG_SPLINE_MOVE_LAND_WALK:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x030A))
         _fmt = "<4s"
@@ -38940,7 +38940,7 @@ class SMSG_SPLINE_MOVE_START_SWIM:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x030B))
         _fmt = "<4s"
@@ -38976,7 +38976,7 @@ class SMSG_SPLINE_MOVE_STOP_SWIM:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x030C))
         _fmt = "<4s"
@@ -39012,7 +39012,7 @@ class SMSG_SPLINE_MOVE_SET_RUN_MODE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x030D))
         _fmt = "<4s"
@@ -39048,7 +39048,7 @@ class SMSG_SPLINE_MOVE_SET_WALK_MODE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x030E))
         _fmt = "<4s"
@@ -39099,7 +39099,7 @@ class CMSG_ACTIVATETAXIEXPRESS:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0312))
         _fmt = "<6s"
@@ -39139,7 +39139,7 @@ class CMSG_SET_FACTION_INACTIVE:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(3 + 4, 0x0317))
         _fmt = "<6s"
@@ -39171,7 +39171,7 @@ class CMSG_SET_WATCHED_FACTION:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(2 + 4, 0x0318))
         _fmt = "<6s"
@@ -39208,7 +39208,7 @@ class MSG_MOVE_TIME_SKIPPED_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0319))
         _fmt = "<4s"
@@ -39248,7 +39248,7 @@ class SMSG_SPLINE_MOVE_ROOT:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x031A))
         _fmt = "<4s"
@@ -39280,7 +39280,7 @@ class SMSG_INVALIDATE_PLAYER:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x031C))
         _fmt = "<4s"
@@ -39306,7 +39306,7 @@ class CMSG_RESET_INSTANCES:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(0 + 4, 0x031D))
         _fmt = "<6s"
@@ -39336,7 +39336,7 @@ class SMSG_INSTANCE_RESET:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x031E))
         _fmt = "<4s"
@@ -39373,7 +39373,7 @@ class SMSG_INSTANCE_RESET_FAILED:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(8 + 2, 0x031F))
         _fmt = "<4s"
@@ -39405,7 +39405,7 @@ class SMSG_UPDATE_LAST_INSTANCE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x0320))
         _fmt = "<4s"
@@ -39444,7 +39444,7 @@ class MSG_RAID_TARGET_UPDATE_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0321))
         _fmt = "<6s"
@@ -39503,7 +39503,7 @@ class MSG_RAID_TARGET_UPDATE_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0321))
         _fmt = "<4s"
@@ -39560,7 +39560,7 @@ class MSG_RAID_READY_CHECK_Client:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x0322))
         _fmt = "<6s"
@@ -39616,7 +39616,7 @@ class MSG_RAID_READY_CHECK_Server:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0322))
         _fmt = "<4s"
@@ -39664,7 +39664,7 @@ class SMSG_PET_ACTION_SOUND:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x0324))
         _fmt = "<4s"
@@ -39701,7 +39701,7 @@ class SMSG_PET_DISMISS_SOUND:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(16 + 2, 0x0325))
         _fmt = "<4s"
@@ -39736,7 +39736,7 @@ class SMSG_GM_TICKET_STATUS_UPDATE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x0328))
         _fmt = "<4s"
@@ -39780,7 +39780,7 @@ class CMSG_GMSURVEY_SUBMIT:
     def write_encrypted_client(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 4, 0x032A))
         _fmt = "<6s"
@@ -39823,7 +39823,7 @@ class SMSG_UPDATE_INSTANCE_OWNERSHIP:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(4 + 2, 0x032B))
         _fmt = "<4s"
@@ -39860,7 +39860,7 @@ class SMSG_SPELLINSTAKILLLOG:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(12 + 2, 0x032F))
         _fmt = "<4s"
@@ -39907,7 +39907,7 @@ class SMSG_SPELL_UPDATE_CHAIN_TARGETS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0330))
         _fmt = "<4s"
@@ -39947,7 +39947,7 @@ class SMSG_EXPECTED_SPAM_RECORDS:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0332))
         _fmt = "<4s"
@@ -39993,7 +39993,7 @@ class SMSG_DEFENSE_MESSAGE:
     def write_encrypted_server(
         self,
         writer: typing.Union[asyncio.StreamWriter, bytearray],
-        header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+        header_crypto: wow_srp.VanillaHeaderCrypto,
     ):
         _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x033B))
         _fmt = "<4s"
@@ -41373,7 +41373,7 @@ async def read_client_opcodes_unencrypted(reader: asyncio.StreamReader) -> Clien
 
 async def read_client_opcodes_encrypted(
     reader: asyncio.StreamReader,
-    header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+    header_crypto: wow_srp.VanillaHeaderCrypto,
 ) -> ClientOpcode:
     size_field_size = 4
     header_size = 6
@@ -41409,7 +41409,7 @@ async def read_server_opcodes_unencrypted(reader: asyncio.StreamReader) -> Serve
 
 async def read_server_opcodes_encrypted(
     reader: asyncio.StreamReader,
-    header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+    header_crypto: wow_srp.VanillaHeaderCrypto,
 ) -> ServerOpcode:
     size_field_size = 2
     header_size = 4
@@ -41441,7 +41441,7 @@ async def expect_client_opcode_unencrypted(
 async def expect_client_opcode_encrypted(
     reader: asyncio.StreamReader,
     opcode: typing.Type[ClientOpcode],
-    header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+    header_crypto: wow_srp.VanillaHeaderCrypto,
 ) -> typing.Optional[ClientOpcode]:
     o = await read_client_opcodes_encrypted(reader, header_crypto)
     if isinstance(o, opcode):
@@ -41464,7 +41464,7 @@ async def expect_server_opcode_unencrypted(
 async def expect_server_opcode_encrypted(
     reader: asyncio.StreamReader,
     opcode: typing.Type[ServerOpcode],
-    header_crypto: wow_srp.vanilla_header.HeaderCrypto,
+    header_crypto: wow_srp.VanillaHeaderCrypto,
 ) -> typing.Optional[ServerOpcode]:
     o = await read_server_opcodes_encrypted(reader, header_crypto)
     if isinstance(o, opcode):

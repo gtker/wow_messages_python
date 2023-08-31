@@ -91,7 +91,7 @@ async def login_connection(reader: asyncio.StreamReader, writer: asyncio.StreamW
 
 
 async def world_path(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
-    seed = wow_srp.vanilla_header.ProofSeed()
+    seed = wow_srp.VanillaProofSeed()
 
     world.SMSG_AUTH_CHALLENGE(seed.seed()).write_unencrypted(writer)
 
