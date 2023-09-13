@@ -373,6 +373,42 @@ class SMSG_PET_NAME_QUERY_RESPONSE_vanilla(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
+class SMSG_ITEM_QUERY_SINGLE_RESPONSE_vanilla(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([1, 224, 88, 0, 62, 28, 0, 0, 2, 0, 0, 0, 5, 0, 0, 0, 83, 109, 105, 116, 101, 39, 115, 32, 77, 105, 103, 104, 116, 121, 32, 72, 97, 109, 109, 101, 114, 0, 0, 0, 0, 154, 76, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 155, 60, 0, 0, 31, 12, 0, 0, 17, 0, 0, 0, 223, 5, 0, 0, 255, 1, 0, 0, 23, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 11, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 92, 66, 0, 0, 166, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 172, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await vanilla.expect_server_opcode_unencrypted(reader, vanilla.SMSG_ITEM_QUERY_SINGLE_RESPONSE)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 4, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_CREATURE_QUERY_RESPONSE_vanilla(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 46, 97, 0, 69, 0, 0, 0, 84, 104, 105, 110, 103, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await vanilla.expect_server_opcode_unencrypted(reader, vanilla.SMSG_CREATURE_QUERY_RESPONSE)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 4, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
 class SMSG_IGNORE_LIST_vanilla(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
@@ -978,6 +1014,24 @@ class MSG_MOVE_SET_WALK_MODE_Server_vanilla(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
+class MSG_MOVE_TELEPORT_ACK_Client_vanilla(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 13, 199, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await vanilla.expect_client_opcode_unencrypted(reader, vanilla.MSG_MOVE_TELEPORT_ACK_Client)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 6, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
 class MSG_MOVE_FALL_LAND_Client_vanilla(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
@@ -1173,6 +1227,40 @@ class CMSG_AUTOEQUIP_ITEM_vanilla(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
+class CMSG_INITIATE_TRADE_vanilla(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 12, 22, 1, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await vanilla.expect_client_opcode_unencrypted(reader, vanilla.CMSG_INITIATE_TRADE)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_CANCEL_TRADE_vanilla(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 4, 28, 1, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await vanilla.expect_client_opcode_unencrypted(reader, vanilla.CMSG_CANCEL_TRADE)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
 class CMSG_CAST_SPELL_vanilla(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
@@ -1254,6 +1342,59 @@ class CMSG_ATTACKSWING_vanilla(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(reader.at_eof())
         written = bytearray(len(data))
         r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_ATTACKSTART_vanilla(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 18, 67, 1, 23, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await vanilla.expect_server_opcode_unencrypted(reader, vanilla.SMSG_ATTACKSTART)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_ATTACKSTOP_vanilla(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 10, 68, 1, 1, 23, 1, 100, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await vanilla.expect_server_opcode_unencrypted(reader, vanilla.SMSG_ATTACKSTOP)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 4, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_ATTACKERSTATEUPDATE_vanilla(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 51, 74, 1, 128, 0, 0, 0, 1, 23, 1, 100, 57, 5, 0, 0, 1, 0, 0, 0, 0, 0, 128, 166, 68, 52, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await vanilla.expect_server_opcode_unencrypted(reader, vanilla.SMSG_ATTACKERSTATEUPDATE)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 4, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
         self.assertEqual(data, written)
 
 
@@ -1982,6 +2123,24 @@ class SMSG_DESTROY_OBJECT_tbc(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
+class MSG_MOVE_TELEPORT_ACK_Client_tbc(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 13, 199, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await tbc.expect_client_opcode_unencrypted(reader, tbc.MSG_MOVE_TELEPORT_ACK_Client)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 6, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
 class SMSG_TUTORIAL_FLAGS_tbc(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
@@ -2009,6 +2168,40 @@ class CMSG_AUTOEQUIP_ITEM_tbc(unittest.IsolatedAsyncioTestCase):
         reader.feed_eof()
 
         r = await tbc.expect_client_opcode_unencrypted(reader, tbc.CMSG_AUTOEQUIP_ITEM)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_INITIATE_TRADE_tbc(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 12, 22, 1, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await tbc.expect_client_opcode_unencrypted(reader, tbc.CMSG_INITIATE_TRADE)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_CANCEL_TRADE_tbc(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 4, 28, 1, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await tbc.expect_client_opcode_unencrypted(reader, tbc.CMSG_CANCEL_TRADE)
         self.assertIsNotNone(r)
         self.assertTrue(reader.at_eof())
         written = bytearray(len(data))
@@ -2079,6 +2272,41 @@ class CMSG_ATTACKSWING_tbc(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(reader.at_eof())
         written = bytearray(len(data))
         r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_ATTACKSTART_tbc(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 18, 67, 1, 23, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await tbc.expect_server_opcode_unencrypted(reader, tbc.SMSG_ATTACKSTART)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_ATTACKSTOP_tbc(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 10, 68, 1, 1, 23, 1, 100, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await tbc.expect_server_opcode_unencrypted(reader, tbc.SMSG_ATTACKSTOP)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 4, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
         self.assertEqual(data, written)
 
 

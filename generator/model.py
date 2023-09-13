@@ -1751,9 +1751,11 @@ class TestCaseValue:
             "Enum": TestCaseValueEnum,
             "Flag": TestCaseValueFlag,
             "FloatingPoint": TestCaseValueFloatingPoint,
+            "Gold": TestCaseValueGold,
             "Guid": TestCaseValueGUID,
             "Integer": TestCaseValueInteger,
             "IpAddress": TestCaseValueIPAddress,
+            "Level": TestCaseValueLevel,
             "Milliseconds": TestCaseValueMilliseconds,
             "Population": TestCaseValuePopulation,
             "Seconds": TestCaseValueSeconds,
@@ -1804,18 +1806,21 @@ class TestCaseValueArray(TestCaseValue):
 @dataclass
 class TestCaseValueArrayOfSubObjectContent:
     members: 'List[List[TestCaseMember]]'
+    size: 'ArraySize'
     type_name: 'str'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'TestCaseValueArrayOfSubObjectContent':
         return cls(
             _from_json_data(List[List[TestCaseMember]], data.get("members")),
+            _from_json_data(ArraySize, data.get("size")),
             _from_json_data(str, data.get("type_name")),
         )
 
     def to_json_data(self) -> Any:
         data: Dict[str, Any] = {}
         data["members"] = _to_json_data(self.members)
+        data["size"] = _to_json_data(self.size)
         data["type_name"] = _to_json_data(self.type_name)
         return data
 
@@ -1916,6 +1921,22 @@ class TestCaseValueFloatingPoint(TestCaseValue):
         return data
 
 @dataclass
+class TestCaseValueGold(TestCaseValue):
+    content: 'Value'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'TestCaseValueGold':
+        return cls(
+            "Gold",
+            _from_json_data(Value, data.get("content")),
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "test_value_tag": "Gold" }
+        data["content"] = _to_json_data(self.content)
+        return data
+
+@dataclass
 class TestCaseValueGUID(TestCaseValue):
     content: 'Value'
 
@@ -1960,6 +1981,22 @@ class TestCaseValueIPAddress(TestCaseValue):
 
     def to_json_data(self) -> Any:
         data = { "test_value_tag": "IpAddress" }
+        data["content"] = _to_json_data(self.content)
+        return data
+
+@dataclass
+class TestCaseValueLevel(TestCaseValue):
+    content: 'Value'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'TestCaseValueLevel':
+        return cls(
+            "Level",
+            _from_json_data(Value, data.get("content")),
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "test_value_tag": "Level" }
         data["content"] = _to_json_data(self.content)
         return data
 
