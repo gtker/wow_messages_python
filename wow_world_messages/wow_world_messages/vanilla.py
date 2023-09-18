@@ -38292,7 +38292,7 @@ class SMSG_COMPRESSED_MOVES:
 
         # moves: CompressedMove[-]
         moves = []
-        while _size < body_size:
+        while not reader.at_eof():
             moves.append(await CompressedMove.read(reader))
             _size += moves[-1].size()
 

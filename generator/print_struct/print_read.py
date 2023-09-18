@@ -9,7 +9,7 @@ from util import container_needs_size_in_read
 from writer import Writer
 
 
-def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool):
+def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, container_is_compressed: bool):
     s.wln(f"# {d.name}: {type_to_wowm_str(d.data_type)}")
     match d.data_type:
         case model.DataTypeInteger(content=integer_type):
@@ -181,7 +181,9 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool):
                 ):
                     s.open(f"for _ in range(0, {size}):")
                 case model.ArraySizeEndless():
-                    if not array.compressed:
+                    if container_is_compressed:
+                        s.open(f"while not reader.at_eof():")
+                    elif not array.compressed:
                         s.open("while _size < body_size:")
                     else:
                         s.open(f"while not {d.name}_reader.at_eof():")
@@ -248,7 +250,7 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool):
 def print_read_member(s: Writer, m: model.StructMember, container: model.Container, needs_size: bool):
     match m:
         case model.StructMemberDefinition(_tag, definition):
-            print_read_struct_member(s, definition, needs_size)
+            print_read_struct_member(s, definition, needs_size, container.tags.compressed)
 
         case model.StructMemberIfStatement(_tag, statement):
             print_read_if_statement(s, statement, container, False, needs_size)
