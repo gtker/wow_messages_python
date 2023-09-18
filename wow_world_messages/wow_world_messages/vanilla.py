@@ -8024,6 +8024,8 @@ class MonsterMoveSpline:
             packed = await read_int(reader, 4)
             splines.append(packed_to_vec(packed))
 
+        return MonsterMoveSpline(splines=splines)
+
     def write(self, fmt, data):
         def vec_to_packed(vec: Vector3d) -> int:
             packed = 0
