@@ -1757,6 +1757,7 @@ class TestCaseValue:
             "IpAddress": TestCaseValueIPAddress,
             "Level": TestCaseValueLevel,
             "Milliseconds": TestCaseValueMilliseconds,
+            "MonsterMoveSpline": TestCaseValueMonsterMoveSpline,
             "Population": TestCaseValuePopulation,
             "Seconds": TestCaseValueSeconds,
             "String": TestCaseValueString,
@@ -2013,6 +2014,43 @@ class TestCaseValueMilliseconds(TestCaseValue):
 
     def to_json_data(self) -> Any:
         data = { "test_value_tag": "Milliseconds" }
+        data["content"] = _to_json_data(self.content)
+        return data
+
+@dataclass
+class TestCaseValueMonsterMoveSplineContent:
+    x: 'float'
+    y: 'float'
+    z: 'float'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'TestCaseValueMonsterMoveSplineContent':
+        return cls(
+            _from_json_data(float, data.get("x")),
+            _from_json_data(float, data.get("y")),
+            _from_json_data(float, data.get("z")),
+        )
+
+    def to_json_data(self) -> Any:
+        data: Dict[str, Any] = {}
+        data["x"] = _to_json_data(self.x)
+        data["y"] = _to_json_data(self.y)
+        data["z"] = _to_json_data(self.z)
+        return data
+
+@dataclass
+class TestCaseValueMonsterMoveSpline(TestCaseValue):
+    content: 'List[TestCaseValueMonsterMoveSplineContent]'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'TestCaseValueMonsterMoveSpline':
+        return cls(
+            "MonsterMoveSpline",
+            _from_json_data(List[TestCaseValueMonsterMoveSplineContent], data.get("content")),
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "test_value_tag": "MonsterMoveSpline" }
         data["content"] = _to_json_data(self.content)
         return data
 

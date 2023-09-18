@@ -1032,6 +1032,24 @@ class MSG_MOVE_TELEPORT_ACK_Client_vanilla(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
+class MSG_MOVE_TELEPORT_ACK_Server_vanilla(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 36, 199, 0, 1, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 135, 69, 0, 160, 37, 197, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await vanilla.expect_server_opcode_unencrypted(reader, vanilla.MSG_MOVE_TELEPORT_ACK_Server)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 4, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
 class MSG_MOVE_FALL_LAND_Client_vanilla(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
@@ -1190,6 +1208,23 @@ class SMSG_TUTORIAL_FLAGS_vanilla(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(reader.at_eof())
         written = bytearray(len(data))
         r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_STANDSTATECHANGE_vanilla(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 8, 1, 1, 0, 0, 1, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await vanilla.expect_client_opcode_unencrypted(reader, vanilla.CMSG_STANDSTATECHANGE)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
         self.assertEqual(data, written)
 
 
@@ -1917,6 +1952,36 @@ class CMSG_BATTLEFIELD_STATUS_vanilla(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
+class SMSG_COMPRESSED_MOVES_vanilla(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 50, 251, 2, 46, 0, 0, 0, 120, 1, 211, 189, 203, 192, 40, 145, 183, 154, 251, 216, 186, 88, 230, 195, 43, 212, 151, 59, 49, 32, 3, 70, 32, 167, 100, 57, 247, 177, 245, 239, 95, 29, 58, 121, 102, 137, 19, 0, 38, 30, 14, 73, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await vanilla.expect_server_opcode_unencrypted(reader, vanilla.SMSG_COMPRESSED_MOVES)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(r.size() + 4)
+        r.write_encrypted_server(written, NullHeaderCrypto())
+
+    async def test1(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 70, 251, 2, 59, 0, 0, 0, 120, 1, 179, 186, 203, 112, 59, 95, 198, 65, 220, 224, 99, 245, 27, 177, 35, 215, 23, 55, 31, 109, 80, 148, 113, 210, 87, 100, 0, 2, 70, 6, 134, 99, 28, 12, 12, 204, 64, 102, 235, 107, 177, 35, 92, 229, 205, 71, 21, 183, 203, 58, 49, 20, 0, 5, 12, 24, 24, 0, 88, 227, 17, 4, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await vanilla.expect_server_opcode_unencrypted(reader, vanilla.SMSG_COMPRESSED_MOVES)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(r.size() + 4)
+        r.write_encrypted_server(written, NullHeaderCrypto())
+
+
 class SMSG_SPLINE_SET_RUN_SPEED_vanilla(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
@@ -2155,6 +2220,23 @@ class SMSG_TUTORIAL_FLAGS_tbc(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(reader.at_eof())
         written = bytearray(len(data))
         r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_STANDSTATECHANGE_tbc(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 8, 1, 1, 0, 0, 1, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await tbc.expect_client_opcode_unencrypted(reader, tbc.CMSG_STANDSTATECHANGE)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
         self.assertEqual(data, written)
 
 
