@@ -1321,14 +1321,12 @@ class LoginVersionsSpecific(LoginVersions):
 @dataclass
 class MemberTags:
     comment: 'Optional[str]'
-    description: 'Optional[str]'
     display: 'Optional[str]'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'MemberTags':
         return cls(
             _from_json_data(Optional[str], data.get("comment")),
-            _from_json_data(Optional[str], data.get("description")),
             _from_json_data(Optional[str], data.get("display")),
         )
 
@@ -1336,8 +1334,6 @@ class MemberTags:
         data: Dict[str, Any] = {}
         if self.comment is not None:
              data["comment"] = _to_json_data(self.comment)
-        if self.description is not None:
-             data["description"] = _to_json_data(self.description)
         if self.display is not None:
              data["display"] = _to_json_data(self.display)
         return data
@@ -1358,7 +1354,6 @@ class ObjectTags:
     version: 'ObjectVersions'
     comment: 'Optional[str]'
     compressed: 'Optional[bool]'
-    description: 'Optional[str]'
     non_network_type: 'Optional[bool]'
     unimplemented: 'Optional[bool]'
     used_in_update_mask: 'Optional[bool]'
@@ -1369,7 +1364,6 @@ class ObjectTags:
             _from_json_data(ObjectVersions, data.get("version")),
             _from_json_data(Optional[str], data.get("comment")),
             _from_json_data(Optional[bool], data.get("compressed")),
-            _from_json_data(Optional[str], data.get("description")),
             _from_json_data(Optional[bool], data.get("non_network_type")),
             _from_json_data(Optional[bool], data.get("unimplemented")),
             _from_json_data(Optional[bool], data.get("used_in_update_mask")),
@@ -1382,8 +1376,6 @@ class ObjectTags:
              data["comment"] = _to_json_data(self.comment)
         if self.compressed is not None:
              data["compressed"] = _to_json_data(self.compressed)
-        if self.description is not None:
-             data["description"] = _to_json_data(self.description)
         if self.non_network_type is not None:
              data["non_network_type"] = _to_json_data(self.non_network_type)
         if self.unimplemented is not None:
