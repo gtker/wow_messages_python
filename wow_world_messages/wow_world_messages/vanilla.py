@@ -7691,7 +7691,7 @@ class AuctionListItem:
         # id: u32
         id = await read_int(reader, 4)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # item_enchantment: u32
@@ -8900,7 +8900,7 @@ class ItemSpells:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader) -> ItemSpells:
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         # spell_trigger: SpellTriggerType
@@ -8972,7 +8972,7 @@ class ListInventoryItem:
         # item_stack_count: u32
         item_stack_count = await read_int(reader, 4)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # item_display_id: u32
@@ -9017,7 +9017,7 @@ class LootItem:
         # index: u8
         index = await read_int(reader, 1)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # ty: LootSlotType
@@ -9095,7 +9095,7 @@ class Mail:
         # stationery: u32
         stationery = await read_int(reader, 4)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # item_enchant_id: u32
@@ -9187,7 +9187,7 @@ class Mail:
         _fmt += 'I'
         _data.append(self.stationery)
 
-        # item: u32
+        # item: Item
         _fmt += 'I'
         _data.append(self.item)
 
@@ -10059,7 +10059,7 @@ class PetSpellCooldown:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader) -> PetSpellCooldown:
-        # spell: u16
+        # spell: Spell16
         spell = await read_int(reader, 2)
 
         # spell_category: u16
@@ -10216,7 +10216,7 @@ class QuestItemRequirement:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader) -> QuestItemRequirement:
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # item_count: u32
@@ -10244,7 +10244,7 @@ class QuestItemReward:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader) -> QuestItemReward:
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # item_count: u32
@@ -10515,7 +10515,7 @@ class SpellCooldownStatus:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader) -> SpellCooldownStatus:
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         # cooldown_time: Milliseconds
@@ -10625,28 +10625,28 @@ class SpellLog:
             extra_attacks = await read_int(reader, 4)
 
         elif effect == SpellEffect.CREATE_ITEM:
-            # item: u32
+            # item: Item
             item = await read_int(reader, 4)
 
         elif effect == SpellEffect.INTERRUPT_CAST:
             # target5: Guid
             target5 = await read_int(reader, 8)
 
-            # interrupted_spell: u32
+            # interrupted_spell: Spell
             interrupted_spell = await read_int(reader, 4)
 
         elif effect == SpellEffect.DURABILITY_DAMAGE:
             # target6: Guid
             target6 = await read_int(reader, 8)
 
-            # item_to_damage: u32
+            # item_to_damage: Item
             item_to_damage = await read_int(reader, 4)
 
             # unknown5: u32
             unknown5 = await read_int(reader, 4)
 
         elif effect == SpellEffect.FEED_PET:
-            # feed_pet_item: u32
+            # feed_pet_item: Item
             feed_pet_item = await read_int(reader, 4)
 
         elif effect in {SpellEffect.INSTAKILL, SpellEffect.RESURRECT, SpellEffect.DISPEL, SpellEffect.THREAT, SpellEffect.DISTRACT, SpellEffect.SANCTUARY, SpellEffect.THREAT_ALL, SpellEffect.DISPEL_MECHANIC, SpellEffect.RESURRECT_NEW, SpellEffect.ATTACK_ME, SpellEffect.SKIN_PLAYER_CORPSE, SpellEffect.MODIFY_THREAT_PERCENT, SpellEffect.UNKNOWN126, SpellEffect.OPEN_LOCK, SpellEffect.OPEN_LOCK_ITEM, SpellEffect.DISMISS_PET, SpellEffect.TRANS_DOOR, SpellEffect.SUMMON, SpellEffect.SUMMON_PET, SpellEffect.SUMMON_WILD, SpellEffect.SUMMON_GUARDIAN, SpellEffect.SUMMON_TOTEM_SLOT1, SpellEffect.SUMMON_TOTEM_SLOT2, SpellEffect.SUMMON_TOTEM_SLOT3, SpellEffect.SUMMON_TOTEM_SLOT4, SpellEffect.SUMMON_POSSESSED, SpellEffect.SUMMON_TOTEM, SpellEffect.SUMMON_CRITTER, SpellEffect.SUMMON_OBJECT_WILD, SpellEffect.SUMMON_OBJECT_SLOT1, SpellEffect.SUMMON_OBJECT_SLOT2, SpellEffect.SUMMON_OBJECT_SLOT3, SpellEffect.SUMMON_OBJECT_SLOT4, SpellEffect.SUMMON_DEMON}:
@@ -10851,7 +10851,7 @@ class TradeSlot:
         # trade_slot_number: u8
         trade_slot_number = await read_int(reader, 1)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # display_id: u32
@@ -10927,7 +10927,7 @@ class TrainerSpell:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader) -> TrainerSpell:
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         # state: TrainerSpellState
@@ -12188,7 +12188,7 @@ class CMSG_ITEM_QUERY_SINGLE:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_ITEM_QUERY_SINGLE:
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # guid: Guid
@@ -12334,7 +12334,7 @@ class SMSG_ITEM_QUERY_SINGLE_RESPONSE:
         bag_family = None
         _size = 0
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
         _size += 4
 
@@ -12408,7 +12408,7 @@ class SMSG_ITEM_QUERY_SINGLE_RESPONSE:
             required_skill_rank = await read_int(reader, 4)
             _size += 4
 
-            # required_spell: u32
+            # required_spell: Spell
             required_spell = await read_int(reader, 4)
             _size += 4
 
@@ -16642,7 +16642,7 @@ class SMSG_ITEM_COOLDOWN:
         # guid: Guid
         guid = await read_int(reader, 8)
 
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         return SMSG_ITEM_COOLDOWN(
@@ -21024,7 +21024,7 @@ class SMSG_TRADE_STATUS_EXTENDED:
         # money_in_trade: Gold
         money_in_trade = await read_int(reader, 4)
 
-        # spell_on_lowest_slot: u32
+        # spell_on_lowest_slot: Spell
         spell_on_lowest_slot = await read_int(reader, 4)
 
         # trade_slots: TradeSlot[7]
@@ -21412,7 +21412,7 @@ class SMSG_LEARNED_SPELL:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_LEARNED_SPELL:
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         return SMSG_LEARNED_SPELL(
@@ -21482,7 +21482,7 @@ class CMSG_CAST_SPELL:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CAST_SPELL:
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         # targets: SpellCastTargets
@@ -21524,7 +21524,7 @@ class CMSG_CANCEL_CAST:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CANCEL_CAST:
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         return CMSG_CANCEL_CAST(
@@ -21569,7 +21569,7 @@ class SMSG_CAST_RESULT:
         equipped_item_class = None
         equipped_item_subclass_mask = None
         equipped_item_inventory_type_mask = None
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         # result: SimpleSpellCastResult
@@ -21676,7 +21676,7 @@ class SMSG_SPELL_START:
         # caster: PackedGuid
         caster = await read_packed_guid(reader)
 
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         # flags: CastFlags
@@ -21721,7 +21721,7 @@ class SMSG_SPELL_START:
         # caster: PackedGuid
         _fmt, _data = packed_guid_write(self.caster, _fmt, _data)
 
-        # spell: u32
+        # spell: Spell
         _fmt += 'I'
         _data.append(self.spell)
 
@@ -21777,7 +21777,7 @@ class SMSG_SPELL_GO:
         # caster: PackedGuid
         caster = await read_packed_guid(reader)
 
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         # flags: CastFlags
@@ -21836,7 +21836,7 @@ class SMSG_SPELL_GO:
         # caster: PackedGuid
         _fmt, _data = packed_guid_write(self.caster, _fmt, _data)
 
-        # spell: u32
+        # spell: Spell
         _fmt += 'I'
         _data.append(self.spell)
 
@@ -21893,7 +21893,7 @@ class SMSG_SPELL_FAILURE:
         # guid: Guid
         guid = await read_int(reader, 8)
 
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         # result: SpellCastResult
@@ -21981,7 +21981,7 @@ class SMSG_COOLDOWN_EVENT:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_COOLDOWN_EVENT:
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         # guid: Guid
@@ -22017,7 +22017,7 @@ class CMSG_CANCEL_AURA:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CANCEL_AURA:
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         return CMSG_CANCEL_AURA(
@@ -22088,7 +22088,7 @@ class SMSG_PET_CAST_FAILED:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_PET_CAST_FAILED:
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         # unknown1: u8
@@ -22129,7 +22129,7 @@ class MSG_CHANNEL_START_Server:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> MSG_CHANNEL_START_Server:
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         # duration: u32
@@ -22197,7 +22197,7 @@ class CMSG_CANCEL_CHANNELLING:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_CANCEL_CHANNELLING:
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         return CMSG_CANCEL_CHANNELLING(
@@ -22744,7 +22744,7 @@ class SMSG_SPELLHEALLOG:
         # caster: PackedGuid
         caster = await read_packed_guid(reader)
 
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         # damage: u32
@@ -22776,7 +22776,7 @@ class SMSG_SPELLHEALLOG:
         # caster: PackedGuid
         _fmt, _data = packed_guid_write(self.caster, _fmt, _data)
 
-        # id: u32
+        # id: Spell
         _fmt += 'I'
         _data.append(self.id)
 
@@ -22815,7 +22815,7 @@ class SMSG_SPELLENERGIZELOG:
         # caster: PackedGuid
         caster = await read_packed_guid(reader)
 
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         # power: Power
@@ -22847,7 +22847,7 @@ class SMSG_SPELLENERGIZELOG:
         # caster: PackedGuid
         _fmt, _data = packed_guid_write(self.caster, _fmt, _data)
 
-        # spell: u32
+        # spell: Spell
         _fmt += 'I'
         _data.append(self.spell)
 
@@ -23437,7 +23437,7 @@ class SMSG_ITEM_PUSH_RESULT:
         # item_slot: u32
         item_slot = await read_int(reader, 4)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # item_suffix_factor: u32
@@ -24804,7 +24804,7 @@ class SMSG_QUESTGIVER_QUEST_DETAILS:
         # money_reward: Gold
         money_reward = await read_int(reader, 4)
 
-        # reward_spell: u32
+        # reward_spell: Spell
         reward_spell = await read_int(reader, 4)
 
         # amount_of_emotes: u32
@@ -24856,7 +24856,7 @@ class SMSG_QUESTGIVER_QUEST_DETAILS:
         _fmt += 'I'
         _data.append(self.money_reward)
 
-        # reward_spell: u32
+        # reward_spell: Spell
         _fmt += 'I'
         _data.append(self.reward_spell)
 
@@ -25168,10 +25168,10 @@ class SMSG_QUESTGIVER_OFFER_REWARD:
         # money_reward: Gold
         money_reward = await read_int(reader, 4)
 
-        # reward_spell: u32
+        # reward_spell: Spell
         reward_spell = await read_int(reader, 4)
 
-        # reward_spell_cast: u32
+        # reward_spell_cast: Spell
         reward_spell_cast = await read_int(reader, 4)
 
         return SMSG_QUESTGIVER_OFFER_REWARD(
@@ -25223,11 +25223,11 @@ class SMSG_QUESTGIVER_OFFER_REWARD:
         _fmt += 'I'
         _data.append(self.money_reward)
 
-        # reward_spell: u32
+        # reward_spell: Spell
         _fmt += 'I'
         _data.append(self.reward_spell)
 
-        # reward_spell_cast: u32
+        # reward_spell_cast: Spell
         _fmt += 'I'
         _data.append(self.reward_spell_cast)
 
@@ -26005,7 +26005,7 @@ class CMSG_BUY_ITEM:
         # vendor: Guid
         vendor = await read_int(reader, 8)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # amount: u8
@@ -26053,7 +26053,7 @@ class CMSG_BUY_ITEM_IN_SLOT:
         # vendor: Guid
         vendor = await read_int(reader, 8)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # bag: Guid
@@ -26150,7 +26150,7 @@ class SMSG_BUY_FAILED:
         # guid: Guid
         guid = await read_int(reader, 8)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # result: BuyResult
@@ -26543,7 +26543,7 @@ class CMSG_TRAINER_BUY_SPELL:
         # guid: Guid
         guid = await read_int(reader, 8)
 
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         return CMSG_TRAINER_BUY_SPELL(
@@ -26580,7 +26580,7 @@ class SMSG_TRAINER_BUY_SUCCEEDED:
         # guid: Guid
         guid = await read_int(reader, 8)
 
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         return SMSG_TRAINER_BUY_SUCCEEDED(
@@ -26618,7 +26618,7 @@ class SMSG_TRAINER_BUY_FAILED:
         # guid: Guid
         guid = await read_int(reader, 8)
 
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         # error: TrainingFailureReason
@@ -28117,10 +28117,10 @@ class SMSG_ENCHANTMENTLOG:
         # caster: Guid
         caster = await read_int(reader, 8)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         # show_affiliation: Bool8
@@ -28179,7 +28179,7 @@ class SMSG_START_MIRROR_TIMER:
         # is_frozen: Bool8
         is_frozen = await read_bool(reader, 1)
 
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         return SMSG_START_MIRROR_TIMER(
@@ -28355,7 +28355,7 @@ class SMSG_CLEAR_COOLDOWN:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CLEAR_COOLDOWN:
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         # target: Guid
@@ -28804,7 +28804,7 @@ class CMSG_PET_CAST_SPELL:
         # guid: Guid
         guid = await read_int(reader, 8)
 
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         # targets: SpellCastTargets
@@ -29476,7 +29476,7 @@ class SMSG_REMOVED_SPELL:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_REMOVED_SPELL:
-        # spell: u16
+        # spell: Spell16
         spell = await read_int(reader, 2)
 
         return SMSG_REMOVED_SPELL(
@@ -30866,7 +30866,7 @@ class SMSG_SEND_MAIL_RESULT:
                 equip_error = await read_int(reader, 4)
 
             else:
-                # item: u32
+                # item: Item
                 item = await read_int(reader, 4)
 
                 # item_count: u32
@@ -31458,7 +31458,7 @@ class SMSG_SPELLLOGMISS:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_SPELLLOGMISS:
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         # caster: Guid
@@ -31519,7 +31519,7 @@ class SMSG_SPELLLOGEXECUTE:
         # caster: PackedGuid
         caster = await read_packed_guid(reader)
 
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         # amount_of_effects: u32
@@ -31548,7 +31548,7 @@ class SMSG_SPELLLOGEXECUTE:
         # caster: PackedGuid
         _fmt, _data = packed_guid_write(self.caster, _fmt, _data)
 
-        # spell: u32
+        # spell: Spell
         _fmt += 'I'
         _data.append(self.spell)
 
@@ -31586,7 +31586,7 @@ class SMSG_PERIODICAURALOG:
         # caster: PackedGuid
         caster = await read_packed_guid(reader)
 
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         # amount_of_auras: u32
@@ -31619,7 +31619,7 @@ class SMSG_PERIODICAURALOG:
         # caster: PackedGuid
         _fmt, _data = packed_guid_write(self.caster, _fmt, _data)
 
-        # spell: u32
+        # spell: Spell
         _fmt += 'I'
         _data.append(self.spell)
 
@@ -31712,7 +31712,7 @@ class SMSG_SPELLNONMELEEDAMAGELOG:
         # attacker: PackedGuid
         attacker = await read_packed_guid(reader)
 
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         # damage: u32
@@ -31772,7 +31772,7 @@ class SMSG_SPELLNONMELEEDAMAGELOG:
         # attacker: PackedGuid
         _fmt, _data = packed_guid_write(self.attacker, _fmt, _data)
 
-        # spell: u32
+        # spell: Spell
         _fmt += 'I'
         _data.append(self.spell)
 
@@ -32604,7 +32604,7 @@ class SMSG_AUCTION_OWNER_NOTIFICATION:
         # bidder: Guid
         bidder = await read_int(reader, 8)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # item_random_property_id: u32
@@ -32653,7 +32653,7 @@ class SMSG_PROCRESIST:
         # target: Guid
         target = await read_int(reader, 8)
 
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         # log_format: LogFormat
@@ -32703,7 +32703,7 @@ class SMSG_DISPEL_FAILED:
         target = await read_int(reader, 8)
         _size += 8
 
-        # spells: u32[-]
+        # spells: Spell[-]
         spells = []
         while _size < body_size:
             spells.append(await read_int(reader, 4))
@@ -32724,8 +32724,12 @@ class SMSG_DISPEL_FAILED:
         _fmt = "<4s"
         _data = [_data]
 
-        _fmt += f'QQ{len(self.spells)}I'
-        _data.extend([self.caster, self.target, *self.spells])
+        _fmt += 'QQ'
+        _data.extend([self.caster, self.target])
+        # spells: Spell[-]
+        _fmt += f'len({self.spells})I'
+        _data.extend(self.spells)
+
         _data = struct.pack(_fmt, *_data)
         if isinstance(writer, bytearray):
             for i in range(0, len(_data)):
@@ -32752,7 +32756,7 @@ class SMSG_SPELLORDAMAGE_IMMUNE:
         # target: Guid
         target = await read_int(reader, 8)
 
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         # debug_log_format: Bool8
@@ -32977,7 +32981,7 @@ class CMSG_SET_AMMO:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_SET_AMMO:
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         return CMSG_SET_AMMO(
@@ -33077,7 +33081,7 @@ class CMSG_PET_CANCEL_AURA:
         # guid: Guid
         guid = await read_int(reader, 8)
 
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         return CMSG_PET_CANCEL_AURA(
@@ -33581,7 +33585,7 @@ class SMSG_SPELLDISPELLOG:
         # amount_of_spells: u32
         amount_of_spells = await read_int(reader, 4)
 
-        # spells: u32[amount_of_spells]
+        # spells: Spell[amount_of_spells]
         spells = []
         for _ in range(0, amount_of_spells):
             spells.append(await read_int(reader, 4))
@@ -33611,9 +33615,9 @@ class SMSG_SPELLDISPELLOG:
         _fmt += 'I'
         _data.append(len(self.spells))
 
-        # spells: u32[amount_of_spells]
-        _fmt += f'{len(self.spells)}I'
-        _data.extend([*self.spells])
+        # spells: Spell[amount_of_spells]
+        _fmt += f'len({self.spells})I'
+        _data.extend(self.spells)
 
         _data = struct.pack(_fmt, *_data)
         if isinstance(writer, bytearray):
@@ -33987,7 +33991,7 @@ class SMSG_AUCTION_REMOVED_NOTIFICATION:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_AUCTION_REMOVED_NOTIFICATION:
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # item_template: u32
@@ -34452,7 +34456,7 @@ class SMSG_LOOT_ALL_PASSED:
         # loot_slot: u32
         loot_slot = await read_int(reader, 4)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # item_random_property_id: u32
@@ -34507,7 +34511,7 @@ class SMSG_LOOT_ROLL_WON:
         # loot_slot: u32
         loot_slot = await read_int(reader, 4)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # item_random_suffix: u32
@@ -34614,7 +34618,7 @@ class SMSG_LOOT_START_ROLL:
         # loot_slot: u32
         loot_slot = await read_int(reader, 4)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # item_random_suffix: u32
@@ -34676,7 +34680,7 @@ class SMSG_LOOT_ROLL:
         # player: Guid
         player = await read_int(reader, 8)
 
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # item_random_suffix: u32
@@ -34857,7 +34861,7 @@ class SMSG_SPELL_FAILED_OTHER:
         # caster: Guid
         caster = await read_int(reader, 8)
 
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         return SMSG_SPELL_FAILED_OTHER(
@@ -35836,7 +35840,7 @@ class CMSG_ITEM_NAME_QUERY:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> CMSG_ITEM_NAME_QUERY:
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # guid: Guid
@@ -35873,7 +35877,7 @@ class SMSG_ITEM_NAME_QUERY_RESPONSE:
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ITEM_NAME_QUERY_RESPONSE:
-        # item: u32
+        # item: Item
         item = await read_int(reader, 4)
 
         # item_name: CString
@@ -38154,7 +38158,7 @@ class CMSG_PET_SPELL_AUTOCAST:
         # guid: Guid
         guid = await read_int(reader, 8)
 
-        # id: u32
+        # id: Spell
         id = await read_int(reader, 4)
 
         # autocast_enabled: Bool8
@@ -39851,7 +39855,7 @@ class SMSG_SPELLINSTAKILLLOG:
         # target: Guid
         target = await read_int(reader, 8)
 
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         return SMSG_SPELLINSTAKILLLOG(
@@ -39889,7 +39893,7 @@ class SMSG_SPELL_UPDATE_CHAIN_TARGETS:
         # caster: Guid
         caster = await read_int(reader, 8)
 
-        # spell: u32
+        # spell: Spell
         spell = await read_int(reader, 4)
 
         # amount_of_targets: u32

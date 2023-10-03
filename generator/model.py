@@ -163,6 +163,7 @@ class ArrayType:
             "Guid": ArrayTypeGUID,
             "Integer": ArrayTypeInteger,
             "PackedGuid": ArrayTypePackedGUID,
+            "Spell": ArrayTypeSpell,
             "Struct": ArrayTypeStruct,
         }
 
@@ -224,6 +225,19 @@ class ArrayTypePackedGUID(ArrayType):
 
     def to_json_data(self) -> Any:
         data = { "array_type_tag": "PackedGuid" }
+        return data
+
+@dataclass
+class ArrayTypeSpell(ArrayType):
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'ArrayTypeSpell':
+        return cls(
+            "Spell",
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "array_type_tag": "Spell" }
         return data
 
 @dataclass
@@ -514,6 +528,7 @@ class DataType:
             "InspectTalentGearMask": DataTypeInspectTalentGearMask,
             "Integer": DataTypeInteger,
             "IpAddress": DataTypeIPAddress,
+            "Item": DataTypeItem,
             "Level": DataTypeLevel,
             "Level16": DataTypeLevel16,
             "Level32": DataTypeLevel32,
@@ -524,6 +539,8 @@ class DataType:
             "Population": DataTypePopulation,
             "Seconds": DataTypeSeconds,
             "SizedCString": DataTypeSizedCstring,
+            "Spell": DataTypeSpell,
+            "Spell16": DataTypeSpell16,
             "String": DataTypeString,
             "Struct": DataTypeStruct,
             "UpdateMask": DataTypeUpdateMask,
@@ -814,6 +831,19 @@ class DataTypeIPAddress(DataType):
         return data
 
 @dataclass
+class DataTypeItem(DataType):
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'DataTypeItem':
+        return cls(
+            "Item",
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "data_type_tag": "Item" }
+        return data
+
+@dataclass
 class DataTypeLevel(DataType):
 
     @classmethod
@@ -941,6 +971,32 @@ class DataTypeSizedCstring(DataType):
 
     def to_json_data(self) -> Any:
         data = { "data_type_tag": "SizedCString" }
+        return data
+
+@dataclass
+class DataTypeSpell(DataType):
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'DataTypeSpell':
+        return cls(
+            "Spell",
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "data_type_tag": "Spell" }
+        return data
+
+@dataclass
+class DataTypeSpell16(DataType):
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'DataTypeSpell16':
+        return cls(
+            "Spell16",
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "data_type_tag": "Spell16" }
         return data
 
 @dataclass

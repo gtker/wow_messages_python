@@ -88,6 +88,12 @@ def type_to_wowm_str(ty: model.DataType) -> str:
             return "Level16"
         case model.DataTypeLevel32():
             return "Level32"
+        case model.DataTypeSpell():
+            return "Spell"
+        case model.DataTypeSpell16():
+            return "Spell16"
+        case model.DataTypeItem():
+            return "Item"
         case model.DataTypeMilliseconds():
             return "Milliseconds"
         case model.DataTypePackedGUID():
@@ -146,6 +152,8 @@ def array_type_to_wowm_str(ty: model.ArrayType):
         case model.ArrayTypeInteger(content=integer_type):
             text = f"{integer_type}".replace("IntegerType.", "").lower()
             return text
+        case model.ArrayTypeSpell():
+            return "Spell"
         case model.ArrayTypePackedGUID():
             return "PackedGuid"
         case model.ArrayTypeStruct(content=model.ArrayTypeStructContent(struct_data=e)):
@@ -190,6 +198,12 @@ def type_to_python_str(ty: model.DataType) -> str:
             return "int"
         case model.DataTypeLevel32():
             return "int"
+        case model.DataTypeSpell():
+            return "int"
+        case model.DataTypeSpell16():
+            return "int"
+        case model.DataTypeItem():
+            return "int"
         case model.DataTypeMilliseconds():
             return "int"
         case model.DataTypePackedGUID():
@@ -233,6 +247,8 @@ def array_type_to_python_str(ty: model.ArrayType):
         case model.ArrayTypeGUID():
             return "int"
         case model.ArrayTypeInteger():
+            return "int"
+        case model.ArrayTypeSpell():
             return "int"
         case model.ArrayTypePackedGUID():
             return "int"

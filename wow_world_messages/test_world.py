@@ -219,6 +219,24 @@ class SMSG_NEW_WORLD_vanilla(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
+class SMSG_TRANSFER_PENDING_vanilla(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 6, 63, 0, 1, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await vanilla.expect_server_opcode_unencrypted(reader, vanilla.SMSG_TRANSFER_PENDING)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 4, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
 class SMSG_CHARACTER_LOGIN_FAILED_vanilla(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()

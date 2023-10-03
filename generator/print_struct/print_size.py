@@ -82,6 +82,8 @@ def array_size_inner_values(
             return f"sum([len(i) + 1 for i in {extra_self}{name}])"
         case model.ArrayTypeInteger(content=integer_type):
             size = integer_type_to_size(integer_type)
+        case model.ArrayTypeSpell():
+            size = 4
         case v:
             raise Exception(f"{v}")
 
@@ -128,7 +130,7 @@ def addable_size_value(
         case model.DataTypeFlag(content=content):
             return integer_type_to_size(content.integer_type), None
 
-        case model.DataTypeDateTime() \
+        case model.DataTypeSpell() | model.DataTypeItem() | model.DataTypeDateTime() \
              | model.DataTypeGold() \
              | model.DataTypeSeconds() \
              | model.DataTypeMilliseconds() \
@@ -140,7 +142,7 @@ def addable_size_value(
             return 8, None
         case model.DataTypeLevel():
             return 1, None
-        case model.DataTypeLevel16():
+        case model.DataTypeLevel16() | model.DataTypeSpell16():
             return 2, None
         case model.DataTypeLevel32():
             return 4, None

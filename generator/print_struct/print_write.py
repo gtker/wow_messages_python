@@ -81,10 +81,10 @@ def addable_write_values(
         case model.DataTypeLevel():
             return "B", f"self.{d.name}"
 
-        case model.DataTypeLevel16():
+        case model.DataTypeLevel16() | model.DataTypeSpell16():
             return "H", f"self.{d.name}"
 
-        case model.DataTypeLevel32():
+        case model.DataTypeLevel32() | model.DataTypeItem() | model.DataTypeSpell():
             return "I", f"self.{d.name}"
 
         case model.DataTypeFloatingPoint():
@@ -211,6 +211,10 @@ def print_array_write_inner(s: Writer, d: model.Definition, inner_type: model.Da
 
         case model.ArrayTypeGUID():
             s.wln(f"{prefix}fmt += f'len({{{extra_self}{d.name}}})Q'")
+            s.wln(f"{prefix}data.extend({extra_self}{d.name})")
+
+        case model.ArrayTypeSpell():
+            s.wln(f"{prefix}fmt += f'len({{{extra_self}{d.name}}})I'")
             s.wln(f"{prefix}data.extend({extra_self}{d.name})")
 
         case model.ArrayTypePackedGUID():

@@ -93,12 +93,12 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
             if needs_size:
                 s.wln(f"_size += 1")
 
-        case model.DataTypeLevel16():
+        case model.DataTypeLevel16() | model.DataTypeSpell16():
             s.wln(f"{d.name} = await read_int(reader, 2)")
 
             if needs_size:
                 s.wln(f"_size += 2")
-        case model.DataTypeLevel32():
+        case model.DataTypeLevel32() | model.DataTypeSpell() | model.DataTypeItem():
             s.wln(f"{d.name} = await read_int(reader, 4)")
 
             if needs_size:
@@ -210,6 +210,11 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
                         f"{d.name}.append(await read_int({reader}, 8))"
                     )
 
+                case model.ArrayTypeSpell():
+                    s.wln(
+                        f"{d.name}.append(await read_int({reader}, 4))"
+                    )
+
                 case model.ArrayTypePackedGUID():
                     s.wln(
                         f"{d.name}.append(await read_packed_guid({reader}))"
@@ -236,8 +241,14 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
                     case model.ArrayTypeGUID():
                         s.wln_no_indent(str(8))
 
+                    case model.ArrayTypeSpell():
+                        s.wln_no_indent(str(4))
+
                     case model.ArrayTypePackedGUID():
                         s.wln_no_indent(f"{d.name}[-1].size()")
+
+                    case v:
+                        raise Exception(f"{v}")
 
             s.dec_indent()
 
