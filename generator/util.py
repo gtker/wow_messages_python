@@ -34,7 +34,6 @@ def should_print_container_struct_member(m: model.StructMember) -> bool:
                 case model.DataTypeAddonArray() \
                      | model.DataTypeAchievementDoneArray() \
                      | model.DataTypeAchievementInProgressArray() \
-                     | model.DataTypeInspectTalentGearMask() \
                      | model.DataTypeVariableItemRandomProperty() \
                      | model.DataTypeCacheMask():
                     return False

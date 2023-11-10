@@ -1075,6 +1075,7 @@ __all__ = [
     "SMSG_USERLIST_REMOVE",
     "SMSG_USERLIST_UPDATE",
     "CMSG_CLEAR_CHANNEL_WATCH",
+    "SMSG_INSPECT_TALENT",
     "CMSG_SPELLCLICK",
     "SMSG_LOOT_LIST",
     "MSG_GUILD_PERMISSIONS_Client",
@@ -53944,6 +53945,104 @@ class CMSG_CLEAR_CHANNEL_WATCH:
 
 
 @dataclasses.dataclass
+class SMSG_INSPECT_TALENT:
+    player: int
+    unspent_talent_points: int
+    active_spec: int
+    specs: typing.List[InspectTalentSpec]
+    glyphs: typing.List[int]
+    talent_gear_mask: InspectTalentGearMask
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_INSPECT_TALENT:
+        # player: PackedGuid
+        player = await read_packed_guid(reader)
+
+        # unspent_talent_points: u32
+        unspent_talent_points = await read_int(reader, 4)
+
+        # amount_of_specs: u8
+        amount_of_specs = await read_int(reader, 1)
+
+        # active_spec: u8
+        active_spec = await read_int(reader, 1)
+
+        # specs: InspectTalentSpec[amount_of_specs]
+        specs = []
+        for _ in range(0, amount_of_specs):
+            specs.append(await InspectTalentSpec.read(reader))
+
+        # amount_of_glyphs: u8
+        amount_of_glyphs = await read_int(reader, 1)
+
+        # glyphs: u16[amount_of_glyphs]
+        glyphs = []
+        for _ in range(0, amount_of_glyphs):
+            glyphs.append(await read_int(reader, 2))
+
+        # talent_gear_mask: InspectTalentGearMask
+        talent_gear_mask = await InspectTalentGearMask.read(reader)
+
+        return SMSG_INSPECT_TALENT(
+            player=player,
+            unspent_talent_points=unspent_talent_points,
+            active_spec=active_spec,
+            specs=specs,
+            glyphs=glyphs,
+            talent_gear_mask=talent_gear_mask,
+        )
+
+    def write_encrypted_server(
+        self,
+        writer: typing.Union[asyncio.StreamWriter, bytearray],
+        header_crypto: wow_srp.VanillaHeaderCrypto,
+    ):
+        _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x03F4))
+        _fmt = "<4s"
+        _data = [_data]
+
+        # player: PackedGuid
+        _fmt, _data = packed_guid_write(self.player, _fmt, _data)
+
+        # unspent_talent_points: u32
+        _fmt += 'I'
+        _data.append(self.unspent_talent_points)
+
+        # amount_of_specs: u8
+        _fmt += 'B'
+        _data.append(len(self.specs))
+
+        # active_spec: u8
+        _fmt += 'B'
+        _data.append(self.active_spec)
+
+        # specs: InspectTalentSpec[amount_of_specs]
+        for i in self.specs:
+            _fmt, _data = i.write(_fmt, _data)
+
+        # amount_of_glyphs: u8
+        _fmt += 'B'
+        _data.append(len(self.glyphs))
+
+        # glyphs: u16[amount_of_glyphs]
+        _fmt += f'{len(self.glyphs)}H'
+        _data.extend([*self.glyphs])
+
+        # talent_gear_mask: InspectTalentGearMask
+        _fmt, _data = self.talent_gear_mask.write(_fmt, _data)
+
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
+
+    def size(self) -> int:
+        return 7 + packed_guid_size(self.player) + sum([i.size() for i in self.specs]) + 2 * len(self.glyphs) + self.talent_gear_mask.size()
+
+
+@dataclasses.dataclass
 class CMSG_SPELLCLICK:
     target: int
 
@@ -62802,6 +62901,7 @@ ServerOpcode = typing.Union[
     SMSG_USERLIST_ADD,
     SMSG_USERLIST_REMOVE,
     SMSG_USERLIST_UPDATE,
+    SMSG_INSPECT_TALENT,
     SMSG_LOOT_LIST,
     MSG_GUILD_PERMISSIONS_Server,
     MSG_GUILD_BANK_MONEY_WITHDRAWN_Server,
@@ -63774,6 +63874,7 @@ server_opcodes: dict[int, ServerOpcode] = {
     0x03F0: SMSG_USERLIST_ADD,
     0x03F1: SMSG_USERLIST_REMOVE,
     0x03F2: SMSG_USERLIST_UPDATE,
+    0x03F4: SMSG_INSPECT_TALENT,
     0x03F9: SMSG_LOOT_LIST,
     0x03FD: MSG_GUILD_PERMISSIONS_Server,
     0x03FE: MSG_GUILD_BANK_MONEY_WITHDRAWN_Server,
