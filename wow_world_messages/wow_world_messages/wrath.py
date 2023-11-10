@@ -27,6 +27,7 @@ __all__ = [
     "expect_server_opcode_encrypted",
     "NamedGuid",
     "VariableItemRandomProperty",
+    "AddonArray",
     "CacheMask",
     "AuraMask",
     "UpdateMask",
@@ -917,6 +918,7 @@ __all__ = [
     "SMSG_BATTLEGROUND_PLAYER_JOINED",
     "SMSG_BATTLEGROUND_PLAYER_LEFT",
     "CMSG_BATTLEMASTER_JOIN",
+    "SMSG_ADDON_INFO",
     "CMSG_PET_UNLEARN",
     "SMSG_PET_UNLEARN_CONFIRM",
     "SMSG_PARTY_MEMBER_STATS_FULL",
@@ -1327,6 +1329,28 @@ class VariableItemRandomProperty:
             return 8
         else:
             return 4
+
+
+@dataclasses.dataclass
+class AddonArray:
+    data: list[Addon]
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader):
+        raise Exception('read for AddonArray is unimplemented. Create an issue on Github if this is relevant for you.')
+
+    def write(self, fmt, data):
+        for d in self.data:
+            fmt, data = d.write(fmt, data)
+
+        return fmt, data
+
+    def size(self):
+        size = 0
+        for d in self.data:
+            size += d.size()
+
+        return size
 
 
 @dataclasses.dataclass
@@ -46379,6 +46403,49 @@ class CMSG_BATTLEMASTER_JOIN:
 
 
 @dataclasses.dataclass
+class SMSG_ADDON_INFO:
+    addons: AddonArray
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ADDON_INFO:
+        # addons: AddonArray
+        addons = await CacheMask.read(reader)
+
+        # number_of_banned_addons: u32
+        _number_of_banned_addons = await read_int(reader, 4)
+
+        return SMSG_ADDON_INFO(
+            addons=addons,
+        )
+
+    def write_encrypted_server(
+        self,
+        writer: typing.Union[asyncio.StreamWriter, bytearray],
+        header_crypto: wow_srp.VanillaHeaderCrypto,
+    ):
+        _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x02EF))
+        _fmt = "<4s"
+        _data = [_data]
+
+        # addons: AddonArray
+        _fmt, _data = self.addons.write(_fmt, _data)
+
+        # number_of_banned_addons: u32
+        _fmt += 'I'
+        _data.append(0)
+
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
+
+    def size(self) -> int:
+        return 4 + self.addons.size()
+
+
+@dataclasses.dataclass
 class CMSG_PET_UNLEARN:
     pet: int
 
@@ -63117,6 +63184,7 @@ ServerOpcode = typing.Union[
     SMSG_BINDER_CONFIRM,
     SMSG_BATTLEGROUND_PLAYER_JOINED,
     SMSG_BATTLEGROUND_PLAYER_LEFT,
+    SMSG_ADDON_INFO,
     SMSG_PET_UNLEARN_CONFIRM,
     SMSG_PARTY_MEMBER_STATS_FULL,
     SMSG_WEATHER,
@@ -64092,6 +64160,7 @@ server_opcodes: dict[int, ServerOpcode] = {
     0x02EB: SMSG_BINDER_CONFIRM,
     0x02EC: SMSG_BATTLEGROUND_PLAYER_JOINED,
     0x02ED: SMSG_BATTLEGROUND_PLAYER_LEFT,
+    0x02EF: SMSG_ADDON_INFO,
     0x02F1: SMSG_PET_UNLEARN_CONFIRM,
     0x02F2: SMSG_PARTY_MEMBER_STATS_FULL,
     0x02F4: SMSG_WEATHER,

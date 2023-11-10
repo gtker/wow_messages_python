@@ -31,8 +31,7 @@ def should_print_container_struct_member(m: model.StructMember) -> bool:
         case model.StructMemberDefinition(struct_member_content=d):
             match d.data_type:
                 # Non-vanilla types
-                case model.DataTypeAddonArray() \
-                     | model.DataTypeAchievementDoneArray() \
+                case model.DataTypeAchievementDoneArray() \
                      | model.DataTypeAchievementInProgressArray():
                     return False
 

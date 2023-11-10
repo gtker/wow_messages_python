@@ -5,6 +5,7 @@ import pstats
 import typing
 
 import model
+from generator.print_addon_array import print_addon_array
 from generator.print_aura_mask import print_aura_mask
 from generator.print_cache_mask import print_cache_mask
 from generator.print_named_guid import print_named_guid
@@ -129,6 +130,9 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
 
         print_variable_item_random_property(s)
         all_types.wln('"VariableItemRandomProperty",')
+
+        print_addon_array(s)
+        all_types.wln('"AddonArray",')
 
         if world_version_is_wrath(v):
             print_cache_mask(s)
