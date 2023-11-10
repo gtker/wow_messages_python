@@ -262,6 +262,7 @@ __all__ = [
     "GuildRights",
     "InitialSpell",
     "InspectTalent",
+    "InspectTalentGear",
     "InspectTalentSpec",
     "ItemDamageType",
     "ItemRefundExtra",
@@ -12843,6 +12844,62 @@ class InspectTalent:
         _fmt += 'IB'
         _data.extend([self.talent.value, self.max_rank])
         return _fmt, _data
+
+
+@dataclasses.dataclass
+class InspectTalentGear:
+    item: int
+    enchant_mask: EnchantMask
+    unknown1: int
+    creator: int
+    unknown2: int
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader) -> InspectTalentGear:
+        # item: Item
+        item = await read_int(reader, 4)
+
+        # enchant_mask: EnchantMask
+        enchant_mask = await EnchantMask.read(reader)
+
+        # unknown1: u16
+        unknown1 = await read_int(reader, 2)
+
+        # creator: PackedGuid
+        creator = await read_packed_guid(reader)
+
+        # unknown2: u32
+        unknown2 = await read_int(reader, 4)
+
+        return InspectTalentGear(
+            item=item,
+            enchant_mask=enchant_mask,
+            unknown1=unknown1,
+            creator=creator,
+            unknown2=unknown2,
+        )
+
+    def write(self, _fmt, _data):
+        _fmt += 'I'
+        _data.append(self.item)
+        # enchant_mask: EnchantMask
+        _fmt, _data = self.enchant_mask.write(_fmt, _data)
+
+        # unknown1: u16
+        _fmt += 'H'
+        _data.append(self.unknown1)
+
+        # creator: PackedGuid
+        _fmt, _data = packed_guid_write(self.creator, _fmt, _data)
+
+        # unknown2: u32
+        _fmt += 'I'
+        _data.append(self.unknown2)
+
+        return _fmt, _data
+
+    def size(self) -> int:
+        return 10 + self.enchant_mask.size() + packed_guid_size(self.creator)
 
 
 @dataclasses.dataclass

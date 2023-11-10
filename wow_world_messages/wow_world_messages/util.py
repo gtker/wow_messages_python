@@ -5,6 +5,40 @@ import typing
 
 
 @dataclasses.dataclass
+class EnchantMask:
+    fields: dict[int]
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader):
+        mask = await read_int(reader, 2)
+
+        fields = {}
+        for index in range(0, 16):
+            if mask & 1 << index:
+                data = await read_int(reader, 2)
+                fields[index] = data
+
+        return EnchantMask(fields=fields)
+
+    def write(self, fmt, data):
+        mask = 0
+        for i, _ in enumerate(self.fields):
+            mask |= 1 << i
+
+        fmt += 'H'
+        data.append(mask)
+
+        for d in self.fields:
+            fmt += "H"
+            data.append(d)
+
+        return fmt, data
+
+    def size(self):
+        return 2 + len(self.fields) * 2
+
+
+@dataclasses.dataclass
 class WrathAuraMask:
     fields: dict[int]
 
