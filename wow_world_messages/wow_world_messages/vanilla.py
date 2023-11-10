@@ -11,7 +11,6 @@ from .util import packed_guid_size
 from .util import packed_guid_write
 from .util import read_packed_guid
 from .util import read_sized_cstring
-from .util import VanillaAuraMask as AuraMask
 from .util import read_bool
 from .util import read_int
 from .util import read_cstring
@@ -27,8 +26,6 @@ __all__ = [
     "expect_server_opcode_unencrypted",
     "expect_server_opcode_encrypted",
     "UpdateMask",
-    "AuraMask",
-    "MonsterMoveSpline",
     "AccountDataType",
     "ActivateTaxiReply",
     "AddonType",
@@ -215,6 +212,7 @@ __all__ = [
     "BattlegroundPlayerPosition",
     "ChannelMember",
     "Vector3d",
+    "MonsterMoveSpline",
     "CharacterGear",
     "Character",
     "MonsterMove",

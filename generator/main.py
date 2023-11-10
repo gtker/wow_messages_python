@@ -5,6 +5,7 @@ import pstats
 import typing
 
 import model
+from generator.print_aura_mask import print_aura_mask
 from login_utils import print_login_utils
 from print_enum import print_enum, print_flag
 from print_monster_move_spline import print_monster_move_spline
@@ -52,7 +53,6 @@ def print_includes(s: Writer, world: typing.Optional[model.WorldVersion]):
         s.wln("from .util import read_packed_guid")
 
         s.wln("from .util import read_sized_cstring")
-        s.wln(f"from .util import {world_version_to_title_name(world)}AuraMask as AuraMask")
     else:
         s.wln("from .util import read_string")
 
@@ -121,8 +121,6 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
 
     print_update_mask(s, update_mask)
     all_types.wln('"UpdateMask",')
-    all_types.wln('"AuraMask",')
-    all_types.wln('"MonsterMoveSpline",')
 
     for e in m.enums.value:
         if not world_version_matches(e.tags, v):
@@ -150,6 +148,10 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
 
         if e.name == "Vector3d":
             print_monster_move_spline(s)
+            all_types.wln('"MonsterMoveSpline",')
+        elif e.name == "Aura":
+            print_aura_mask(s, v)
+            all_types.wln('"AuraMask",')
 
     for e in m.messages.value:
         if not should_print_container(e, v):

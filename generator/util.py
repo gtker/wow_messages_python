@@ -119,6 +119,18 @@ def world_version_satisfies(t: model.WorldVersion, o: model.WorldVersion) -> boo
     return True
 
 
+def world_version_is_wrath(version: model.WorldVersion) -> bool:
+    return version == WRATH
+
+
+def world_version_is_tbc(version: model.WorldVersion) -> bool:
+    return version == TBC
+
+
+def world_version_is_vanilla(version: model.WorldVersion) -> bool:
+    return version == VANILLA
+
+
 def world_version_matches(tags: model.ObjectTags, version: model.WorldVersion) -> bool:
     match tags.version:
         case model.ObjectVersionsLogin(version_type=version_type):

@@ -11,7 +11,6 @@ from .util import packed_guid_size
 from .util import packed_guid_write
 from .util import read_packed_guid
 from .util import read_sized_cstring
-from .util import TbcAuraMask as AuraMask
 from .util import read_bool
 from .util import read_int
 from .util import read_cstring
@@ -27,8 +26,6 @@ __all__ = [
     "expect_server_opcode_unencrypted",
     "expect_server_opcode_encrypted",
     "UpdateMask",
-    "AuraMask",
-    "MonsterMoveSpline",
     "AccountDataType",
     "ActivateTaxiReply",
     "AiReaction",
@@ -206,11 +203,13 @@ __all__ = [
     "AuctionListItem",
     "AuctionSort",
     "Aura",
+    "AuraMask",
     "AuraLog",
     "BankTab",
     "BattlegroundPlayerPosition",
     "ChannelMember",
     "Vector3d",
+    "MonsterMoveSpline",
     "CharacterGear",
     "Character",
     "CooldownSpell",
@@ -9276,6 +9275,42 @@ class Aura:
         _fmt += 'HB'
         _data.extend([self.aura, self.unknown])
         return _fmt, _data
+
+
+@dataclasses.dataclass
+class AuraMask:
+    fields: dict[int, tuple[int, int]]
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader):
+        mask = await read_int(reader, 8)
+
+        fields = {}
+        for index in range(0, 64):
+            if mask & 1 << index:
+                first = await read_int(reader, 2)
+                second = await read_int(reader, 1)
+                fields[index] = (first, second)
+
+        return AuraMask(fields=fields)
+
+    def write(self, fmt, data):
+        mask = 0
+        for i, _ in enumerate(self.fields):
+            mask |= 1 << i
+
+        fmt += 'Q'
+        data.append(mask)
+
+        for (first, second) in self.fields:
+            fmt += "HB"
+            data.append(first)
+            data.append(second)
+
+        return fmt, data
+
+    def size(self):
+        return 4 + len(self.fields) * 3
 
 
 @dataclasses.dataclass
