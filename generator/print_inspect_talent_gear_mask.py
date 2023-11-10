@@ -38,3 +38,5 @@ class InspectTalentGearMask:
             size += f.size()
         return size
 """)
+
+    s.double_newline()

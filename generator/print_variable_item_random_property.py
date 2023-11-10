@@ -34,3 +34,5 @@ class VariableItemRandomProperty:
         else:
             return 4
 """)
+
+    s.double_newline()

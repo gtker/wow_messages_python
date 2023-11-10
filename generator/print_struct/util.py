@@ -126,6 +126,8 @@ def type_to_wowm_str(ty: model.DataType) -> str:
             return "NamedGuid"
         case model.DataTypeVariableItemRandomProperty():
             return "VariableItemRandomProperty"
+        case model.DataTypeCacheMask():
+            return "CacheMask"
         case v:
             raise Exception(f"{v}")
 
@@ -236,6 +238,8 @@ def type_to_python_str(ty: model.DataType) -> str:
             return "NamedGUID"
         case model.DataTypeVariableItemRandomProperty():
             return "VariableItemRandomProperty"
+        case model.DataTypeCacheMask():
+            return "CacheMask"
         case v:
             raise Exception(f"{v}")
 

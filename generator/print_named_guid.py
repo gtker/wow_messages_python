@@ -37,3 +37,5 @@ class NamedGuid:
             return 8
 
 """)
+
+    s.double_newline()

@@ -111,7 +111,7 @@ def addable_size_value(
             return 5, f"len({extra_self}{name})"
         case model.DataTypePackedGUID():
             return 0, f"packed_guid_size({extra_self}{name})"
-        case model.DataTypeVariableItemRandomProperty() | model.DataTypeInspectTalentGearMask() | model.DataTypeNamedGUID() | model.DataTypeEnchantMask() | model.DataTypeUpdateMask() | model.DataTypeAuraMask() | model.DataTypeMonsterMoveSpline():
+        case model.DataTypeCacheMask() | model.DataTypeVariableItemRandomProperty() | model.DataTypeInspectTalentGearMask() | model.DataTypeNamedGUID() | model.DataTypeEnchantMask() | model.DataTypeUpdateMask() | model.DataTypeAuraMask() | model.DataTypeMonsterMoveSpline():
             return 0, f"{extra_self}{name}.size()"
         case model.DataTypeArray(content=array):
             if array.compressed:

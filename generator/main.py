@@ -6,6 +6,7 @@ import typing
 
 import model
 from generator.print_aura_mask import print_aura_mask
+from generator.print_cache_mask import print_cache_mask
 from generator.print_named_guid import print_named_guid
 from generator.print_variable_item_random_property import print_variable_item_random_property
 from login_utils import print_login_utils
@@ -128,6 +129,11 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
 
         print_variable_item_random_property(s)
         all_types.wln('"VariableItemRandomProperty",')
+
+        if world_version_is_wrath(v):
+            print_cache_mask(s)
+            all_types.wln('"CacheMask",')
+
     elif world_version_is_vanilla(v):
         # Vanilla doesn't have an Aura type
         print_aura_mask(s, v)

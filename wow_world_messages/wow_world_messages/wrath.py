@@ -27,6 +27,7 @@ __all__ = [
     "expect_server_opcode_encrypted",
     "NamedGuid",
     "VariableItemRandomProperty",
+    "CacheMask",
     "AuraMask",
     "UpdateMask",
     "AchievementNameLinkType",
@@ -732,6 +733,7 @@ __all__ = [
     "SMSG_GMTICKET_CREATE",
     "CMSG_GMTICKET_UPDATETEXT",
     "SMSG_GMTICKET_UPDATETEXT",
+    "SMSG_ACCOUNT_DATA_TIMES",
     "CMSG_REQUEST_ACCOUNT_DATA",
     "CMSG_UPDATE_ACCOUNT_DATA",
     "SMSG_UPDATE_ACCOUNT_DATA",
@@ -1293,6 +1295,8 @@ class NamedGuid:
         else:
             return 8
 
+
+
 @dataclasses.dataclass
 class VariableItemRandomProperty:
     first: int
@@ -1323,6 +1327,40 @@ class VariableItemRandomProperty:
             return 8
         else:
             return 4
+
+
+@dataclasses.dataclass
+class CacheMask:
+    fields: dict[int, int]
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader):
+        mask = await read_int(reader, 4)
+
+        fields = {}
+        for index in range(0, 32):
+            if mask & 1 << index:
+                fields[index] = await read_int(reader, 2)
+
+        return AuraMask(fields=fields)
+
+    def write(self, fmt, data):
+        mask = 0
+        for key in self.fields:
+            mask |= 1 << key
+
+        fmt += 'I'
+        data.append(mask)
+
+        fmt += f"{len(self.fields)}H"
+        data.extend(list(self.fields.values()))
+
+        return fmt, data
+
+    def size(self):
+        return 4 + len(self.fields) * 2
+
+
 @dataclasses.dataclass
 class UpdateMask:
     fields: dict[int, int]
@@ -38012,6 +38050,54 @@ class SMSG_GMTICKET_UPDATETEXT:
 
 
 @dataclasses.dataclass
+class SMSG_ACCOUNT_DATA_TIMES:
+    unix_time: int
+    unknown1: int
+    mask: CacheMask
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ACCOUNT_DATA_TIMES:
+        # unix_time: u32
+        unix_time = await read_int(reader, 4)
+
+        # unknown1: u8
+        unknown1 = await read_int(reader, 1)
+
+        # mask: CacheMask
+        mask = await CacheMask.read(reader)
+
+        return SMSG_ACCOUNT_DATA_TIMES(
+            unix_time=unix_time,
+            unknown1=unknown1,
+            mask=mask,
+        )
+
+    def write_encrypted_server(
+        self,
+        writer: typing.Union[asyncio.StreamWriter, bytearray],
+        header_crypto: wow_srp.VanillaHeaderCrypto,
+    ):
+        _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0209))
+        _fmt = "<4s"
+        _data = [_data]
+
+        _fmt += 'IB'
+        _data.extend([self.unix_time, self.unknown1])
+        # mask: CacheMask
+        _fmt, _data = self.mask.write(_fmt, _data)
+
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
+
+    def size(self) -> int:
+        return 5 + self.mask.size()
+
+
+@dataclasses.dataclass
 class CMSG_REQUEST_ACCOUNT_DATA:
     data_type: int
 
@@ -62937,6 +63023,7 @@ ServerOpcode = typing.Union[
     SMSG_REMOVED_SPELL,
     SMSG_GMTICKET_CREATE,
     SMSG_GMTICKET_UPDATETEXT,
+    SMSG_ACCOUNT_DATA_TIMES,
     SMSG_UPDATE_ACCOUNT_DATA,
     SMSG_GMTICKET_GETTICKET,
     SMSG_UPDATE_INSTANCE_ENCOUNTER_UNIT,
@@ -63911,6 +63998,7 @@ server_opcodes: dict[int, ServerOpcode] = {
     0x0203: SMSG_REMOVED_SPELL,
     0x0206: SMSG_GMTICKET_CREATE,
     0x0208: SMSG_GMTICKET_UPDATETEXT,
+    0x0209: SMSG_ACCOUNT_DATA_TIMES,
     0x020C: SMSG_UPDATE_ACCOUNT_DATA,
     0x0212: SMSG_GMTICKET_GETTICKET,
     0x0214: SMSG_UPDATE_INSTANCE_ENCOUNTER_UNIT,

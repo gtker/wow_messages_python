@@ -1102,6 +1102,8 @@ class NamedGuid:
         else:
             return 8
 
+
+
 @dataclasses.dataclass
 class VariableItemRandomProperty:
     first: int
@@ -1132,6 +1134,8 @@ class VariableItemRandomProperty:
             return 8
         else:
             return 4
+
+
 @dataclasses.dataclass
 class UpdateMask:
     fields: dict[int, int]
