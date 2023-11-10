@@ -7,6 +7,7 @@ import typing
 import model
 from generator.print_aura_mask import print_aura_mask
 from generator.print_named_guid import print_named_guid
+from generator.print_variable_item_random_property import print_variable_item_random_property
 from login_utils import print_login_utils
 from print_enum import print_enum, print_flag
 from print_monster_move_spline import print_monster_move_spline
@@ -124,6 +125,9 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
     if world_version_is_tbc(v) or world_version_is_wrath(v):
         print_named_guid(s)
         all_types.wln('"NamedGuid",')
+
+        print_variable_item_random_property(s)
+        all_types.wln('"VariableItemRandomProperty",')
 
     print_update_mask(s, update_mask)
     all_types.wln('"UpdateMask",')

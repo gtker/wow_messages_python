@@ -26,6 +26,7 @@ __all__ = [
     "expect_server_opcode_unencrypted",
     "expect_server_opcode_encrypted",
     "NamedGuid",
+    "VariableItemRandomProperty",
     "UpdateMask",
     "AccountDataType",
     "ActivateTaxiReply",
@@ -224,6 +225,7 @@ __all__ = [
     "GroupListMember",
     "GuildBankRights",
     "GuildBankSocket",
+    "GuildBankSlot",
     "GuildBankTab",
     "GuildLogEvent",
     "GuildMember",
@@ -1021,6 +1023,7 @@ __all__ = [
     "CMSG_REPORT_PVP_AFK",
     "CMSG_GUILD_BANKER_ACTIVATE",
     "CMSG_GUILD_BANK_QUERY_TAB",
+    "SMSG_GUILD_BANK_LIST",
     "CMSG_GUILD_BANK_SWAP_ITEMS",
     "CMSG_GUILD_BANK_BUY_TAB",
     "CMSG_GUILD_BANK_UPDATE_TAB",
@@ -1099,6 +1102,36 @@ class NamedGuid:
         else:
             return 8
 
+@dataclasses.dataclass
+class VariableItemRandomProperty:
+    first: int
+    second: typing.Optional[int]
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader):
+        first = await read_int(reader, 4)
+
+        second = None
+        if first != 0:
+            second = await read_int(reader, 4)
+
+        return VariableItemRandomProperty(first=first, second=second)
+
+    def write(self, fmt, data):
+        fmt += 'I'
+        data.append(first)
+
+        if second is not None:
+            fmt += 'I'
+            data.append(second)
+
+        return fmt, data
+
+    def size(self):
+        if second is not None:
+            return 8
+        else:
+            return 4
 @dataclasses.dataclass
 class UpdateMask:
     fields: dict[int, int]
@@ -10141,6 +10174,86 @@ class GuildBankSocket:
         _fmt += 'BI'
         _data.extend([self.socket_index, self.gem])
         return _fmt, _data
+
+
+@dataclasses.dataclass
+class GuildBankSlot:
+    slot: int
+    item: int
+    item_random_property_id: VariableItemRandomProperty
+    amount_of_items: int
+    enchant: int
+    charges: int
+    sockets: typing.List[GuildBankSocket]
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader) -> GuildBankSlot:
+        # slot: u8
+        slot = await read_int(reader, 1)
+
+        # item: Item
+        item = await read_int(reader, 4)
+
+        # item_random_property_id: VariableItemRandomProperty
+        item_random_property_id = await VariableItemRandomProperty.read(reader)
+
+        # amount_of_items: u8
+        amount_of_items = await read_int(reader, 1)
+
+        # enchant: u32
+        enchant = await read_int(reader, 4)
+
+        # charges: u8
+        charges = await read_int(reader, 1)
+
+        # amount_of_sockets: u8
+        amount_of_sockets = await read_int(reader, 1)
+
+        # sockets: GuildBankSocket[amount_of_sockets]
+        sockets = []
+        for _ in range(0, amount_of_sockets):
+            sockets.append(await GuildBankSocket.read(reader))
+
+        return GuildBankSlot(
+            slot=slot,
+            item=item,
+            item_random_property_id=item_random_property_id,
+            amount_of_items=amount_of_items,
+            enchant=enchant,
+            charges=charges,
+            sockets=sockets,
+        )
+
+    def write(self, _fmt, _data):
+        _fmt += 'BI'
+        _data.extend([self.slot, self.item])
+        # item_random_property_id: VariableItemRandomProperty
+        _fmt, _data = self.item_random_property_id.write(_fmt, _data)
+
+        # amount_of_items: u8
+        _fmt += 'B'
+        _data.append(self.amount_of_items)
+
+        # enchant: u32
+        _fmt += 'I'
+        _data.append(self.enchant)
+
+        # charges: u8
+        _fmt += 'B'
+        _data.append(self.charges)
+
+        # amount_of_sockets: u8
+        _fmt += 'B'
+        _data.append(len(self.sockets))
+
+        # sockets: GuildBankSocket[amount_of_sockets]
+        for i in self.sockets:
+            _fmt, _data = i.write(_fmt, _data)
+
+        return _fmt, _data
+
+    def size(self) -> int:
+        return 12 + self.item_random_property_id.size() + 5 * len(self.sockets)
 
 
 @dataclasses.dataclass
@@ -47238,6 +47351,99 @@ class CMSG_GUILD_BANK_QUERY_TAB:
 
 
 @dataclasses.dataclass
+class SMSG_GUILD_BANK_LIST:
+    bank_balance: int
+    tab_id: int
+    amount_of_allowed_item_withdraws: int
+    tab_result: GuildBankTabResult
+    slot_updates: typing.List[GuildBankSlot]
+    tabs: typing.Optional[typing.List[GuildBankTab]] = None
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GUILD_BANK_LIST:
+        amount_of_bank_tabs = None
+        tabs = None
+        # bank_balance: u64
+        bank_balance = await read_int(reader, 8)
+
+        # tab_id: u8
+        tab_id = await read_int(reader, 1)
+
+        # amount_of_allowed_item_withdraws: u32
+        amount_of_allowed_item_withdraws = await read_int(reader, 4)
+
+        # tab_result: GuildBankTabResult
+        tab_result = GuildBankTabResult(await read_int(reader, 1))
+
+        if tab_result == GuildBankTabResult.PRESENT:
+            # amount_of_bank_tabs: u8
+            amount_of_bank_tabs = await read_int(reader, 1)
+
+            # tabs: GuildBankTab[amount_of_bank_tabs]
+            tabs = []
+            for _ in range(0, amount_of_bank_tabs):
+                tabs.append(await GuildBankTab.read(reader))
+
+        # amount_of_slot_updates: u8
+        amount_of_slot_updates = await read_int(reader, 1)
+
+        # slot_updates: GuildBankSlot[amount_of_slot_updates]
+        slot_updates = []
+        for _ in range(0, amount_of_slot_updates):
+            slot_updates.append(await GuildBankSlot.read(reader))
+
+        return SMSG_GUILD_BANK_LIST(
+            bank_balance=bank_balance,
+            tab_id=tab_id,
+            amount_of_allowed_item_withdraws=amount_of_allowed_item_withdraws,
+            tab_result=tab_result,
+            tabs=tabs,
+            slot_updates=slot_updates,
+        )
+
+    def write_encrypted_server(
+        self,
+        writer: typing.Union[asyncio.StreamWriter, bytearray],
+        header_crypto: wow_srp.VanillaHeaderCrypto,
+    ):
+        _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x03E7))
+        _fmt = "<4s"
+        _data = [_data]
+
+        _fmt += 'QBIB'
+        _data.extend([self.bank_balance, self.tab_id, self.amount_of_allowed_item_withdraws, self.tab_result.value])
+        if self.tab_result == GuildBankTabResult.PRESENT:
+            _fmt += 'B'
+            _data.append(len(self.tabs))
+            # tabs: GuildBankTab[amount_of_bank_tabs]
+            for i in self.tabs:
+                _fmt, _data = i.write(_fmt, _data)
+
+        # amount_of_slot_updates: u8
+        _fmt += 'B'
+        _data.append(len(self.slot_updates))
+
+        # slot_updates: GuildBankSlot[amount_of_slot_updates]
+        for i in self.slot_updates:
+            _fmt, _data = i.write(_fmt, _data)
+
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
+
+    def size(self) -> int:
+        _size = 15 + sum([i.size() for i in self.slot_updates])
+
+        if self.tab_result == GuildBankTabResult.PRESENT:
+            _size += 1 + sum([i.size() for i in self.tabs])
+
+        return _size
+
+
+@dataclasses.dataclass
 class CMSG_GUILD_BANK_SWAP_ITEMS:
     bank: int
     source: BankSwapSource
@@ -49890,6 +50096,7 @@ ServerOpcode = typing.Union[
     SMSG_COMPLAIN_RESULT,
     SMSG_FEATURE_SYSTEM_STATUS,
     SMSG_CHANNEL_MEMBER_COUNT,
+    SMSG_GUILD_BANK_LIST,
     MSG_GUILD_BANK_LOG_QUERY_Server,
     SMSG_USERLIST_ADD,
     SMSG_USERLIST_REMOVE,
@@ -50703,6 +50910,7 @@ server_opcodes: dict[int, ServerOpcode] = {
     0x03C7: SMSG_COMPLAIN_RESULT,
     0x03C8: SMSG_FEATURE_SYSTEM_STATUS,
     0x03D4: SMSG_CHANNEL_MEMBER_COUNT,
+    0x03E7: SMSG_GUILD_BANK_LIST,
     0x03ED: MSG_GUILD_BANK_LOG_QUERY_Server,
     0x03EF: SMSG_USERLIST_ADD,
     0x03F0: SMSG_USERLIST_REMOVE,

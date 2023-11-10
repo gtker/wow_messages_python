@@ -112,6 +112,7 @@ def addable_write_values(
              | model.DataTypeEnchantMask() \
              | model.DataTypeInspectTalentGearMask() \
              | model.DataTypeNamedGUID() \
+             | model.DataTypeVariableItemRandomProperty() \
              | model.DataTypeStruct():
             return None
 
@@ -181,7 +182,7 @@ def print_write_struct_member(s: Writer, d: model.Definition, prefix: str):
             case model.DataTypePackedGUID():
                 s.wln(f"{prefix}fmt, {prefix}data = packed_guid_write(self.{d.name}, {prefix}fmt, {prefix}data)")
 
-            case model.DataTypeInspectTalentGearMask() | model.DataTypeNamedGUID() | model.DataTypeEnchantMask() | model.DataTypeUpdateMask() | model.DataTypeAuraMask() | model.DataTypeMonsterMoveSpline():
+            case model.DataTypeVariableItemRandomProperty() | model.DataTypeInspectTalentGearMask() | model.DataTypeNamedGUID() | model.DataTypeEnchantMask() | model.DataTypeUpdateMask() | model.DataTypeAuraMask() | model.DataTypeMonsterMoveSpline():
                 s.wln(f"{prefix}fmt, {prefix}data = self.{d.name}.write({prefix}fmt, {prefix}data)")
 
             case v:

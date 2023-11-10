@@ -169,6 +169,12 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
             if needs_size:
                 s.wln(f"_size += {d.name}.size()")
 
+        case model.DataTypeVariableItemRandomProperty():
+            s.wln(f"{d.name} = await VariableItemRandomProperty.read(reader)")
+
+            if needs_size:
+                s.wln(f"_size += {d.name}.size()")
+
         case model.DataTypeArray(content=array):
             reader = "reader"
             if array.compressed:
