@@ -5,6 +5,8 @@ import pstats
 import typing
 
 import model
+from generator.print_achievement_done_array import print_achievement_done_array
+from generator.print_achievement_in_progress_array import print_achievement_in_progress_array
 from generator.print_addon_array import print_addon_array
 from generator.print_aura_mask import print_aura_mask
 from generator.print_cache_mask import print_cache_mask
@@ -133,6 +135,12 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
 
         print_addon_array(s)
         all_types.wln('"AddonArray",')
+
+        print_achievement_done_array(s)
+        all_types.wln('"AchievementDoneArray",')
+
+        print_achievement_in_progress_array(s)
+        all_types.wln('"AchievementInProgressArray",')
 
         if world_version_is_wrath(v):
             print_cache_mask(s)

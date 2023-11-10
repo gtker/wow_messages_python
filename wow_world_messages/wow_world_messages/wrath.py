@@ -28,6 +28,8 @@ __all__ = [
     "NamedGuid",
     "VariableItemRandomProperty",
     "AddonArray",
+    "AchievementDoneArray",
+    "AchievementInProgressArray",
     "CacheMask",
     "AuraMask",
     "UpdateMask",
@@ -1157,6 +1159,7 @@ __all__ = [
     "SMSG_ACHIEVEMENT_EARNED",
     "SMSG_CRITERIA_UPDATE",
     "CMSG_QUERY_INSPECT_ACHIEVEMENTS",
+    "SMSG_RESPOND_INSPECT_ACHIEVEMENTS",
     "CMSG_DISMISS_CONTROLLED_VEHICLE",
     "SMSG_QUESTUPDATE_ADD_PVP_KILL",
     "SMSG_CALENDAR_RAID_LOCKOUT_UPDATED",
@@ -1168,6 +1171,7 @@ __all__ = [
     "CMSG_REQUEST_VEHICLE_SWITCH_SEAT",
     "CMSG_PET_LEARN_TALENT",
     "SMSG_SET_PHASE_SHIFT",
+    "SMSG_ALL_ACHIEVEMENT_DATA",
     "SMSG_POWER_UPDATE",
     "CMSG_GAMEOBJ_REPORT_USE",
     "SMSG_HIGHEST_THREAT_UPDATE",
@@ -1350,6 +1354,91 @@ class AddonArray:
         for d in self.data:
             size += d.size()
 
+        return size
+
+
+@dataclasses.dataclass
+class AchievementDoneArray:
+    data: list[AchievementDone]
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader):
+        data = []
+        achievement = await read_int(reader, 4)
+
+        while achievement != -1:
+            time = await read_int(reader, 4)
+            data.append(AchievementDone(achievement=achievement, time=time))
+
+            achievement = await read_int(reader, 4)
+
+        return AchievementDoneArray(data=data)
+
+    def write(self, fmt, data):
+        for d in self.data:
+            fmt, data = d.write(fmt, data)
+
+        fmt += "i"
+        data.append(-1)
+
+        return fmt, data
+
+    def size(self):
+        size = 4
+        for d in self.data:
+            size += d.size()
+        return size
+
+
+@dataclasses.dataclass
+class AchievementInProgressArray:
+    data: list[AchievementInProgress]
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader):
+        data = []
+        achievement = await read_int(reader, 4)
+
+        while achievement != -1:
+            counter = await read_packed_guid(reader)
+
+            player = await read_packed_guid(reader)
+
+            timed_criteria_failed = await read_bool(reader, 4)
+
+            progress_date = await read_int(reader, 4)
+
+            time_since_progress = await read_int(reader, 4)
+
+            time_since_progress2 = await read_int(reader, 4)
+
+            data.append(AchievementInProgress(
+                                              achievement=achievement,
+                                              counter=counter,
+                                              player=player,
+                                              timed_criteria_failed=timed_criteria_failed,
+                                              progress_date=progress_date,
+                                              time_since_progress=time_since_progress,
+                                              time_since_progress2=time_since_progress2,
+                                              ))
+
+            achievement = await read_int(reader, 4)
+
+        return AchievementInProgressArray(data=data)
+
+    def write(self, fmt, data):
+        for d in self.data:
+            fmt, data = d.write(fmt, data)
+
+        fmt += "i"
+        data.append(-1)
+
+        return fmt, data
+
+    def size(self):
+        size = 4
+        for d in self.data:
+            size += d.size()
         return size
 
 
@@ -58059,6 +58148,58 @@ class CMSG_QUERY_INSPECT_ACHIEVEMENTS:
 
 
 @dataclasses.dataclass
+class SMSG_RESPOND_INSPECT_ACHIEVEMENTS:
+    player: int
+    done: AchievementDoneArray
+    in_progress: AchievementInProgressArray
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_RESPOND_INSPECT_ACHIEVEMENTS:
+        # player: PackedGuid
+        player = await read_packed_guid(reader)
+
+        # done: AchievementDoneArray
+        done = await CacheMask.read(reader)
+
+        # in_progress: AchievementInProgressArray
+        in_progress = await CacheMask.read(reader)
+
+        return SMSG_RESPOND_INSPECT_ACHIEVEMENTS(
+            player=player,
+            done=done,
+            in_progress=in_progress,
+        )
+
+    def write_encrypted_server(
+        self,
+        writer: typing.Union[asyncio.StreamWriter, bytearray],
+        header_crypto: wow_srp.VanillaHeaderCrypto,
+    ):
+        _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x046C))
+        _fmt = "<4s"
+        _data = [_data]
+
+        # player: PackedGuid
+        _fmt, _data = packed_guid_write(self.player, _fmt, _data)
+
+        # done: AchievementDoneArray
+        _fmt, _data = self.done.write(_fmt, _data)
+
+        # in_progress: AchievementInProgressArray
+        _fmt, _data = self.in_progress.write(_fmt, _data)
+
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
+
+    def size(self) -> int:
+        return 0 + packed_guid_size(self.player) + self.done.size() + self.in_progress.size()
+
+
+@dataclasses.dataclass
 class CMSG_DISMISS_CONTROLLED_VEHICLE:
 
     @staticmethod
@@ -58519,6 +58660,50 @@ class SMSG_SET_PHASE_SHIFT:
                 writer[i] = _data[i]
             return
         writer.write(_data)
+
+
+@dataclasses.dataclass
+class SMSG_ALL_ACHIEVEMENT_DATA:
+    done: AchievementDoneArray
+    in_progress: AchievementInProgressArray
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_ALL_ACHIEVEMENT_DATA:
+        # done: AchievementDoneArray
+        done = await CacheMask.read(reader)
+
+        # in_progress: AchievementInProgressArray
+        in_progress = await CacheMask.read(reader)
+
+        return SMSG_ALL_ACHIEVEMENT_DATA(
+            done=done,
+            in_progress=in_progress,
+        )
+
+    def write_encrypted_server(
+        self,
+        writer: typing.Union[asyncio.StreamWriter, bytearray],
+        header_crypto: wow_srp.VanillaHeaderCrypto,
+    ):
+        _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x047D))
+        _fmt = "<4s"
+        _data = [_data]
+
+        # done: AchievementDoneArray
+        _fmt, _data = self.done.write(_fmt, _data)
+
+        # in_progress: AchievementInProgressArray
+        _fmt, _data = self.in_progress.write(_fmt, _data)
+
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
+
+    def size(self) -> int:
+        return 0 + self.done.size() + self.in_progress.size()
 
 
 @dataclasses.dataclass
@@ -63325,10 +63510,12 @@ ServerOpcode = typing.Union[
     SMSG_TRIGGER_MOVIE,
     SMSG_ACHIEVEMENT_EARNED,
     SMSG_CRITERIA_UPDATE,
+    SMSG_RESPOND_INSPECT_ACHIEVEMENTS,
     SMSG_QUESTUPDATE_ADD_PVP_KILL,
     SMSG_CALENDAR_RAID_LOCKOUT_UPDATED,
     SMSG_CHAR_CUSTOMIZE,
     SMSG_SET_PHASE_SHIFT,
+    SMSG_ALL_ACHIEVEMENT_DATA,
     SMSG_POWER_UPDATE,
     SMSG_HIGHEST_THREAT_UPDATE,
     SMSG_THREAT_UPDATE,
@@ -64301,10 +64488,12 @@ server_opcodes: dict[int, ServerOpcode] = {
     0x0464: SMSG_TRIGGER_MOVIE,
     0x0468: SMSG_ACHIEVEMENT_EARNED,
     0x046A: SMSG_CRITERIA_UPDATE,
+    0x046C: SMSG_RESPOND_INSPECT_ACHIEVEMENTS,
     0x046F: SMSG_QUESTUPDATE_ADD_PVP_KILL,
     0x0471: SMSG_CALENDAR_RAID_LOCKOUT_UPDATED,
     0x0474: SMSG_CHAR_CUSTOMIZE,
     0x047C: SMSG_SET_PHASE_SHIFT,
+    0x047D: SMSG_ALL_ACHIEVEMENT_DATA,
     0x0480: SMSG_POWER_UPDATE,
     0x0482: SMSG_HIGHEST_THREAT_UPDATE,
     0x0483: SMSG_THREAT_UPDATE,

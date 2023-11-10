@@ -10,64 +10,9 @@ WRATH = model.WorldVersion(major=3, minor=3, patch=5, build=12340)
 VERSIONS = [VANILLA, TBC, WRATH]
 
 
-def should_print_container_if(statement: model.IfStatement) -> bool:
-    for m in statement.members:
-        if not should_print_container_struct_member(m):
-            return False
-
-    for elseif in statement.else_if_statements:
-        if not should_print_container_if(elseif):
-            return False
-
-    for m in statement.else_members:
-        if not should_print_container_struct_member(m):
-            return False
-
-    return True
-
-
-def should_print_container_struct_member(m: model.StructMember) -> bool:
-    match m:
-        case model.StructMemberDefinition(struct_member_content=d):
-            match d.data_type:
-                # Non-vanilla types
-                case model.DataTypeAchievementDoneArray() \
-                     | model.DataTypeAchievementInProgressArray():
-                    return False
-
-                case model.DataTypeStruct(content=model.DataTypeStructContent(struct_data=e)):
-                    for m in e.members:
-                        if not should_print_container_struct_member(m):
-                            return False
-
-                case model.DataTypeArray(content=array):
-                    match array.inner_type:
-                        case model.ArrayTypeStruct(content=model.ArrayTypeStructContent(struct_data=e)):
-                            for m in e.members:
-                                if not should_print_container_struct_member(m):
-                                    return False
-
-        case model.StructMemberIfStatement(struct_member_content=statement):
-            if not should_print_container_if(statement):
-                return False
-        case model.StructMemberOptional(struct_member_content=optional):
-            for m in optional.members:
-                if not should_print_container_struct_member(m):
-                    return False
-
-        case _:
-            raise Exception("unknown m")
-
-    return True
-
-
 def should_print_container(container: model.Container, v: model.WorldVersion) -> bool:
     if not world_version_matches(container.tags, v):
         return False
-
-    for m in container.members:
-        if not should_print_container_struct_member(m):
-            return False
 
     return True
 

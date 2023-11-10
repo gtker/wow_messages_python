@@ -115,6 +115,8 @@ def addable_write_values(
              | model.DataTypeVariableItemRandomProperty() \
              | model.DataTypeCacheMask() \
              | model.DataTypeAddonArray() \
+             | model.DataTypeAchievementDoneArray() \
+             | model.DataTypeAchievementInProgressArray() \
              | model.DataTypeStruct():
             return None
 
@@ -184,7 +186,7 @@ def print_write_struct_member(s: Writer, d: model.Definition, prefix: str):
             case model.DataTypePackedGUID():
                 s.wln(f"{prefix}fmt, {prefix}data = packed_guid_write(self.{d.name}, {prefix}fmt, {prefix}data)")
 
-            case model.DataTypeAddonArray() | model.DataTypeCacheMask() | model.DataTypeVariableItemRandomProperty() | model.DataTypeInspectTalentGearMask() | model.DataTypeNamedGUID() | model.DataTypeEnchantMask() | model.DataTypeUpdateMask() | model.DataTypeAuraMask() | model.DataTypeMonsterMoveSpline():
+            case model.DataTypeAchievementDoneArray() | model.DataTypeAchievementInProgressArray() | model.DataTypeAddonArray() | model.DataTypeCacheMask() | model.DataTypeVariableItemRandomProperty() | model.DataTypeInspectTalentGearMask() | model.DataTypeNamedGUID() | model.DataTypeEnchantMask() | model.DataTypeUpdateMask() | model.DataTypeAuraMask() | model.DataTypeMonsterMoveSpline():
                 s.wln(f"{prefix}fmt, {prefix}data = self.{d.name}.write({prefix}fmt, {prefix}data)")
 
             case v:
