@@ -11444,7 +11444,7 @@ class Aura:
 
 @dataclasses.dataclass
 class AuraMask:
-    fields: dict[int]
+    fields: dict[int, Aura]
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):
@@ -11453,9 +11453,8 @@ class AuraMask:
         fields = {}
         for index in range(0, 64):
             if mask & 1 << index:
-                first = await read_int(reader, 4)
-                second = await read_int(reader, 1)
-                fields[index] = (first, second)
+                aura = Aura.read(reader)
+                fields[index] = aura
 
         return AuraMask(fields=fields)
 
@@ -11467,10 +11466,8 @@ class AuraMask:
         fmt += 'Q'
         data.append(mask)
 
-        for (first, second) in self.fields:
-            fmt += "IB"
-            data.append(first)
-            data.append(second)
+        for aura in self.fields:
+            fmt, data = aura.write(fmt, data)
 
         return fmt, data
 
