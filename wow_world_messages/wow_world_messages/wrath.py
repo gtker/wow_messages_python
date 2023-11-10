@@ -25,6 +25,7 @@ __all__ = [
     "expect_client_opcode_encrypted",
     "expect_server_opcode_unencrypted",
     "expect_server_opcode_encrypted",
+    "NamedGuid",
     "UpdateMask",
     "AchievementNameLinkType",
     "ActionBarBehavior",
@@ -416,6 +417,7 @@ __all__ = [
     "SMSG_GUILD_EVENT",
     "SMSG_GUILD_COMMAND_RESULT",
     "CMSG_MESSAGECHAT",
+    "SMSG_MESSAGECHAT",
     "CMSG_JOIN_CHANNEL",
     "CMSG_LEAVE_CHANNEL",
     "SMSG_CHANNEL_NOTIFY",
@@ -1044,6 +1046,7 @@ __all__ = [
     "MSG_RAID_READY_CHECK_CONFIRM_Client",
     "MSG_RAID_READY_CHECK_CONFIRM_Server",
     "CMSG_VOICE_SESSION_ENABLE",
+    "SMSG_GM_MESSAGECHAT",
     "CMSG_COMMENTATOR_ENABLE",
     "SMSG_CLEAR_TARGET",
     "SMSG_CROSSED_INEBRIATION_THRESHOLD",
@@ -1252,6 +1255,39 @@ __all__ = [
     "SMSG_MULTIPLE_MOVES",
 ]
 
+
+@dataclasses.dataclass
+class NamedGuid:
+    guid: int
+    name: typing.Optional[int]
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader) -> Aura:
+        guid = await read_int(reader, 4)
+
+        if guid != 0:
+            name = await read_cstring(reader)
+
+        return Aura(
+            guid=guid,
+            name=name,
+        )
+
+    def write(self, _fmt, _data):
+        if self.guid != 0:
+            _fmt += f"Q{len(self.name)}sB"
+            _data.extend([self.guid, self.name, 0])
+        else:
+            _fmt += 'Q'
+            _data.append(self.guid)
+
+        return _fmt, _data
+
+    def size(self) -> int:
+        if guid != 0:
+            return len(self.name) + 8
+        else:
+            return 8
 
 @dataclasses.dataclass
 class UpdateMask:
@@ -21998,6 +22034,184 @@ class CMSG_MESSAGECHAT:
             _size += 1 + len(self.target_player)
         elif self.chat_type == ChatType.CHANNEL:
             _size += 1 + len(self.channel)
+
+        return _size
+
+
+@dataclasses.dataclass
+class SMSG_MESSAGECHAT:
+    chat_type: ChatType
+    language: Language
+    sender: int
+    flags: int
+    message: str
+    tag: PlayerChatTag
+    sender1: typing.Optional[str] = None
+    target1: typing.Optional[NamedGUID] = None
+    sender2: typing.Optional[str] = None
+    target2: typing.Optional[int] = None
+    target3: typing.Optional[NamedGUID] = None
+    target4: typing.Optional[int] = None
+    channel_name: typing.Optional[str] = None
+    target5: typing.Optional[int] = None
+    target6: typing.Optional[int] = None
+    achievement_id: typing.Optional[int] = None
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_MESSAGECHAT:
+        sender1 = None
+        target1 = None
+        sender2 = None
+        target2 = None
+        target3 = None
+        target4 = None
+        channel_name = None
+        target5 = None
+        target6 = None
+        achievement_id = None
+        # chat_type: ChatType
+        chat_type = ChatType(await read_int(reader, 1))
+
+        # language: Language
+        language = Language(await read_int(reader, 4))
+
+        # sender: Guid
+        sender = await read_int(reader, 8)
+
+        # flags: u32
+        flags = await read_int(reader, 4)
+
+        if chat_type in {ChatType.MONSTER_SAY, ChatType.MONSTER_PARTY, ChatType.MONSTER_YELL, ChatType.MONSTER_WHISPER, ChatType.RAID_BOSS_WHISPER, ChatType.RAID_BOSS_EMOTE, ChatType.MONSTER_EMOTE, ChatType.BATTLENET}:
+            # sender1: SizedCString
+            sender1 = await read_sized_cstring(reader)
+
+            # target1: NamedGuid
+            target1 = await NamedGuid.read(reader)
+
+        elif chat_type == ChatType.WHISPER_FOREIGN:
+            # sender2: SizedCString
+            sender2 = await read_sized_cstring(reader)
+
+            # target2: Guid
+            target2 = await read_int(reader, 8)
+
+        elif chat_type in {ChatType.BG_SYSTEM_NEUTRAL, ChatType.BG_SYSTEM_ALLIANCE, ChatType.BG_SYSTEM_HORDE}:
+            # target3: NamedGuid
+            target3 = await NamedGuid.read(reader)
+
+        elif chat_type in {ChatType.ACHIEVEMENT, ChatType.GUILD_ACHIEVEMENT}:
+            # target4: Guid
+            target4 = await read_int(reader, 8)
+
+        elif chat_type == ChatType.CHANNEL:
+            # channel_name: CString
+            channel_name = await read_cstring(reader)
+
+            # target5: Guid
+            target5 = await read_int(reader, 8)
+
+        else:
+            # target6: Guid
+            target6 = await read_int(reader, 8)
+
+        # message: SizedCString
+        message = await read_sized_cstring(reader)
+
+        # tag: PlayerChatTag
+        tag = PlayerChatTag(await read_int(reader, 1))
+
+        if chat_type in {ChatType.ACHIEVEMENT, ChatType.GUILD_ACHIEVEMENT}:
+            # achievement_id: u32
+            achievement_id = await read_int(reader, 4)
+
+        return SMSG_MESSAGECHAT(
+            chat_type=chat_type,
+            language=language,
+            sender=sender,
+            flags=flags,
+            sender1=sender1,
+            target1=target1,
+            sender2=sender2,
+            target2=target2,
+            target3=target3,
+            target4=target4,
+            channel_name=channel_name,
+            target5=target5,
+            target6=target6,
+            message=message,
+            tag=tag,
+            achievement_id=achievement_id,
+        )
+
+    def write_encrypted_server(
+        self,
+        writer: typing.Union[asyncio.StreamWriter, bytearray],
+        header_crypto: wow_srp.VanillaHeaderCrypto,
+    ):
+        _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x0096))
+        _fmt = "<4s"
+        _data = [_data]
+
+        _fmt += 'BIQI'
+        _data.extend([self.chat_type.value, self.language.value, self.sender, self.flags])
+        if self.chat_type in {ChatType.MONSTER_SAY, ChatType.MONSTER_PARTY, ChatType.MONSTER_YELL, ChatType.MONSTER_WHISPER, ChatType.RAID_BOSS_WHISPER, ChatType.RAID_BOSS_EMOTE, ChatType.MONSTER_EMOTE, ChatType.BATTLENET}:
+            _fmt += f'I{len(self.sender1)}sB'
+            _data.extend([len(self.sender1) + 1, self.sender1.encode('utf-8'), 0])
+            # target1: NamedGuid
+            _fmt, _data = self.target1.write(_fmt, _data)
+
+        elif self.chat_type == ChatType.WHISPER_FOREIGN:
+            _fmt += f'I{len(self.sender2)}sBQ'
+            _data.extend([len(self.sender2) + 1, self.sender2.encode('utf-8'), 0, self.target2])
+        elif self.chat_type in {ChatType.BG_SYSTEM_NEUTRAL, ChatType.BG_SYSTEM_ALLIANCE, ChatType.BG_SYSTEM_HORDE}:
+            # target3: NamedGuid
+            _fmt, _data = self.target3.write(_fmt, _data)
+
+        elif self.chat_type in {ChatType.ACHIEVEMENT, ChatType.GUILD_ACHIEVEMENT}:
+            _fmt += 'Q'
+            _data.append(self.target4)
+        elif self.chat_type == ChatType.CHANNEL:
+            _fmt += f'{len(self.channel_name)}sBQ'
+            _data.extend([self.channel_name.encode('utf-8'), 0, self.target5])
+        else:
+            _fmt += 'Q'
+            _data.append(self.target6)
+        # message: SizedCString
+        _fmt += f'I{len(self.message)}sB'
+        _data.extend([len(self.message) + 1, self.message.encode('utf-8'), 0])
+
+        # tag: PlayerChatTag
+        _fmt += 'B'
+        _data.append(self.tag.value)
+
+        if self.chat_type in {ChatType.ACHIEVEMENT, ChatType.GUILD_ACHIEVEMENT}:
+            _fmt += 'I'
+            _data.append(self.achievement_id)
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
+
+    def size(self) -> int:
+        _size = 23 + len(self.message)
+
+        if self.chat_type in {ChatType.MONSTER_SAY, ChatType.MONSTER_PARTY, ChatType.MONSTER_YELL, ChatType.MONSTER_WHISPER, ChatType.RAID_BOSS_WHISPER, ChatType.RAID_BOSS_EMOTE, ChatType.MONSTER_EMOTE, ChatType.BATTLENET}:
+            _size += 5 + len(self.sender1) + self.target1.size()
+        elif self.chat_type == ChatType.WHISPER_FOREIGN:
+            _size += 13 + len(self.sender2)
+        elif self.chat_type in {ChatType.BG_SYSTEM_NEUTRAL, ChatType.BG_SYSTEM_ALLIANCE, ChatType.BG_SYSTEM_HORDE}:
+            _size += 0 + self.target3.size()
+        elif self.chat_type in {ChatType.ACHIEVEMENT, ChatType.GUILD_ACHIEVEMENT}:
+            _size += 8
+        elif self.chat_type == ChatType.CHANNEL:
+            _size += 9 + len(self.channel_name)
+        else:
+            _size += 8
+
+        if self.chat_type in {ChatType.ACHIEVEMENT, ChatType.GUILD_ACHIEVEMENT}:
+            _size += 4
 
         return _size
 
@@ -52214,6 +52428,190 @@ class CMSG_VOICE_SESSION_ENABLE:
 
 
 @dataclasses.dataclass
+class SMSG_GM_MESSAGECHAT:
+    chat_type: ChatType
+    language: Language
+    sender: int
+    flags: int
+    message: str
+    chat_tag: PlayerChatTag
+    sender1: typing.Optional[str] = None
+    target1: typing.Optional[NamedGUID] = None
+    sender2: typing.Optional[str] = None
+    target2: typing.Optional[int] = None
+    target3: typing.Optional[NamedGUID] = None
+    target4: typing.Optional[int] = None
+    channel_name: typing.Optional[str] = None
+    target5: typing.Optional[int] = None
+    sender_name: typing.Optional[str] = None
+    target6: typing.Optional[int] = None
+    achievement_id: typing.Optional[int] = None
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_GM_MESSAGECHAT:
+        sender1 = None
+        target1 = None
+        sender2 = None
+        target2 = None
+        target3 = None
+        target4 = None
+        channel_name = None
+        target5 = None
+        sender_name = None
+        target6 = None
+        achievement_id = None
+        # chat_type: ChatType
+        chat_type = ChatType(await read_int(reader, 1))
+
+        # language: Language
+        language = Language(await read_int(reader, 4))
+
+        # sender: Guid
+        sender = await read_int(reader, 8)
+
+        # flags: u32
+        flags = await read_int(reader, 4)
+
+        if chat_type in {ChatType.MONSTER_SAY, ChatType.MONSTER_PARTY, ChatType.MONSTER_YELL, ChatType.MONSTER_WHISPER, ChatType.RAID_BOSS_WHISPER, ChatType.RAID_BOSS_EMOTE, ChatType.MONSTER_EMOTE, ChatType.BATTLENET}:
+            # sender1: SizedCString
+            sender1 = await read_sized_cstring(reader)
+
+            # target1: NamedGuid
+            target1 = await NamedGuid.read(reader)
+
+        elif chat_type == ChatType.WHISPER_FOREIGN:
+            # sender2: SizedCString
+            sender2 = await read_sized_cstring(reader)
+
+            # target2: Guid
+            target2 = await read_int(reader, 8)
+
+        elif chat_type in {ChatType.BG_SYSTEM_NEUTRAL, ChatType.BG_SYSTEM_ALLIANCE, ChatType.BG_SYSTEM_HORDE}:
+            # target3: NamedGuid
+            target3 = await NamedGuid.read(reader)
+
+        elif chat_type in {ChatType.ACHIEVEMENT, ChatType.GUILD_ACHIEVEMENT}:
+            # target4: Guid
+            target4 = await read_int(reader, 8)
+
+        elif chat_type == ChatType.CHANNEL:
+            # channel_name: CString
+            channel_name = await read_cstring(reader)
+
+            # target5: Guid
+            target5 = await read_int(reader, 8)
+
+        else:
+            # sender_name: SizedCString
+            sender_name = await read_sized_cstring(reader)
+
+            # target6: Guid
+            target6 = await read_int(reader, 8)
+
+        # message: SizedCString
+        message = await read_sized_cstring(reader)
+
+        # chat_tag: PlayerChatTag
+        chat_tag = PlayerChatTag(await read_int(reader, 1))
+
+        if chat_type in {ChatType.ACHIEVEMENT, ChatType.GUILD_ACHIEVEMENT}:
+            # achievement_id: u32
+            achievement_id = await read_int(reader, 4)
+
+        return SMSG_GM_MESSAGECHAT(
+            chat_type=chat_type,
+            language=language,
+            sender=sender,
+            flags=flags,
+            sender1=sender1,
+            target1=target1,
+            sender2=sender2,
+            target2=target2,
+            target3=target3,
+            target4=target4,
+            channel_name=channel_name,
+            target5=target5,
+            sender_name=sender_name,
+            target6=target6,
+            message=message,
+            chat_tag=chat_tag,
+            achievement_id=achievement_id,
+        )
+
+    def write_encrypted_server(
+        self,
+        writer: typing.Union[asyncio.StreamWriter, bytearray],
+        header_crypto: wow_srp.VanillaHeaderCrypto,
+    ):
+        _data = bytes(header_crypto.encrypt_server_header(self.size() + 2, 0x03B3))
+        _fmt = "<4s"
+        _data = [_data]
+
+        _fmt += 'BIQI'
+        _data.extend([self.chat_type.value, self.language.value, self.sender, self.flags])
+        if self.chat_type in {ChatType.MONSTER_SAY, ChatType.MONSTER_PARTY, ChatType.MONSTER_YELL, ChatType.MONSTER_WHISPER, ChatType.RAID_BOSS_WHISPER, ChatType.RAID_BOSS_EMOTE, ChatType.MONSTER_EMOTE, ChatType.BATTLENET}:
+            _fmt += f'I{len(self.sender1)}sB'
+            _data.extend([len(self.sender1) + 1, self.sender1.encode('utf-8'), 0])
+            # target1: NamedGuid
+            _fmt, _data = self.target1.write(_fmt, _data)
+
+        elif self.chat_type == ChatType.WHISPER_FOREIGN:
+            _fmt += f'I{len(self.sender2)}sBQ'
+            _data.extend([len(self.sender2) + 1, self.sender2.encode('utf-8'), 0, self.target2])
+        elif self.chat_type in {ChatType.BG_SYSTEM_NEUTRAL, ChatType.BG_SYSTEM_ALLIANCE, ChatType.BG_SYSTEM_HORDE}:
+            # target3: NamedGuid
+            _fmt, _data = self.target3.write(_fmt, _data)
+
+        elif self.chat_type in {ChatType.ACHIEVEMENT, ChatType.GUILD_ACHIEVEMENT}:
+            _fmt += 'Q'
+            _data.append(self.target4)
+        elif self.chat_type == ChatType.CHANNEL:
+            _fmt += f'{len(self.channel_name)}sBQ'
+            _data.extend([self.channel_name.encode('utf-8'), 0, self.target5])
+        else:
+            _fmt += f'I{len(self.sender_name)}sBQ'
+            _data.extend([len(self.sender_name) + 1, self.sender_name.encode('utf-8'), 0, self.target6])
+        # message: SizedCString
+        _fmt += f'I{len(self.message)}sB'
+        _data.extend([len(self.message) + 1, self.message.encode('utf-8'), 0])
+
+        # chat_tag: PlayerChatTag
+        _fmt += 'B'
+        _data.append(self.chat_tag.value)
+
+        if self.chat_type in {ChatType.ACHIEVEMENT, ChatType.GUILD_ACHIEVEMENT}:
+            _fmt += 'I'
+            _data.append(self.achievement_id)
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
+
+    def size(self) -> int:
+        _size = 23 + len(self.message)
+
+        if self.chat_type in {ChatType.MONSTER_SAY, ChatType.MONSTER_PARTY, ChatType.MONSTER_YELL, ChatType.MONSTER_WHISPER, ChatType.RAID_BOSS_WHISPER, ChatType.RAID_BOSS_EMOTE, ChatType.MONSTER_EMOTE, ChatType.BATTLENET}:
+            _size += 5 + len(self.sender1) + self.target1.size()
+        elif self.chat_type == ChatType.WHISPER_FOREIGN:
+            _size += 13 + len(self.sender2)
+        elif self.chat_type in {ChatType.BG_SYSTEM_NEUTRAL, ChatType.BG_SYSTEM_ALLIANCE, ChatType.BG_SYSTEM_HORDE}:
+            _size += 0 + self.target3.size()
+        elif self.chat_type in {ChatType.ACHIEVEMENT, ChatType.GUILD_ACHIEVEMENT}:
+            _size += 8
+        elif self.chat_type == ChatType.CHANNEL:
+            _size += 9 + len(self.channel_name)
+        else:
+            _size += 13 + len(self.sender_name)
+
+        if self.chat_type in {ChatType.ACHIEVEMENT, ChatType.GUILD_ACHIEVEMENT}:
+            _size += 4
+
+        return _size
+
+
+@dataclasses.dataclass
 class CMSG_COMMENTATOR_ENABLE:
     option: CommentatorEnableOption
 
@@ -62035,6 +62433,7 @@ ServerOpcode = typing.Union[
     SMSG_GUILD_ROSTER,
     SMSG_GUILD_EVENT,
     SMSG_GUILD_COMMAND_RESULT,
+    SMSG_MESSAGECHAT,
     SMSG_CHANNEL_NOTIFY,
     SMSG_CHANNEL_LIST,
     SMSG_UPDATE_OBJECT,
@@ -62392,6 +62791,7 @@ ServerOpcode = typing.Union[
     SMSG_DISMOUNT,
     MSG_MOVE_UPDATE_CAN_FLY_Server,
     MSG_RAID_READY_CHECK_CONFIRM_Server,
+    SMSG_GM_MESSAGECHAT,
     SMSG_CLEAR_TARGET,
     SMSG_CROSSED_INEBRIATION_THRESHOLD,
     SMSG_KICK_REASON,
@@ -63005,6 +63405,7 @@ server_opcodes: dict[int, ServerOpcode] = {
     0x008A: SMSG_GUILD_ROSTER,
     0x0092: SMSG_GUILD_EVENT,
     0x0093: SMSG_GUILD_COMMAND_RESULT,
+    0x0096: SMSG_MESSAGECHAT,
     0x0099: SMSG_CHANNEL_NOTIFY,
     0x009B: SMSG_CHANNEL_LIST,
     0x00A9: SMSG_UPDATE_OBJECT,
@@ -63362,6 +63763,7 @@ server_opcodes: dict[int, ServerOpcode] = {
     0x03AC: SMSG_DISMOUNT,
     0x03AD: MSG_MOVE_UPDATE_CAN_FLY_Server,
     0x03AE: MSG_RAID_READY_CHECK_CONFIRM_Server,
+    0x03B3: SMSG_GM_MESSAGECHAT,
     0x03BF: SMSG_CLEAR_TARGET,
     0x03C1: SMSG_CROSSED_INEBRIATION_THRESHOLD,
     0x03C5: SMSG_KICK_REASON,

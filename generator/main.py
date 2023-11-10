@@ -6,6 +6,7 @@ import typing
 
 import model
 from generator.print_aura_mask import print_aura_mask
+from generator.print_named_guid import print_named_guid
 from login_utils import print_login_utils
 from print_enum import print_enum, print_flag
 from print_monster_move_spline import print_monster_move_spline
@@ -19,7 +20,8 @@ from util import (
     world_version_to_module_name,
     login_version_to_module_name,
     first_login_version,
-    login_version_matches, world_version_to_title_name, VERSIONS, VANILLA, WRATH, TBC,
+    login_version_matches, world_version_to_title_name, VERSIONS, VANILLA, WRATH, TBC, world_version_is_wrath,
+    world_version_is_tbc,
 )
 from world_utils import print_world_utils
 from writer import Writer
@@ -118,6 +120,10 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
     all_types.wln('"expect_server_opcode_encrypted",')
 
     s = Writer()
+
+    if world_version_is_tbc(v) or world_version_is_wrath(v):
+        print_named_guid(s)
+        all_types.wln('"NamedGuid",')
 
     print_update_mask(s, update_mask)
     all_types.wln('"UpdateMask",')
