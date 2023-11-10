@@ -4,6 +4,7 @@ import struct
 
 import wow_world_messages.vanilla as vanilla
 import wow_world_messages.tbc as tbc
+import wow_world_messages.wrath as wrath
 
 
 class NullHeaderCrypto:
@@ -2810,6 +2811,637 @@ class SMSG_MOTD_tbc(unittest.IsolatedAsyncioTestCase):
         reader.feed_eof()
 
         r = await tbc.expect_server_opcode_unencrypted(reader, tbc.SMSG_MOTD)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 4, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_WORLD_TELEPORT_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 36, 8, 0, 0, 0, 239, 190, 173, 222, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 64, 0, 0, 64, 64, 0, 0, 128, 64, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_WORLD_TELEPORT)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+    async def test1(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 36, 8, 0, 0, 0, 154, 61, 9, 2, 213, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 226, 67, 0, 176, 201, 69, 0, 128, 30, 69, 219, 15, 73, 64, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_WORLD_TELEPORT)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_TELEPORT_TO_UNIT_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 11, 9, 0, 0, 0, 86, 117, 114, 116, 110, 101, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_TELEPORT_TO_UNIT)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 6, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_CHAR_ENUM_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 4, 55, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_CHAR_ENUM)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_CHAR_DELETE_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 12, 56, 0, 0, 0, 239, 190, 173, 222, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_CHAR_DELETE)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_PLAYER_LOGIN_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 12, 61, 0, 0, 0, 239, 190, 173, 222, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_PLAYER_LOGIN)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_PLAYER_LOGOUT_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 4, 74, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_PLAYER_LOGOUT)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_LOGOUT_REQUEST_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 4, 75, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_LOGOUT_REQUEST)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_LOGOUT_RESPONSE_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 7, 76, 0, 0, 0, 0, 0, 1, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_server_opcode_unencrypted(reader, wrath.SMSG_LOGOUT_RESPONSE)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_LOGOUT_COMPLETE_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 2, 77, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_server_opcode_unencrypted(reader, wrath.SMSG_LOGOUT_COMPLETE)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_PET_NAME_QUERY_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 16, 82, 0, 0, 0, 239, 190, 173, 222, 239, 190, 173, 222, 222, 202, 250, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_PET_NAME_QUERY)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class MSG_MOVE_TELEPORT_ACK_Client_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 13, 199, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.MSG_MOVE_TELEPORT_ACK_Client)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 6, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_TUTORIAL_FLAGS_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 34, 253, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_server_opcode_unencrypted(reader, wrath.SMSG_TUTORIAL_FLAGS)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_STANDSTATECHANGE_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 8, 1, 1, 0, 0, 1, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_STANDSTATECHANGE)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_AUTOEQUIP_ITEM_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 6, 10, 1, 0, 0, 255, 24, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_AUTOEQUIP_ITEM)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_INITIATE_TRADE_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 12, 22, 1, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_INITIATE_TRADE)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_CANCEL_TRADE_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 4, 28, 1, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_CANCEL_TRADE)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_CANCEL_CAST_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 8, 47, 1, 0, 0, 120, 80, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_CANCEL_CAST)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+    async def test1(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 8, 47, 1, 0, 0, 242, 33, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_CANCEL_CAST)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_SET_SELECTION_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 12, 61, 1, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_SET_SELECTION)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_ATTACKSWING_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 12, 65, 1, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_ATTACKSWING)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_ATTACKSTART_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 18, 67, 1, 23, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_server_opcode_unencrypted(reader, wrath.SMSG_ATTACKSTART)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_ATTACKSTOP_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 10, 68, 1, 1, 23, 1, 100, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_server_opcode_unencrypted(reader, wrath.SMSG_ATTACKSTOP)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 4, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_QUERY_TIME_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 4, 206, 1, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_QUERY_TIME)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_PING_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 12, 220, 1, 0, 0, 239, 190, 173, 222, 222, 202, 250, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_PING)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_PONG_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 6, 221, 1, 239, 190, 173, 222, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_server_opcode_unencrypted(reader, wrath.SMSG_PONG)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_SETSHEATHED_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 8, 224, 1, 0, 0, 1, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_SETSHEATHED)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_REQUEST_ACCOUNT_DATA_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 8, 10, 2, 0, 0, 6, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_REQUEST_ACCOUNT_DATA)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_GMTICKET_GETTICKET_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 4, 17, 2, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_GMTICKET_GETTICKET)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class MSG_AUCTION_HELLO_Client_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 12, 85, 2, 0, 0, 239, 190, 173, 222, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.MSG_AUCTION_HELLO_Client)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_SET_ACTIVE_MOVER_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 12, 106, 2, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_SET_ACTIVE_MOVER)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class MSG_QUERY_NEXT_MAIL_TIME_Client_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 4, 132, 2, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.MSG_QUERY_NEXT_MAIL_TIME_Client)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_CHAR_RENAME_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 21, 199, 2, 0, 0, 239, 190, 173, 222, 0, 0, 0, 0, 68, 101, 97, 100, 98, 101, 101, 102, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_CHAR_RENAME)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 6, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_REQUEST_RAID_INFO_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 4, 205, 2, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_REQUEST_RAID_INFO)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class CMSG_BATTLEFIELD_STATUS_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 4, 211, 2, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_client_opcode_unencrypted(reader, wrath.CMSG_BATTLEFIELD_STATUS)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        written = bytearray(len(data))
+        r.write_encrypted_client(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_SPLINE_SET_RUN_SPEED_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 8, 254, 2, 1, 6, 0, 0, 224, 64, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_server_opcode_unencrypted(reader, wrath.SMSG_SPLINE_SET_RUN_SPEED)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 4, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_MOTD_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 116, 61, 3, 2, 0, 0, 0, 87, 101, 108, 99, 111, 109, 101, 32, 116, 111, 32, 97, 110, 32, 65, 122, 101, 114, 111, 116, 104, 67, 111, 114, 101, 32, 115, 101, 114, 118, 101, 114, 46, 0, 124, 99, 102, 102, 70, 70, 52, 65, 50, 68, 84, 104, 105, 115, 32, 115, 101, 114, 118, 101, 114, 32, 114, 117, 110, 115, 32, 111, 110, 32, 65, 122, 101, 114, 111, 116, 104, 67, 111, 114, 101, 124, 114, 32, 124, 99, 102, 102, 51, 67, 69, 55, 70, 70, 119, 119, 119, 46, 97, 122, 101, 114, 111, 116, 104, 99, 111, 114, 101, 46, 111, 114, 103, 124, 114, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_server_opcode_unencrypted(reader, wrath.SMSG_MOTD)
         self.assertIsNotNone(r)
         self.assertTrue(reader.at_eof())
         self.assertEqual(len(data) - 4, r.size())

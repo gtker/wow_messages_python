@@ -7,7 +7,7 @@ VANILLA = model.WorldVersion(major=1, minor=12, patch=1, build=5875)
 TBC = model.WorldVersion(major=2, minor=4, patch=3, build=8606)
 WRATH = model.WorldVersion(major=3, minor=3, patch=5, build=12340)
 
-VERSIONS = [VANILLA, TBC]
+VERSIONS = [VANILLA, TBC, WRATH]
 
 
 def should_print_container_if(statement: model.IfStatement) -> bool:
@@ -37,7 +37,8 @@ def should_print_container_struct_member(m: model.StructMember) -> bool:
                      | model.DataTypeEnchantMask() \
                      | model.DataTypeNamedGUID() \
                      | model.DataTypeInspectTalentGearMask() \
-                     | model.DataTypeVariableItemRandomProperty():
+                     | model.DataTypeVariableItemRandomProperty() \
+                     | model.DataTypeCacheMask():
                     return False
 
                 case model.DataTypeStruct(content=model.DataTypeStructContent(struct_data=e)):
