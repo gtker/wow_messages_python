@@ -518,6 +518,7 @@ class DataType:
             "AuraMask": DataTypeAuraMask,
             "Bool": DataTypeBool,
             "CString": DataTypeCstring,
+            "CacheMask": DataTypeCacheMask,
             "DateTime": DataTypeDateTime,
             "EnchantMask": DataTypeEnchantMask,
             "Enum": DataTypeEnum,
@@ -647,6 +648,19 @@ class DataTypeCstring(DataType):
 
     def to_json_data(self) -> Any:
         data = { "data_type_tag": "CString" }
+        return data
+
+@dataclass
+class DataTypeCacheMask(DataType):
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'DataTypeCacheMask':
+        return cls(
+            "CacheMask",
+        )
+
+    def to_json_data(self) -> Any:
+        data = { "data_type_tag": "CacheMask" }
         return data
 
 @dataclass

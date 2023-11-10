@@ -258,7 +258,7 @@ class SMSG_LOGIN_SETTIMESPEED_vanilla(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
-        data = bytes([0, 10, 66, 0, 10, 26, 115, 22, 137, 136, 136, 60, ])
+        data = bytes([0, 10, 66, 0, 10, 50, 115, 22, 137, 136, 136, 60, ])
 
         reader.feed_data(data)
         reader.feed_eof()
@@ -2126,7 +2126,7 @@ class SMSG_LOGIN_SETTIMESPEED_tbc(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
-        data = bytes([0, 10, 66, 0, 10, 26, 115, 22, 137, 136, 136, 60, ])
+        data = bytes([0, 10, 66, 0, 10, 50, 115, 22, 137, 136, 136, 60, ])
 
         reader.feed_data(data)
         reader.feed_eof()
@@ -2792,6 +2792,24 @@ class SMSG_SPLINE_SET_RUN_SPEED_tbc(unittest.IsolatedAsyncioTestCase):
         reader.feed_eof()
 
         r = await tbc.expect_server_opcode_unencrypted(reader, tbc.SMSG_SPLINE_SET_RUN_SPEED)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 4, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
+class SMSG_MOTD_tbc(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 116, 61, 3, 2, 0, 0, 0, 87, 101, 108, 99, 111, 109, 101, 32, 116, 111, 32, 97, 110, 32, 65, 122, 101, 114, 111, 116, 104, 67, 111, 114, 101, 32, 115, 101, 114, 118, 101, 114, 46, 0, 124, 99, 102, 102, 70, 70, 52, 65, 50, 68, 84, 104, 105, 115, 32, 115, 101, 114, 118, 101, 114, 32, 114, 117, 110, 115, 32, 111, 110, 32, 65, 122, 101, 114, 111, 116, 104, 67, 111, 114, 101, 124, 114, 32, 124, 99, 102, 102, 51, 67, 69, 55, 70, 70, 119, 119, 119, 46, 97, 122, 101, 114, 111, 116, 104, 99, 111, 114, 101, 46, 111, 114, 103, 124, 114, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await tbc.expect_server_opcode_unencrypted(reader, tbc.SMSG_MOTD)
         self.assertIsNotNone(r)
         self.assertTrue(reader.at_eof())
         self.assertEqual(len(data) - 4, r.size())

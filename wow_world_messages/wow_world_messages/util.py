@@ -42,7 +42,7 @@ class WrathAuraMask:
 
 @dataclasses.dataclass
 class TbcAuraMask:
-    fields: dict[int]
+    fields: dict[tuple[int, int]]
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):

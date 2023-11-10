@@ -205,6 +205,7 @@ __all__ = [
     "AuctionEnchantment",
     "AuctionListItem",
     "AuctionSort",
+    "Aura",
     "AuraLog",
     "BankTab",
     "BattlegroundPlayerPosition",
@@ -9250,6 +9251,30 @@ class AuctionSort:
     def write(self, _fmt, _data):
         _fmt += 'BB'
         _data.extend([self.column, self.reversed])
+        return _fmt, _data
+
+
+@dataclasses.dataclass
+class Aura:
+    aura: int
+    unknown: int
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader) -> Aura:
+        # aura: u16
+        aura = await read_int(reader, 2)
+
+        # unknown: u8
+        unknown = await read_int(reader, 1)
+
+        return Aura(
+            aura=aura,
+            unknown=unknown,
+        )
+
+    def write(self, _fmt, _data):
+        _fmt += 'HB'
+        _data.extend([self.aura, self.unknown])
         return _fmt, _data
 
 
