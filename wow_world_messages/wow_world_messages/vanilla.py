@@ -25,6 +25,7 @@ __all__ = [
     "expect_client_opcode_encrypted",
     "expect_server_opcode_unencrypted",
     "expect_server_opcode_encrypted",
+    "AuraMask",
     "UpdateMask",
     "AccountDataType",
     "ActivateTaxiReply",
@@ -912,6 +913,38 @@ __all__ = [
     "SMSG_EXPECTED_SPAM_RECORDS",
     "SMSG_DEFENSE_MESSAGE",
 ]
+
+
+@dataclasses.dataclass
+class AuraMask:
+    fields: dict[int, int]
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader):
+        mask = await read_int(reader, 4)
+
+        fields = {}
+        for index in range(0, 32):
+            if mask & 1 << index:
+                fields[index] = await read_int(reader, 2)
+
+        return AuraMask(fields=fields)
+
+    def write(self, fmt, data):
+        mask = 0
+        for key in self.fields:
+            mask |= 1 << key
+
+        fmt += 'I'
+        data.append(mask)
+
+        fmt += f"{len(self.fields)}H"
+        data.extend(list(self.fields.values()))
+
+        return fmt, data
+
+    def size(self):
+        return 4 + len(self.fields) * 2
 
 
 @dataclasses.dataclass

@@ -10,7 +10,7 @@ def print_aura_mask(s: Writer, v: model.WorldVersion):
         block = """
 @dataclasses.dataclass
 class AuraMask:
-    fields: dict[int]
+    fields: dict[int, int]
 
     @staticmethod
     async def read(reader: asyncio.StreamReader):

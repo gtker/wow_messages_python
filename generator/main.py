@@ -22,7 +22,7 @@ from util import (
     login_version_to_module_name,
     first_login_version,
     login_version_matches, world_version_to_title_name, VERSIONS, VANILLA, WRATH, TBC, world_version_is_wrath,
-    world_version_is_tbc,
+    world_version_is_tbc, world_version_is_vanilla,
 )
 from world_utils import print_world_utils
 from writer import Writer
@@ -128,6 +128,11 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
 
         print_variable_item_random_property(s)
         all_types.wln('"VariableItemRandomProperty",')
+    elif world_version_is_vanilla(v):
+        # Vanilla doesn't have an Aura type
+        print_aura_mask(s, v)
+
+    all_types.wln('"AuraMask",')
 
     print_update_mask(s, update_mask)
     all_types.wln('"UpdateMask",')
@@ -160,8 +165,8 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
             print_monster_move_spline(s)
             all_types.wln('"MonsterMoveSpline",')
         elif e.name == "Aura":
+            # Vanilla doesn't have an Aura type
             print_aura_mask(s, v)
-            all_types.wln('"AuraMask",')
 
     for e in m.messages.value:
         if not should_print_container(e, v):
