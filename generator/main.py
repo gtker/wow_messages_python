@@ -5,13 +5,13 @@ import pstats
 import typing
 
 import model
-from generator.print_achievement_done_array import print_achievement_done_array
-from generator.print_achievement_in_progress_array import print_achievement_in_progress_array
-from generator.print_addon_array import print_addon_array
-from generator.print_aura_mask import print_aura_mask
-from generator.print_cache_mask import print_cache_mask
-from generator.print_named_guid import print_named_guid
-from generator.print_variable_item_random_property import print_variable_item_random_property
+from print_achievement_done_array import print_achievement_done_array
+from print_achievement_in_progress_array import print_achievement_in_progress_array
+from print_addon_array import print_addon_array
+from print_aura_mask import print_aura_mask
+from print_cache_mask import print_cache_mask
+from print_named_guid import print_named_guid
+from print_variable_item_random_property import print_variable_item_random_property
 from login_utils import print_login_utils
 from print_enum import print_enum, print_flag
 from print_monster_move_spline import print_monster_move_spline

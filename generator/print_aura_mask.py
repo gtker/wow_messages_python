@@ -1,6 +1,6 @@
-from generator.util import world_version_is_vanilla, world_version_is_tbc, \
+from util import world_version_is_vanilla, world_version_is_tbc, \
     world_version_is_wrath
-from generator.writer import Writer
+from writer import Writer
 import model
 
 

@@ -1,4 +1,4 @@
-from generator.writer import Writer
+from writer import Writer
 
 
 def print_named_guid(s: Writer):
