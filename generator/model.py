@@ -1389,15 +1389,52 @@ class LoginVersionsSpecific(LoginVersions):
         return data
 
 @dataclass
+class MemberTagsValidRange:
+    """
+    JSON Typedef does not support integers larger than unsigned 32 bit, so this
+    is a string
+    """
+
+    from_: 'str'
+    to: 'str'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'MemberTagsValidRange':
+        return cls(
+            _from_json_data(str, data.get("from")),
+            _from_json_data(str, data.get("to")),
+        )
+
+    def to_json_data(self) -> Any:
+        data: Dict[str, Any] = {}
+        data["from"] = _to_json_data(self.from_)
+        data["to"] = _to_json_data(self.to)
+        return data
+
+@dataclass
 class MemberTags:
     comment: 'Optional[str]'
     display: 'Optional[str]'
+    maximum_length: 'Optional[str]'
+    """
+    JSON Typedef does not support integers larger than unsigned 32 bit, so this
+    is a string
+    """
+
+    valid_range: 'Optional[MemberTagsValidRange]'
+    """
+    JSON Typedef does not support integers larger than unsigned 32 bit, so this
+    is a string
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'MemberTags':
         return cls(
             _from_json_data(Optional[str], data.get("comment")),
             _from_json_data(Optional[str], data.get("display")),
+            _from_json_data(Optional[str], data.get("maximum_length")),
+            _from_json_data(Optional[MemberTagsValidRange], data.get("valid_range")),
         )
 
     def to_json_data(self) -> Any:
@@ -1406,6 +1443,10 @@ class MemberTags:
              data["comment"] = _to_json_data(self.comment)
         if self.display is not None:
              data["display"] = _to_json_data(self.display)
+        if self.maximum_length is not None:
+             data["maximum_length"] = _to_json_data(self.maximum_length)
+        if self.valid_range is not None:
+             data["valid_range"] = _to_json_data(self.valid_range)
         return data
 
 @dataclass
