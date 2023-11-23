@@ -327,6 +327,7 @@ __all__ = [
     "SpellCooldownStatus",
     "SpellLog",
     "SpellLogMiss",
+    "SpellMiss",
     "SpellSteal",
     "StabledPet",
     "TalentInfoSpec",
@@ -16876,7 +16877,7 @@ class SpellLogMiss:
         target = await read_int(reader, 8)
 
         # miss_info: SpellMissInfo
-        miss_info = SpellMissInfo(await read_int(reader, 4))
+        miss_info = SpellMissInfo(await read_int(reader, 1))
 
         return SpellLogMiss(
             target=target,
@@ -16884,9 +16885,51 @@ class SpellLogMiss:
         )
 
     def write(self, _fmt, _data):
-        _fmt += 'QI'
+        _fmt += 'QB'
         _data.extend([self.target, self.miss_info.value])
         return _fmt, _data
+
+
+@dataclasses.dataclass
+class SpellMiss:
+    target: int
+    miss_info: SpellMissInfo
+    reflect_result: typing.Optional[int] = None
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader) -> SpellMiss:
+        reflect_result = None
+        # target: Guid
+        target = await read_int(reader, 8)
+
+        # miss_info: SpellMissInfo
+        miss_info = SpellMissInfo(await read_int(reader, 1))
+
+        if miss_info == SpellMissInfo.REFLECT:
+            # reflect_result: u8
+            reflect_result = await read_int(reader, 1)
+
+        return SpellMiss(
+            target=target,
+            miss_info=miss_info,
+            reflect_result=reflect_result,
+        )
+
+    def write(self, _fmt, _data):
+        _fmt += 'QB'
+        _data.extend([self.target, self.miss_info.value])
+        if self.miss_info == SpellMissInfo.REFLECT:
+            _fmt += 'B'
+            _data.append(self.reflect_result)
+        return _fmt, _data
+
+    def size(self) -> int:
+        _size = 9
+
+        if self.miss_info == SpellMissInfo.REFLECT:
+            _size += 1
+
+        return _size
 
 
 @dataclasses.dataclass
@@ -29051,6 +29094,8 @@ class SMSG_SPELL_GO:
     spell: int
     flags: GameobjectCastFlags
     timestamp: int
+    hits: typing.List[int]
+    misses: typing.List[SpellMiss]
     targets: SpellCastTargets
     power: typing.Optional[Power] = None
     rune_mask_initial: typing.Optional[int] = None
@@ -29094,6 +29139,22 @@ class SMSG_SPELL_GO:
 
         # timestamp: u32
         timestamp = await read_int(reader, 4)
+
+        # amount_of_hits: u8
+        amount_of_hits = await read_int(reader, 1)
+
+        # hits: Guid[amount_of_hits]
+        hits = []
+        for _ in range(0, amount_of_hits):
+            hits.append(await read_int(reader, 8))
+
+        # amount_of_misses: u8
+        amount_of_misses = await read_int(reader, 1)
+
+        # misses: SpellMiss[amount_of_misses]
+        misses = []
+        for _ in range(0, amount_of_misses):
+            misses.append(await SpellMiss.read(reader))
 
         # targets: SpellCastTargets
         targets = await SpellCastTargets.read(reader)
@@ -29146,6 +29207,8 @@ class SMSG_SPELL_GO:
             spell=spell,
             flags=flags,
             timestamp=timestamp,
+            hits=hits,
+            misses=misses,
             targets=targets,
             power=power,
             rune_mask_initial=rune_mask_initial,
@@ -29191,6 +29254,22 @@ class SMSG_SPELL_GO:
         _fmt += 'I'
         _data.append(self.timestamp)
 
+        # amount_of_hits: u8
+        _fmt += 'B'
+        _data.append(len(self.hits))
+
+        # hits: Guid[amount_of_hits]
+        _fmt += f'{len(self.hits)}Q'
+        _data.extend([*self.hits])
+
+        # amount_of_misses: u8
+        _fmt += 'B'
+        _data.append(len(self.misses))
+
+        # misses: SpellMiss[amount_of_misses]
+        for i in self.misses:
+            _fmt, _data = i.write(_fmt, _data)
+
         # targets: SpellCastTargets
         _fmt, _data = self.targets.write(_fmt, _data)
 
@@ -29220,7 +29299,7 @@ class SMSG_SPELL_GO:
         writer.write(_data)
 
     def size(self) -> int:
-        _size = 13 + packed_guid_size(self.cast_item) + packed_guid_size(self.caster) + self.targets.size()
+        _size = 15 + packed_guid_size(self.cast_item) + packed_guid_size(self.caster) + 8 * len(self.hits) + sum([i.size() for i in self.misses]) + self.targets.size()
 
         if GameobjectCastFlags.POWER_UPDATE in self.flags:
             _size += 4
@@ -40196,7 +40275,7 @@ class SMSG_SPELLLOGMISS:
         writer.write(_data)
 
     def size(self) -> int:
-        return 17 + 12 * len(self.targets)
+        return 17 + 9 * len(self.targets)
 
 
 @dataclasses.dataclass

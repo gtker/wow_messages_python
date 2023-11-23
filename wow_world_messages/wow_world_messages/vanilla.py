@@ -10776,7 +10776,7 @@ class SpellLogMiss:
         target = await read_int(reader, 8)
 
         # miss_info: SpellMissInfo
-        miss_info = SpellMissInfo(await read_int(reader, 4))
+        miss_info = SpellMissInfo(await read_int(reader, 1))
 
         return SpellLogMiss(
             target=target,
@@ -10784,7 +10784,7 @@ class SpellLogMiss:
         )
 
     def write(self, _fmt, _data):
-        _fmt += 'QI'
+        _fmt += 'QB'
         _data.extend([self.target, self.miss_info.value])
         return _fmt, _data
 
@@ -10800,7 +10800,7 @@ class SpellMiss:
         target = await read_int(reader, 8)
 
         # miss_info: SpellMissInfo
-        miss_info = SpellMissInfo(await read_int(reader, 4))
+        miss_info = SpellMissInfo(await read_int(reader, 1))
 
         return SpellMiss(
             target=target,
@@ -10808,7 +10808,7 @@ class SpellMiss:
         )
 
     def write(self, _fmt, _data):
-        _fmt += 'QI'
+        _fmt += 'QB'
         _data.extend([self.target, self.miss_info.value])
         return _fmt, _data
 
@@ -21905,7 +21905,7 @@ class SMSG_SPELL_GO:
         writer.write(_data)
 
     def size(self) -> int:
-        _size = 8 + packed_guid_size(self.cast_item) + packed_guid_size(self.caster) + 8 * len(self.hits) + 12 * len(self.misses) + self.targets.size()
+        _size = 8 + packed_guid_size(self.cast_item) + packed_guid_size(self.caster) + 8 * len(self.hits) + 9 * len(self.misses) + self.targets.size()
 
         if CastFlags.AMMO in self.flags:
             _size += 8
@@ -31536,7 +31536,7 @@ class SMSG_SPELLLOGMISS:
         writer.write(_data)
 
     def size(self) -> int:
-        return 17 + 12 * len(self.targets)
+        return 17 + 9 * len(self.targets)
 
 
 @dataclasses.dataclass

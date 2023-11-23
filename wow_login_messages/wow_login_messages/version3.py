@@ -27,6 +27,11 @@ from .version2 import CMD_AUTH_LOGON_PROOF_Server
 from .all import CMD_AUTH_RECONNECT_CHALLENGE_Client
 from .version2 import CMD_REALM_LIST_Server
 from .version2 import CMD_REALM_LIST_Client
+from .version2 import CMD_XFER_INITIATE
+from .version2 import CMD_XFER_DATA
+from .version2 import CMD_XFER_ACCEPT
+from .version2 import CMD_XFER_RESUME
+from .version2 import CMD_XFER_CANCEL
 
 
 __all__ = [
@@ -288,122 +293,6 @@ class CMD_SURVEY_RESULT:
 
         _fmt += f'IBH{len(self.data)}B'
         _data.extend([self.survey_id, self.error, len(self.data), *self.data])
-        _data = struct.pack(_fmt, *_data)
-        if isinstance(writer, bytearray):
-            for i in range(0, len(_data)):
-                writer[i] = _data[i]
-            return
-        writer.write(_data)
-
-
-@dataclasses.dataclass
-class CMD_XFER_INITIATE:
-
-    @staticmethod
-    async def read(reader: asyncio.StreamReader) -> CMD_XFER_INITIATE:
-        return CMD_XFER_INITIATE()
-
-    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
-        _fmt = '<B' # opcode
-        _data = [48]
-
-        _data = struct.pack(_fmt, *_data)
-        if isinstance(writer, bytearray):
-            for i in range(0, len(_data)):
-                writer[i] = _data[i]
-            return
-        writer.write(_data)
-
-
-@dataclasses.dataclass
-class CMD_XFER_DATA:
-    data: typing.List[int]
-
-    @staticmethod
-    async def read(reader: asyncio.StreamReader) -> CMD_XFER_DATA:
-        # size: u16
-        size = await read_int(reader, 2)
-
-        # data: u8[size]
-        data = []
-        for _ in range(0, size):
-            data.append(await read_int(reader, 1))
-
-        return CMD_XFER_DATA(
-            data=data,
-        )
-
-    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
-        _fmt = '<B' # opcode
-        _data = [49]
-
-        _fmt += f'H{len(self.data)}B'
-        _data.extend([len(self.data), *self.data])
-        _data = struct.pack(_fmt, *_data)
-        if isinstance(writer, bytearray):
-            for i in range(0, len(_data)):
-                writer[i] = _data[i]
-            return
-        writer.write(_data)
-
-
-@dataclasses.dataclass
-class CMD_XFER_ACCEPT:
-
-    @staticmethod
-    async def read(reader: asyncio.StreamReader) -> CMD_XFER_ACCEPT:
-        return CMD_XFER_ACCEPT()
-
-    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
-        _fmt = '<B' # opcode
-        _data = [50]
-
-        _data = struct.pack(_fmt, *_data)
-        if isinstance(writer, bytearray):
-            for i in range(0, len(_data)):
-                writer[i] = _data[i]
-            return
-        writer.write(_data)
-
-
-@dataclasses.dataclass
-class CMD_XFER_RESUME:
-    offset: int
-
-    @staticmethod
-    async def read(reader: asyncio.StreamReader) -> CMD_XFER_RESUME:
-        # offset: u64
-        offset = await read_int(reader, 8)
-
-        return CMD_XFER_RESUME(
-            offset=offset,
-        )
-
-    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
-        _fmt = '<B' # opcode
-        _data = [51]
-
-        _fmt += 'Q'
-        _data.append(self.offset)
-        _data = struct.pack(_fmt, *_data)
-        if isinstance(writer, bytearray):
-            for i in range(0, len(_data)):
-                writer[i] = _data[i]
-            return
-        writer.write(_data)
-
-
-@dataclasses.dataclass
-class CMD_XFER_CANCEL:
-
-    @staticmethod
-    async def read(reader: asyncio.StreamReader) -> CMD_XFER_CANCEL:
-        return CMD_XFER_CANCEL()
-
-    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
-        _fmt = '<B' # opcode
-        _data = [52]
-
         _data = struct.pack(_fmt, *_data)
         if isinstance(writer, bytearray):
             for i in range(0, len(_data)):

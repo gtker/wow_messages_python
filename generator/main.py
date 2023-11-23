@@ -37,7 +37,7 @@ LOGIN_MESSAGE_DIR = f"{LOGIN_PROJECT_DIR}/wow_login_messages"
 WORLD_PROJECT_DIR = f"{THIS_FILE_PATH}/../wow_world_messages"
 WORLD_MESSAGE_DIR = f"{WORLD_PROJECT_DIR}/wow_world_messages"
 
-IR_FILE_PATH = f"{THIS_FILE_PATH}/intermediate_representation.json"
+IR_FILE_PATH = f"{THIS_FILE_PATH}/wow_messages/intermediate_representation.json"
 
 LOGIN_UTIL_FILE = f"{LOGIN_MESSAGE_DIR}/util.py"
 

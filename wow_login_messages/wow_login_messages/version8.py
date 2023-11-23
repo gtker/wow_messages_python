@@ -23,6 +23,11 @@ from .all import CMD_AUTH_LOGON_CHALLENGE_Client
 from .all import CMD_AUTH_RECONNECT_CHALLENGE_Client
 from .version2 import CMD_AUTH_RECONNECT_PROOF_Client
 from .version2 import CMD_REALM_LIST_Client
+from .version2 import CMD_XFER_INITIATE
+from .version2 import CMD_XFER_DATA
+from .version2 import CMD_XFER_ACCEPT
+from .version2 import CMD_XFER_RESUME
+from .version2 import CMD_XFER_CANCEL
 
 
 __all__ = [
@@ -49,6 +54,11 @@ __all__ = [
     "CMD_AUTH_RECONNECT_PROOF_Server",
     "CMD_REALM_LIST_Client",
     "CMD_REALM_LIST_Server",
+    "CMD_XFER_INITIATE",
+    "CMD_XFER_DATA",
+    "CMD_XFER_ACCEPT",
+    "CMD_XFER_RESUME",
+    "CMD_XFER_CANCEL",
     ]
 
 class LoginResult(enum.Enum):
@@ -332,15 +342,14 @@ class CMD_AUTH_LOGON_PROOF_Client:
     pin_salt: typing.Optional[typing.List[int]] = None
     pin_hash: typing.Optional[typing.List[int]] = None
     matrix_card_proof: typing.Optional[typing.List[int]] = None
-    tokens: typing.Optional[typing.List[int]] = None
+    authenticator: typing.Optional[str] = None
 
     @staticmethod
     async def read(reader: asyncio.StreamReader) -> CMD_AUTH_LOGON_PROOF_Client:
         pin_salt = None
         pin_hash = None
         matrix_card_proof = None
-        amount_of_tokens = None
-        tokens = None
+        authenticator = None
         # client_public_key: u8[32]
         client_public_key = []
         for _ in range(0, 32):
@@ -385,13 +394,8 @@ class CMD_AUTH_LOGON_PROOF_Client:
                 matrix_card_proof.append(await read_int(reader, 1))
 
         if SecurityFlag.AUTHENTICATOR in security_flag:
-            # amount_of_tokens: u8
-            amount_of_tokens = await read_int(reader, 1)
-
-            # tokens: u8[amount_of_tokens]
-            tokens = []
-            for _ in range(0, amount_of_tokens):
-                tokens.append(await read_int(reader, 1))
+            # authenticator: String
+            authenticator = await read_string(reader)
 
         return CMD_AUTH_LOGON_PROOF_Client(
             client_public_key=client_public_key,
@@ -402,7 +406,7 @@ class CMD_AUTH_LOGON_PROOF_Client:
             pin_salt=pin_salt,
             pin_hash=pin_hash,
             matrix_card_proof=matrix_card_proof,
-            tokens=tokens,
+            authenticator=authenticator,
         )
 
     def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
@@ -426,8 +430,8 @@ class CMD_AUTH_LOGON_PROOF_Client:
             _fmt += f'{len(self.matrix_card_proof)}B'
             _data.extend([*self.matrix_card_proof])
         if SecurityFlag.AUTHENTICATOR in self.security_flag:
-            _fmt += f'B{len(self.tokens)}B'
-            _data.extend([len(self.tokens), *self.tokens])
+            _fmt += f'B{len(self.authenticator)}s'
+            _data.extend([len(self.authenticator), self.authenticator.encode('utf-8')])
         _data = struct.pack(_fmt, *_data)
         if isinstance(writer, bytearray):
             for i in range(0, len(_data)):
@@ -442,14 +446,14 @@ class CMD_AUTH_LOGON_PROOF_Server:
     server_proof: typing.Optional[typing.List[int]] = None
     account_flag: typing.Optional[AccountFlag] = None
     hardware_survey_id: typing.Optional[int] = None
-    unknown_flags: typing.Optional[int] = None
+    unknown: typing.Optional[int] = None
 
     @staticmethod
     async def read(reader: asyncio.StreamReader) -> CMD_AUTH_LOGON_PROOF_Server:
         server_proof = None
         account_flag = None
         hardware_survey_id = None
-        unknown_flags = None
+        unknown = None
         padding = None
         # result: LoginResult
         result = LoginResult(await read_int(reader, 1))
@@ -466,8 +470,8 @@ class CMD_AUTH_LOGON_PROOF_Server:
             # hardware_survey_id: u32
             hardware_survey_id = await read_int(reader, 4)
 
-            # unknown_flags: u16
-            unknown_flags = await read_int(reader, 2)
+            # unknown: u16
+            unknown = await read_int(reader, 2)
 
         else:
             # padding: u16
@@ -478,7 +482,7 @@ class CMD_AUTH_LOGON_PROOF_Server:
             server_proof=server_proof,
             account_flag=account_flag,
             hardware_survey_id=hardware_survey_id,
-            unknown_flags=unknown_flags,
+            unknown=unknown,
         )
 
     def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
@@ -489,7 +493,7 @@ class CMD_AUTH_LOGON_PROOF_Server:
         _data.append(self.result.value)
         if self.result == LoginResult.SUCCESS:
             _fmt += f'{len(self.server_proof)}BIIH'
-            _data.extend([*self.server_proof, self.account_flag.value, self.hardware_survey_id, self.unknown_flags])
+            _data.extend([*self.server_proof, self.account_flag.value, self.hardware_survey_id, self.unknown])
         else:
             _fmt += 'H'
             _data.append(0)
@@ -636,6 +640,9 @@ ClientOpcode = typing.Union[
     CMD_AUTH_RECONNECT_CHALLENGE_Client,
     CMD_AUTH_RECONNECT_PROOF_Client,
     CMD_REALM_LIST_Client,
+    CMD_XFER_ACCEPT,
+    CMD_XFER_RESUME,
+    CMD_XFER_CANCEL,
 ]
 
 
@@ -651,6 +658,12 @@ async def read_client_opcode(reader: asyncio.StreamReader) -> typing.Optional[Cl
         return await CMD_AUTH_RECONNECT_PROOF_Client.read(reader)
     if opcode == 0x10:
         return await CMD_REALM_LIST_Client.read(reader)
+    if opcode == 0x32:
+        return await CMD_XFER_ACCEPT.read(reader)
+    if opcode == 0x33:
+        return await CMD_XFER_RESUME.read(reader)
+    if opcode == 0x34:
+        return await CMD_XFER_CANCEL.read(reader)
     else:
         raise Exception(f'incorrect opcode {opcode}')
 
@@ -669,6 +682,8 @@ ServerOpcode = typing.Union[
     CMD_AUTH_RECONNECT_CHALLENGE_Server,
     CMD_AUTH_RECONNECT_PROOF_Server,
     CMD_REALM_LIST_Server,
+    CMD_XFER_INITIATE,
+    CMD_XFER_DATA,
 ]
 
 
@@ -684,6 +699,10 @@ async def read_server_opcode(reader: asyncio.StreamReader) -> typing.Optional[Se
         return await CMD_AUTH_RECONNECT_PROOF_Server.read(reader)
     if opcode == 0x10:
         return await CMD_REALM_LIST_Server.read(reader)
+    if opcode == 0x30:
+        return await CMD_XFER_INITIATE.read(reader)
+    if opcode == 0x31:
+        return await CMD_XFER_DATA.read(reader)
     else:
         return None
 

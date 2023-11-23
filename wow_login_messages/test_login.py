@@ -3,10 +3,9 @@ import unittest
 
 import wow_login_messages.version2
 import wow_login_messages.version3
+import wow_login_messages.version5
 import wow_login_messages.version8
 import wow_login_messages.all
-import wow_login_messages.version5
-import wow_login_messages.version6
 
 
 class CMD_AUTH_LOGON_CHALLENGE_Server0(unittest.IsolatedAsyncioTestCase):
@@ -58,7 +57,7 @@ class CMD_AUTH_LOGON_CHALLENGE_Server1(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_AUTH_LOGON_CHALLENGE_Server2(unittest.IsolatedAsyncioTestCase):
+class CMD_AUTH_LOGON_CHALLENGE_Server3(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -165,7 +164,7 @@ class CMD_AUTH_LOGON_CHALLENGE_Server2(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_AUTH_LOGON_CHALLENGE_Client3(unittest.IsolatedAsyncioTestCase):
+class CMD_AUTH_LOGON_CHALLENGE_Client4(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -183,7 +182,7 @@ class CMD_AUTH_LOGON_CHALLENGE_Client3(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_AUTH_LOGON_PROOF_Client4(unittest.IsolatedAsyncioTestCase):
+class CMD_AUTH_LOGON_PROOF_Client5(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -230,7 +229,7 @@ class CMD_AUTH_LOGON_PROOF_Client4(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_AUTH_LOGON_PROOF_Server5(unittest.IsolatedAsyncioTestCase):
+class CMD_AUTH_LOGON_PROOF_Server6(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -247,7 +246,7 @@ class CMD_AUTH_LOGON_PROOF_Server5(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_AUTH_LOGON_PROOF_Client6(unittest.IsolatedAsyncioTestCase):
+class CMD_AUTH_LOGON_PROOF_Client7(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -309,7 +308,7 @@ class CMD_AUTH_LOGON_PROOF_Client6(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_AUTH_LOGON_PROOF_Client8(unittest.IsolatedAsyncioTestCase):
+class CMD_AUTH_LOGON_PROOF_Client10(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -371,7 +370,7 @@ class CMD_AUTH_LOGON_PROOF_Client8(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_AUTH_LOGON_PROOF_Server9(unittest.IsolatedAsyncioTestCase):
+class CMD_AUTH_LOGON_PROOF_Server11(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -403,7 +402,7 @@ class CMD_AUTH_LOGON_PROOF_Server9(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_AUTH_RECONNECT_CHALLENGE_Server10(unittest.IsolatedAsyncioTestCase):
+class CMD_AUTH_RECONNECT_CHALLENGE_Server12(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -435,7 +434,7 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Server10(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_AUTH_RECONNECT_CHALLENGE_Server11(unittest.IsolatedAsyncioTestCase):
+class CMD_AUTH_RECONNECT_CHALLENGE_Server13(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -467,7 +466,7 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Server11(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_AUTH_RECONNECT_CHALLENGE_Client12(unittest.IsolatedAsyncioTestCase):
+class CMD_AUTH_RECONNECT_CHALLENGE_Client14(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -501,7 +500,7 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Client12(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_AUTH_RECONNECT_PROOF_Server13(unittest.IsolatedAsyncioTestCase):
+class CMD_AUTH_RECONNECT_PROOF_Server15(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -548,7 +547,7 @@ class CMD_AUTH_RECONNECT_PROOF_Server13(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_AUTH_RECONNECT_PROOF_Client14(unittest.IsolatedAsyncioTestCase):
+class CMD_AUTH_RECONNECT_PROOF_Client16(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -565,7 +564,7 @@ class CMD_AUTH_RECONNECT_PROOF_Client14(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_AUTH_RECONNECT_PROOF_Server16(unittest.IsolatedAsyncioTestCase):
+class CMD_AUTH_RECONNECT_PROOF_Server18(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -597,7 +596,7 @@ class CMD_AUTH_RECONNECT_PROOF_Server16(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_SURVEY_RESULT17(unittest.IsolatedAsyncioTestCase):
+class CMD_SURVEY_RESULT19(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -614,7 +613,7 @@ class CMD_SURVEY_RESULT17(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_REALM_LIST_Server18(unittest.IsolatedAsyncioTestCase):
+class CMD_REALM_LIST_Server20(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -648,7 +647,7 @@ class CMD_REALM_LIST_Server18(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_REALM_LIST_Client19(unittest.IsolatedAsyncioTestCase):
+class CMD_REALM_LIST_Client21(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -665,7 +664,7 @@ class CMD_REALM_LIST_Client19(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
-class CMD_REALM_LIST_Server22(unittest.IsolatedAsyncioTestCase):
+class CMD_REALM_LIST_Server23(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()
 
@@ -694,106 +693,6 @@ class CMD_REALM_LIST_Server22(unittest.IsolatedAsyncioTestCase):
         self.assertIsNotNone(r)
         self.assertTrue(reader.at_eof())
         self.assertEqual(len(data) - 3, r.size())
-        written = bytearray(len(data))
-        r.write(written)
-        self.assertEqual(data, written)
-
-
-class CMD_XFER_INITIATE23(unittest.IsolatedAsyncioTestCase):
-    async def test0(self):
-        reader = asyncio.StreamReader()
-
-        data = bytes([48, ])
-
-        reader.feed_data(data)
-        reader.feed_eof()
-
-        r = await wow_login_messages.version3.expect_server_opcode(reader, wow_login_messages.version3.CMD_XFER_INITIATE)
-        self.assertIsNotNone(r)
-        self.assertTrue(reader.at_eof())
-        written = bytearray(len(data))
-        r.write(written)
-        self.assertEqual(data, written)
-
-
-class CMD_XFER_DATA24(unittest.IsolatedAsyncioTestCase):
-    async def test0(self):
-        reader = asyncio.StreamReader()
-
-        data = bytes([49, 1, 0, 255, ])
-
-        reader.feed_data(data)
-        reader.feed_eof()
-
-        r = await wow_login_messages.version3.expect_server_opcode(reader, wow_login_messages.version3.CMD_XFER_DATA)
-        self.assertIsNotNone(r)
-        self.assertTrue(reader.at_eof())
-        written = bytearray(len(data))
-        r.write(written)
-        self.assertEqual(data, written)
-
-    async def test1(self):
-        reader = asyncio.StreamReader()
-
-        data = bytes([49, 0, 0, ])
-
-        reader.feed_data(data)
-        reader.feed_eof()
-
-        r = await wow_login_messages.version3.expect_server_opcode(reader, wow_login_messages.version3.CMD_XFER_DATA)
-        self.assertIsNotNone(r)
-        self.assertTrue(reader.at_eof())
-        written = bytearray(len(data))
-        r.write(written)
-        self.assertEqual(data, written)
-
-
-class CMD_XFER_ACCEPT25(unittest.IsolatedAsyncioTestCase):
-    async def test0(self):
-        reader = asyncio.StreamReader()
-
-        data = bytes([50, ])
-
-        reader.feed_data(data)
-        reader.feed_eof()
-
-        r = await wow_login_messages.version3.expect_client_opcode(reader, wow_login_messages.version3.CMD_XFER_ACCEPT)
-        self.assertIsNotNone(r)
-        self.assertTrue(reader.at_eof())
-        written = bytearray(len(data))
-        r.write(written)
-        self.assertEqual(data, written)
-
-
-class CMD_XFER_RESUME26(unittest.IsolatedAsyncioTestCase):
-    async def test0(self):
-        reader = asyncio.StreamReader()
-
-        data = bytes([51, 173, 222, 0, 0, 0, 0, 0, 0, ])
-
-        reader.feed_data(data)
-        reader.feed_eof()
-
-        r = await wow_login_messages.version3.expect_client_opcode(reader, wow_login_messages.version3.CMD_XFER_RESUME)
-        self.assertIsNotNone(r)
-        self.assertTrue(reader.at_eof())
-        written = bytearray(len(data))
-        r.write(written)
-        self.assertEqual(data, written)
-
-
-class CMD_XFER_CANCEL27(unittest.IsolatedAsyncioTestCase):
-    async def test0(self):
-        reader = asyncio.StreamReader()
-
-        data = bytes([52, ])
-
-        reader.feed_data(data)
-        reader.feed_eof()
-
-        r = await wow_login_messages.version3.expect_client_opcode(reader, wow_login_messages.version3.CMD_XFER_CANCEL)
-        self.assertIsNotNone(r)
-        self.assertTrue(reader.at_eof())
         written = bytearray(len(data))
         r.write(written)
         self.assertEqual(data, written)

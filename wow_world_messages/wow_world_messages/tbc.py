@@ -13036,7 +13036,7 @@ class SpellLogMiss:
         target = await read_int(reader, 8)
 
         # miss_info: SpellMissInfo
-        miss_info = SpellMissInfo(await read_int(reader, 4))
+        miss_info = SpellMissInfo(await read_int(reader, 1))
 
         return SpellLogMiss(
             target=target,
@@ -13044,7 +13044,7 @@ class SpellLogMiss:
         )
 
     def write(self, _fmt, _data):
-        _fmt += 'QI'
+        _fmt += 'QB'
         _data.extend([self.target, self.miss_info.value])
         return _fmt, _data
 
@@ -13062,7 +13062,7 @@ class SpellMiss:
         target = await read_int(reader, 8)
 
         # miss_info: SpellMissInfo
-        miss_info = SpellMissInfo(await read_int(reader, 4))
+        miss_info = SpellMissInfo(await read_int(reader, 1))
 
         if miss_info == SpellMissInfo.REFLECT:
             # reflect_result: u8
@@ -13075,7 +13075,7 @@ class SpellMiss:
         )
 
     def write(self, _fmt, _data):
-        _fmt += 'QI'
+        _fmt += 'QB'
         _data.extend([self.target, self.miss_info.value])
         if self.miss_info == SpellMissInfo.REFLECT:
             _fmt += 'B'
@@ -13083,7 +13083,7 @@ class SpellMiss:
         return _fmt, _data
 
     def size(self) -> int:
-        _size = 12
+        _size = 9
 
         if self.miss_info == SpellMissInfo.REFLECT:
             _size += 1
@@ -34887,7 +34887,7 @@ class SMSG_SPELLLOGMISS:
         writer.write(_data)
 
     def size(self) -> int:
-        return 17 + 12 * len(self.targets)
+        return 17 + 9 * len(self.targets)
 
 
 @dataclasses.dataclass
