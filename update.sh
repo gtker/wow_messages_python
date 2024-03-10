@@ -9,13 +9,13 @@ then
     exit 1
 fi
 
-if ! command -v jtd-validate &> /dev/null
+if ! command -v /usr/local/bin/jtd-validate &> /dev/null
 then
     echo "Unable to find 'jtd-validate' command."
     exit 1
 fi
 
-if ! command -v jtd-codegen &> /dev/null
+if ! command -v /usr/local/bin/jtd-codegen &> /dev/null
 then
     echo "Unable to find 'jtd-codegen' command."
     exit 1
