@@ -27,13 +27,15 @@ def integer_type_to_struct_pack(ty: model.IntegerType):
             return "q"
         case model.IntegerType.U48:
             return "IH"
+        case v:
+            raise Exception(f"{v}")
 
 
 def addable_write_values(
         d: model.Definition,
 ) -> typing.Optional[typing.Tuple[str, str]]:
     match d.data_type:
-        case model.DataTypeInteger(content=integer_type):
+        case model.DataTypeInteger(integer_type=integer_type):
             if d.used_as_size_in is not None:
                 return integer_type_to_struct_pack(integer_type), f"len(self.{d.used_as_size_in})"
             elif d.size_of_fields_before_size is not None:
@@ -43,17 +45,13 @@ def addable_write_values(
             else:
                 return integer_type_to_struct_pack(integer_type), f"self.{d.name}"
 
-        case model.DataTypeBool(content=integer_type):
+        case model.DataTypeBool(integer_type=integer_type):
             return integer_type_to_struct_pack(integer_type), f"self.{d.name}"
 
-        case model.DataTypeFlag(
-            content=model.DataTypeFlagContent(integer_type=integer_type)
-        ):
+        case model.DataTypeFlag(integer_type=integer_type):
             return integer_type_to_struct_pack(integer_type), f"self.{d.name}.value"
 
-        case model.DataTypeEnum(
-            content=model.DataTypeEnumContent(integer_type=integer_type)
-        ):
+        case model.DataTypeEnum(integer_type=integer_type):
             return integer_type_to_struct_pack(integer_type), f"self.{d.name}.value"
 
         case model.DataTypeDateTime() \
@@ -90,19 +88,19 @@ def addable_write_values(
         case model.DataTypeFloatingPoint():
             return "f", f"self.{d.name}"
 
-        case model.DataTypeArray(content=array):
-            if array.compressed:
+        case model.DataTypeArray(compressed=compressed, inner_type=inner_type):
+            if compressed:
                 return None
 
-            match array.inner_type:
-                case model.ArrayTypeInteger(content=inner_type):
-                    ty = integer_type_to_struct_pack(inner_type)
+            match inner_type:
+                case model.ArrayTypeInteger(content=integer_type):
+                    ty = integer_type_to_struct_pack(integer_type)
                     return f"{{len(self.{d.name})}}{ty}", f"*self.{d.name}"
 
                 case model.ArrayTypeGUID():
                     return f"{{len(self.{d.name})}}Q", f"*self.{d.name}"
 
-                case model.ArrayTypePackedGUID() | model.ArrayTypeCstring() | model.ArrayTypeStruct():
+                case model.ArrayTypePackedGUID() | model.ArrayTypeCstring() | model.ArrayTypeStruct() | model.ArrayTypeSpell():
                     return None
 
         case model.DataTypeUpdateMask() \
@@ -124,6 +122,8 @@ def addable_write_values(
             print(v)
             raise Exception(f"{v}")
 
+    raise Exception("fallthrough in addable_write_value")
+
 
 def print_write_struct_member(s: Writer, d: model.Definition, prefix: str):
     s.wln(f"# {d.name}: {type_to_wowm_str(d.data_type)}")
@@ -140,47 +140,42 @@ def print_write_struct_member(s: Writer, d: model.Definition, prefix: str):
             s.wln(f"{prefix}data.append({data})")
     else:
         match d.data_type:
-            case model.DataTypeArray(content=array):
-                match array:
-                    case model.Array(inner_type=inner_type):
-                        if array.compressed:
-                            s.wln(f"_{d.name}_fmt = ''")
-                            s.wln(f"_{d.name}_data = []")
-                            s.newline()
+            case model.DataTypeArray(inner_type=inner_type, compressed=compressed):
+                if compressed:
+                    s.wln(f"_{d.name}_fmt = ''")
+                    s.wln(f"_{d.name}_data = []")
+                    s.newline()
 
-                            s.wln(f"_{d.name}_decompressed_size = 0")
-                            s.open(f"if len(self.{d.name}) != 0:")
+                    s.wln(f"_{d.name}_decompressed_size = 0")
+                    s.open(f"if len(self.{d.name}) != 0:")
 
-                            print_array_write_inner(s, d, inner_type, f"_{d.name}_", "self.")
+                    print_array_write_inner(s, d, inner_type, f"_{d.name}_", "self.")
 
-                            s.wln(f"_{d.name}_bytes = struct.pack(_{d.name}_fmt, *_{d.name}_data)")
-                            s.wln(f"_{d.name}_decompressed_size = len(_{d.name}_bytes)")
-                            s.wln(f"_{d.name}_bytes = list(_{d.name}_bytes)")
-                            s.newline()
+                    s.wln(f"_{d.name}_bytes = struct.pack(_{d.name}_fmt, *_{d.name}_data)")
+                    s.wln(f"_{d.name}_decompressed_size = len(_{d.name}_bytes)")
+                    s.wln(f"_{d.name}_bytes = list(_{d.name}_bytes)")
+                    s.newline()
 
-                            s.wln("_fmt += 'I'")
-                            s.wln(f"_data.append(_{d.name}_decompressed_size)")
-                            s.newline()
+                    s.wln("_fmt += 'I'")
+                    s.wln(f"_data.append(_{d.name}_decompressed_size)")
+                    s.newline()
 
-                            s.wln(f"_fmt += f'{{len(_{d.name}_bytes)}}B'")
+                    s.wln(f"_fmt += f'{{len(_{d.name}_bytes)}}B'")
 
-                            s.wln(f"_data.extend(list(_{d.name}_bytes))")
-                            s.close()  # if len( != 0
+                    s.wln(f"_data.extend(list(_{d.name}_bytes))")
+                    s.close()  # if len( != 0
 
-                            s.open("else:")
-                            s.wln("_fmt += 'I'")
-                            s.wln(f"_data.append(_{d.name}_decompressed_size)")
-                            s.newline()
+                    s.open("else:")
+                    s.wln("_fmt += 'I'")
+                    s.wln(f"_data.append(_{d.name}_decompressed_size)")
+                    s.newline()
 
-                            s.close()  # else:
+                    s.close()  # else:
 
-                        else:
-                            print_array_write_inner(s, d, inner_type, prefix, "self.")
+                else:
+                    print_array_write_inner(s, d, inner_type, prefix, "self.")
 
-                    case v:
-                        raise Exception(f"{v}")
-
-            case model.DataTypeStruct(content=model.DataTypeStructContent()):
+            case model.DataTypeStruct():
                 s.wln(f"{prefix}fmt, {prefix}data = self.{d.name}.write({prefix}fmt, {prefix}data)")
 
             case model.DataTypePackedGUID():
@@ -196,10 +191,10 @@ def print_write_struct_member(s: Writer, d: model.Definition, prefix: str):
     s.newline()
 
 
-def print_array_write_inner(s: Writer, d: model.Definition, inner_type: model.DataType, prefix: str, extra_self: str):
+def print_array_write_inner(s: Writer, d: model.Definition, inner_type: model.ArrayType, prefix: str, extra_self: str):
     match inner_type:
-        case model.ArrayTypeInteger(content=inner_type):
-            ty = integer_type_to_struct_pack(inner_type)
+        case model.ArrayTypeInteger(content=integer_type):
+            ty = integer_type_to_struct_pack(integer_type)
             s.wln(f"{prefix}fmt += f'{{len({extra_self}{d.name})}}{ty}'")
             s.wln(f"{prefix}data.extend({extra_self}{d.name})")
 
@@ -237,7 +232,7 @@ def print_array_write_inner(s: Writer, d: model.Definition, inner_type: model.Da
 
 def get_write_and_remaining_members(
         members: list[model.StructMember]
-) -> (str, str, list[model.StructMember]):
+) -> typing.Tuple[str, str, list[model.StructMember]]:
     fmt = ""
     data = ""
 

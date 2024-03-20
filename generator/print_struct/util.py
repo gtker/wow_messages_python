@@ -40,11 +40,11 @@ def integer_type_to_size(ty: model.IntegerType) -> int:
 
 def type_to_wowm_str(ty: model.DataType) -> str:
     match ty:
-        case model.DataTypeInteger(content=integer_type):
+        case model.DataTypeInteger(integer_type=integer_type):
             text = f"{integer_type}".replace("IntegerType.", "").lower()
             return text
 
-        case model.DataTypeBool(content=integer_type):
+        case model.DataTypeBool(integer_type=integer_type):
             size = integer_type_to_size(integer_type)
             return f"Bool{size * 8}"
 
@@ -59,22 +59,19 @@ def type_to_wowm_str(ty: model.DataType) -> str:
         case model.DataTypeFloatingPoint():
             return "f32"
 
-        case model.DataTypeStruct(
-            content=model.DataTypeStructContent(struct_data=e)
-        ):
+        case model.DataTypeStruct(struct_data=e):
             return e.name
 
-        case model.DataTypeEnum(content=model.DataTypeEnumContent(type_name=type_name)):
+        case model.DataTypeEnum(type_name=type_name):
             return type_name
 
-        case model.DataTypeFlag(content=model.DataTypeFlagContent(type_name=type_name)):
+        case model.DataTypeFlag(type_name=type_name):
             return type_name
 
-        case model.DataTypeArray(content=model.Array(inner_type=inner_type, size=size)):
+        case model.DataTypeArray(inner_type=inner_type, size=size):
             inner_type = array_type_to_wowm_str(inner_type)
-            size = array_size_to_wowm_str(size)
 
-            return f"{inner_type}[{size}]"
+            return f"{inner_type}[{array_size_to_wowm_str(size)}]"
 
         case model.DataTypeGold():
             return "Gold"
@@ -132,8 +129,8 @@ def type_to_wowm_str(ty: model.DataType) -> str:
             raise Exception(f"{v}")
 
 
-def array_size_to_wowm_str(size: model.ArraySize):
-    match size:
+def array_size_to_wowm_str(s: model.ArraySize) -> str:
+    match s:
         case model.ArraySizeFixed(size=size):
             return size
         case model.ArraySizeVariable(size=size):
@@ -175,16 +172,14 @@ def type_to_python_str(ty: model.DataType) -> str:
             return "str"
         case model.DataTypeFloatingPoint():
             return "float"
-        case model.DataTypeStruct(
-            content=model.DataTypeStructContent(struct_data=e)
-        ):
+        case model.DataTypeStruct(struct_data=e):
             return e.name
-        case model.DataTypeEnum(content=model.DataTypeEnumContent(type_name=type_name)):
+        case model.DataTypeEnum(type_name=type_name):
             return type_name
-        case model.DataTypeFlag(content=model.DataTypeFlagContent(type_name=type_name)):
+        case model.DataTypeFlag(type_name=type_name):
             return type_name
 
-        case model.DataTypeArray(content=model.Array(inner_type=inner_type)):
+        case model.DataTypeArray(inner_type=inner_type):
             inner_type = array_type_to_python_str(inner_type)
             return f"typing.List[{inner_type}]"
 
@@ -265,7 +260,7 @@ def array_type_to_python_str(ty: model.ArrayType):
 def all_members_from_container(
         container: model.Container,
 ) -> typing.List[model.Definition]:
-    out_members = []
+    out_members: typing.List[model.Definition] = []
 
     def inner(m: model.StructMember, out_members: typing.List[model.Definition]):
         def inner_if(

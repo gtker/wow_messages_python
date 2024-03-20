@@ -187,15 +187,17 @@ def container_needs_size_in_read(container: model.Container) -> bool:
             if inner(m):
                 return True
 
+        return False
+
     def inner(m: model.StructMember) -> bool:
         match m:
             case model.StructMemberDefinition(struct_member_content=d):
                 match d.data_type:
-                    case model.DataTypeArray(content=array):
-                        if array.compressed:
+                    case model.DataTypeArray(compressed=compressed, size=size):
+                        if compressed:
                             return True
 
-                        match array.size:
+                        match size:
                             case model.ArraySizeEndless():
                                 return True
 
@@ -205,6 +207,10 @@ def container_needs_size_in_read(container: model.Container) -> bool:
             case model.StructMemberOptional(struct_member_content=optional):
                 return True
 
+        return False
+
     for m in container.members:
         if inner(m):
             return True
+
+    return False

@@ -65,7 +65,7 @@ def print_size_for_compressed_container(s, container):
 
 
 def array_size_inner_values(
-        array: model.Array, name: str, extra_self: str
+        array: model.DataTypeArray, name: str, extra_self: str
 ) -> typing.Union[str, int]:
     size = 0
     match array.inner_type:
@@ -92,15 +92,15 @@ def array_size_inner_values(
             return size * int(array_size)
         case model.ArraySizeVariable() | model.ArraySizeEndless():
             return f"{size} * len({extra_self}{name})"
-        case v:
-            raise Exception(f"{v}")
+        case v2:
+            raise Exception(f"{v2}")
 
 
 def addable_size_value(
         data_type: model.DataType, extra_self: str, name: str
 ) -> typing.Optional[typing.Tuple[int, typing.Optional[str]]]:
     match data_type:
-        case model.DataTypeStruct(content=model.DataTypeStructContent(struct_data=e)):
+        case model.DataTypeStruct(struct_data=e):
             if not e.sizes.constant_sized:
                 return 0, f"{extra_self}{name}.size()"
             else:
@@ -113,22 +113,22 @@ def addable_size_value(
             return 0, f"packed_guid_size({extra_self}{name})"
         case model.DataTypeAchievementDoneArray() | model.DataTypeAchievementInProgressArray() | model.DataTypeAddonArray() | model.DataTypeCacheMask() | model.DataTypeVariableItemRandomProperty() | model.DataTypeInspectTalentGearMask() | model.DataTypeNamedGUID() | model.DataTypeEnchantMask() | model.DataTypeUpdateMask() | model.DataTypeAuraMask() | model.DataTypeMonsterMoveSpline():
             return 0, f"{extra_self}{name}.size()"
-        case model.DataTypeArray(content=array):
-            if array.compressed:
+        case model.DataTypeArray(compressed=compressed):
+            if compressed:
                 return None
-            size = array_size_inner_values(array, name, extra_self)
+            size = array_size_inner_values(data_type, name, extra_self)
             if isinstance(size, str):
                 return 0, size
             elif isinstance(size, int):
                 return size, None
-        case model.DataTypeInteger(content=integer_type):
+        case model.DataTypeInteger(integer_type=integer_type):
             return integer_type_to_size(integer_type), None
-        case model.DataTypeBool(content=integer_type):
+        case model.DataTypeBool(integer_type=integer_type):
             return integer_type_to_size(integer_type), None
-        case model.DataTypeEnum(content=content):
-            return integer_type_to_size(content.integer_type), None
-        case model.DataTypeFlag(content=content):
-            return integer_type_to_size(content.integer_type), None
+        case model.DataTypeEnum(integer_type=integer_type):
+            return integer_type_to_size(integer_type), None
+        case model.DataTypeFlag(integer_type=integer_type):
+            return integer_type_to_size(integer_type), None
 
         case model.DataTypeSpell() | model.DataTypeItem() | model.DataTypeDateTime() \
              | model.DataTypeGold() \
@@ -155,10 +155,11 @@ def addable_size_value(
     return None
 
 
-def get_size_and_remaining_members(members: list[model.StructMember]) -> (int, list[str], list[model.StructMember]):
+def get_size_and_remaining_members(members: list[model.StructMember]) -> typing.Tuple[
+    int, list[str], list[model.StructMember]]:
     count = 0
     strings = []
-    uncounted_members = []
+    uncounted_members: typing.List[model.StructMember] = []
 
     for m in members:
         match m:
@@ -187,15 +188,15 @@ def print_size_inner(s: Writer, m: model.StructMember):
             s.wln(f"# {d.name}: {type_to_wowm_str(d.data_type)}")
 
             match d.data_type:
-                case model.DataTypeArray(content=array):
-                    if array.compressed:
+                case model.DataTypeArray(compressed=compressed, inner_type=inner_type):
+                    if compressed:
                         s.wln(f"_{d.name}_fmt = ''")
                         s.wln(f"_{d.name}_data = []")
                         s.newline()
 
                         s.open(f"if len({extra_self}{d.name}) != 0:")
 
-                        print_array_write_inner(s, d, array.inner_type, f"_{d.name}_", extra_self)
+                        print_array_write_inner(s, d, inner_type, f"_{d.name}_", extra_self)
 
                         s.wln(f"_{d.name}_bytes = struct.pack(_{d.name}_fmt, *_{d.name}_data)")
                         s.wln(f"_size += len(_{d.name}_bytes) + 4")

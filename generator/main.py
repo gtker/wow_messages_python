@@ -5,27 +5,27 @@ import pstats
 import typing
 
 import model
+from login_utils import print_login_utils
 from print_achievement_done_array import print_achievement_done_array
 from print_achievement_in_progress_array import print_achievement_in_progress_array
 from print_addon_array import print_addon_array
 from print_aura_mask import print_aura_mask
 from print_cache_mask import print_cache_mask
-from print_named_guid import print_named_guid
-from print_variable_item_random_property import print_variable_item_random_property
-from login_utils import print_login_utils
 from print_enum import print_enum, print_flag
 from print_monster_move_spline import print_monster_move_spline
+from print_named_guid import print_named_guid
 from print_struct import print_struct
 from print_struct.print_tests import print_login_tests, print_world_tests
 from print_struct.util import all_members_from_container
 from print_update_mask import print_update_mask
+from print_variable_item_random_property import print_variable_item_random_property
 from util import (
     world_version_matches,
     should_print_container,
     world_version_to_module_name,
     login_version_to_module_name,
     first_login_version,
-    login_version_matches, world_version_to_title_name, VERSIONS, VANILLA, WRATH, TBC, world_version_is_wrath,
+    login_version_matches, VERSIONS, VANILLA, WRATH, TBC, world_version_is_wrath,
     world_version_is_tbc, world_version_is_vanilla,
 )
 from world_utils import print_world_utils
@@ -155,21 +155,21 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
     print_update_mask(s, update_mask)
     all_types.wln('"UpdateMask",')
 
-    for e in m.enums.value:
-        if not world_version_matches(e.tags, v):
+    for d in m.enums.value:
+        if not world_version_matches(d.tags, v):
             continue
 
-        print_enum(s, e)
+        print_enum(s, d)
 
-        all_types.wln(f'"{e.name}",')
+        all_types.wln(f'"{d.name}",')
 
-    for e in m.flags.value:
-        if not world_version_matches(e.tags, v):
+    for d in m.flags.value:
+        if not world_version_matches(d.tags, v):
             continue
 
-        print_flag(s, e)
+        print_flag(s, d)
 
-        all_types.wln(f'"{e.name}",')
+        all_types.wln(f'"{d.name}",')
 
     for e in m.structs.value:
         if not should_print_container(e, v):
@@ -226,29 +226,29 @@ def print_login(m: model.LoginObjects, v: int):
     print_includes(includes, world=None)
 
     s = Writer()
-    for e in m.enums.value:
-        if not login_version_matches(e.tags, v):
+    for d in m.enums.value:
+        if not login_version_matches(d.tags, v):
             continue
 
-        first = first_login_version(e.tags)
+        first = first_login_version(d.tags)
         if first == v:
-            print_enum(s, e)
+            print_enum(s, d)
         else:
-            includes.wln(f"from .{login_version_to_module_name(first)} import {e.name}")
+            includes.wln(f"from .{login_version_to_module_name(first)} import {d.name}")
 
-        all_types.wln(f'"{e.name}",')
+        all_types.wln(f'"{d.name}",')
 
-    for e in m.flags.value:
-        if not login_version_matches(e.tags, v):
+    for d in m.flags.value:
+        if not login_version_matches(d.tags, v):
             continue
 
-        first = first_login_version(e.tags)
+        first = first_login_version(d.tags)
         if first == v:
-            print_flag(s, e)
+            print_flag(s, d)
         else:
-            includes.wln(f"from .{login_version_to_module_name(first)} import {e.name}")
+            includes.wln(f"from .{login_version_to_module_name(first)} import {d.name}")
 
-        all_types.wln(f'"{e.name}",')
+        all_types.wln(f'"{d.name}",')
 
     for e in m.structs.value:
         if not login_version_matches(e.tags, v):

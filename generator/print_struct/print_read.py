@@ -12,7 +12,7 @@ from writer import Writer
 def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, container_is_compressed: bool):
     s.wln(f"# {d.name}: {type_to_wowm_str(d.data_type)}")
     match d.data_type:
-        case model.DataTypeInteger(content=integer_type):
+        case model.DataTypeInteger(integer_type=integer_type):
             size = integer_type_to_size(integer_type)
             prefix = ""
             if d.constant_value is not None or d.size_of_fields_before_size is not None:
@@ -24,7 +24,7 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
 
             if needs_size:
                 s.wln(f"_size += {size}")
-        case model.DataTypeBool(content=integer_type):
+        case model.DataTypeBool(integer_type=integer_type):
             size = integer_type_to_size(integer_type)
             s.wln(
                 f"{d.name} = await read_bool(reader, {size})"
@@ -34,9 +34,7 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
                 s.wln(f"_size += {size}")
 
         case model.DataTypeFlag(
-            content=model.DataTypeFlagContent(
-                type_name=type_name, integer_type=integer_type
-            )
+            type_name=type_name, integer_type=integer_type
         ):
             size = integer_type_to_size(integer_type)
             s.wln(
@@ -46,10 +44,10 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
             if needs_size:
                 s.wln(f"_size += {size}")
 
-        case model.DataTypeEnum(content=integer_type):
-            size = integer_type_to_size(integer_type.integer_type)
+        case model.DataTypeEnum(integer_type=integer_type, type_name=type_name):
+            size = integer_type_to_size(integer_type)
             s.wln(
-                f"{d.name} = {integer_type.type_name}(await read_int(reader, {size}))"
+                f"{d.name} = {type_name}(await read_int(reader, {size}))"
             )
 
             if needs_size:
@@ -122,9 +120,7 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
             if needs_size:
                 s.wln(f"_size += 4")
 
-        case model.DataTypeStruct(
-            content=model.DataTypeStructContent(struct_data=e)
-        ):
+        case model.DataTypeStruct(struct_data=e):
             s.wln(f"{d.name} = await {e.name}.read(reader)")
 
             if needs_size:
@@ -199,9 +195,9 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
             if needs_size:
                 s.wln(f"_size += {d.name}.size()")
 
-        case model.DataTypeArray(content=array):
+        case model.DataTypeArray(compressed=compressed, size=size, inner_type=inner_type):
             reader = "reader"
-            if array.compressed:
+            if compressed:
                 s.wln("# {d.name}_decompressed_size: u32")
                 s.wln("_size += 4  # decompressed_size")
                 s.newline()
@@ -223,7 +219,7 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
                 reader = f"{d.name}_reader"
 
             s.wln(f"{d.name} = []")
-            match array.size:
+            match size:
                 case model.ArraySizeFixed(size=size) | model.ArraySizeVariable(
                     size=size
                 ):
@@ -231,14 +227,14 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
                 case model.ArraySizeEndless():
                     if container_is_compressed:
                         s.open(f"while not reader.at_eof():")
-                    elif not array.compressed:
+                    elif not compressed:
                         s.open("while _size < body_size:")
                     else:
                         s.open(f"while not {d.name}_reader.at_eof():")
                 case v:
                     raise Exception(f"{v}")
 
-            match array.inner_type:
+            match inner_type:
                 case model.ArrayTypeInteger(content=integer_type):
                     size = integer_type_to_size(integer_type)
                     s.wln(
@@ -268,12 +264,12 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
                         f"{d.name}.append(await read_packed_guid({reader}))"
                     )
 
-                case v:
-                    raise Exception(f"{v}")
+                case v2:
+                    raise Exception(f"{v2}")
 
-            if needs_size or isinstance(array.size, model.ArraySizeEndless):
+            if needs_size or isinstance(size, model.ArraySizeEndless):
                 s.w("_size += ")
-                match array.inner_type:
+                match inner_type:
                     case model.ArrayTypeInteger(content=integer_type):
                         size = integer_type_to_size(integer_type)
                         s.wln_no_indent(str(size))
@@ -295,8 +291,8 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
                     case model.ArrayTypePackedGUID():
                         s.wln_no_indent(f"{d.name}[-1].size()")
 
-                    case v:
-                        raise Exception(f"{v}")
+                    case v3:
+                        raise Exception(f"{v3}")
 
             s.dec_indent()
 
@@ -309,7 +305,8 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
 def print_read_member(s: Writer, m: model.StructMember, container: model.Container, needs_size: bool):
     match m:
         case model.StructMemberDefinition(_tag, definition):
-            print_read_struct_member(s, definition, needs_size, container.tags.compressed)
+            compressed = container.tags.compressed is not None and container.tags.compressed
+            print_read_struct_member(s, definition, needs_size, compressed)
 
         case model.StructMemberIfStatement(_tag, statement):
             print_read_if_statement(s, statement, container, False, needs_size)

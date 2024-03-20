@@ -65,27 +65,6 @@ class IntermediateRepresentationSchema:
         return data
 
 @dataclass
-class Array:
-    compressed: 'bool'
-    inner_type: 'ArrayType'
-    size: 'ArraySize'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'Array':
-        return cls(
-            _from_json_data(bool, data.get("compressed")),
-            _from_json_data(ArrayType, data.get("inner_type")),
-            _from_json_data(ArraySize, data.get("size")),
-        )
-
-    def to_json_data(self) -> Any:
-        data: Dict[str, Any] = {}
-        data["compressed"] = _to_json_data(self.compressed)
-        data["inner_type"] = _to_json_data(self.inner_type)
-        data["size"] = _to_json_data(self.size)
-        return data
-
-@dataclass
 class ArraySize:
     array_size_tag: 'str'
 
@@ -466,18 +445,24 @@ class DataTypeAddonArray(DataType):
 
 @dataclass
 class DataTypeArray(DataType):
-    content: 'Array'
+    compressed: 'bool'
+    inner_type: 'ArrayType'
+    size: 'ArraySize'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeArray':
         return cls(
             "Array",
-            _from_json_data(Array, data.get("content")),
+            _from_json_data(bool, data.get("compressed")),
+            _from_json_data(ArrayType, data.get("inner_type")),
+            _from_json_data(ArraySize, data.get("size")),
         )
 
     def to_json_data(self) -> Any:
         data = { "data_type_tag": "Array" }
-        data["content"] = _to_json_data(self.content)
+        data["compressed"] = _to_json_data(self.compressed)
+        data["inner_type"] = _to_json_data(self.inner_type)
+        data["size"] = _to_json_data(self.size)
         return data
 
 @dataclass
@@ -495,18 +480,18 @@ class DataTypeAuraMask(DataType):
 
 @dataclass
 class DataTypeBool(DataType):
-    content: 'IntegerType'
+    integer_type: 'IntegerType'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeBool':
         return cls(
             "Bool",
-            _from_json_data(IntegerType, data.get("content")),
+            _from_json_data(IntegerType, data.get("integer_type")),
         )
 
     def to_json_data(self) -> Any:
         data = { "data_type_tag": "Bool" }
-        data["content"] = _to_json_data(self.content)
+        data["integer_type"] = _to_json_data(self.integer_type)
         return data
 
 @dataclass
@@ -562,58 +547,22 @@ class DataTypeEnchantMask(DataType):
         return data
 
 @dataclass
-class DataTypeEnumContent:
+class DataTypeEnum(DataType):
     integer_type: 'IntegerType'
     type_name: 'str'
     upcast: 'bool'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'DataTypeEnumContent':
-        return cls(
-            _from_json_data(IntegerType, data.get("integer_type")),
-            _from_json_data(str, data.get("type_name")),
-            _from_json_data(bool, data.get("upcast")),
-        )
-
-    def to_json_data(self) -> Any:
-        data: Dict[str, Any] = {}
-        data["integer_type"] = _to_json_data(self.integer_type)
-        data["type_name"] = _to_json_data(self.type_name)
-        data["upcast"] = _to_json_data(self.upcast)
-        return data
-
-@dataclass
-class DataTypeEnum(DataType):
-    content: 'DataTypeEnumContent'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeEnum':
         return cls(
             "Enum",
-            _from_json_data(DataTypeEnumContent, data.get("content")),
-        )
-
-    def to_json_data(self) -> Any:
-        data = { "data_type_tag": "Enum" }
-        data["content"] = _to_json_data(self.content)
-        return data
-
-@dataclass
-class DataTypeFlagContent:
-    integer_type: 'IntegerType'
-    type_name: 'str'
-    upcast: 'bool'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'DataTypeFlagContent':
-        return cls(
             _from_json_data(IntegerType, data.get("integer_type")),
             _from_json_data(str, data.get("type_name")),
             _from_json_data(bool, data.get("upcast")),
         )
 
     def to_json_data(self) -> Any:
-        data: Dict[str, Any] = {}
+        data = { "data_type_tag": "Enum" }
         data["integer_type"] = _to_json_data(self.integer_type)
         data["type_name"] = _to_json_data(self.type_name)
         data["upcast"] = _to_json_data(self.upcast)
@@ -621,18 +570,24 @@ class DataTypeFlagContent:
 
 @dataclass
 class DataTypeFlag(DataType):
-    content: 'DataTypeFlagContent'
+    integer_type: 'IntegerType'
+    type_name: 'str'
+    upcast: 'bool'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeFlag':
         return cls(
             "Flag",
-            _from_json_data(DataTypeFlagContent, data.get("content")),
+            _from_json_data(IntegerType, data.get("integer_type")),
+            _from_json_data(str, data.get("type_name")),
+            _from_json_data(bool, data.get("upcast")),
         )
 
     def to_json_data(self) -> Any:
         data = { "data_type_tag": "Flag" }
-        data["content"] = _to_json_data(self.content)
+        data["integer_type"] = _to_json_data(self.integer_type)
+        data["type_name"] = _to_json_data(self.type_name)
+        data["upcast"] = _to_json_data(self.upcast)
         return data
 
 @dataclass
@@ -689,18 +644,18 @@ class DataTypeInspectTalentGearMask(DataType):
 
 @dataclass
 class DataTypeInteger(DataType):
-    content: 'IntegerType'
+    integer_type: 'IntegerType'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeInteger':
         return cls(
             "Integer",
-            _from_json_data(IntegerType, data.get("content")),
+            _from_json_data(IntegerType, data.get("integer_type")),
         )
 
     def to_json_data(self) -> Any:
         data = { "data_type_tag": "Integer" }
-        data["content"] = _to_json_data(self.content)
+        data["integer_type"] = _to_json_data(self.integer_type)
         return data
 
 @dataclass
@@ -899,34 +854,19 @@ class DataTypeString(DataType):
         return data
 
 @dataclass
-class DataTypeStructContent:
-    struct_data: 'Container'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'DataTypeStructContent':
-        return cls(
-            _from_json_data(Container, data.get("struct_data")),
-        )
-
-    def to_json_data(self) -> Any:
-        data: Dict[str, Any] = {}
-        data["struct_data"] = _to_json_data(self.struct_data)
-        return data
-
-@dataclass
 class DataTypeStruct(DataType):
-    content: 'DataTypeStructContent'
+    struct_data: 'Container'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeStruct':
         return cls(
             "Struct",
-            _from_json_data(DataTypeStructContent, data.get("content")),
+            _from_json_data(Container, data.get("struct_data")),
         )
 
     def to_json_data(self) -> Any:
         data = { "data_type_tag": "Struct" }
-        data["content"] = _to_json_data(self.content)
+        data["struct_data"] = _to_json_data(self.struct_data)
         return data
 
 @dataclass

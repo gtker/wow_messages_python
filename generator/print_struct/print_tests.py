@@ -24,8 +24,7 @@ def print_tests_for_login_message(s: Writer, e: model.Container, i: int):
         s.wln("reader.feed_eof()")
         s.newline()
 
-        version = first_login_version(e.tags)
-        version = login_version_to_module_name(version)
+        version = login_version_to_module_name(first_login_version(e.tags))
 
         version = f"wow_login_messages.{version}"
         match e.object_type:
@@ -65,8 +64,8 @@ def print_login_tests(s: Writer, m: model.LoginObjects):
         version = first_login_version(e.tags)
         versions[login_version_to_module_name(version)] = ""
 
-    for version in versions:
-        s.wln(f"import wow_login_messages.{version}")
+    for v in versions:
+        s.wln(f"import wow_login_messages.{v}")
 
     s.double_newline()
 
@@ -79,8 +78,8 @@ def print_tests_for_world_message(s: Writer, e: model.Container, version: str):
     any_fields_are_compressed = e.tags.compressed
     for d in all_members_from_container(e):
         match d.data_type:
-            case model.DataTypeArray(content=array):
-                if array.compressed:
+            case model.DataTypeArray(compressed=compressed):
+                if compressed:
                     any_fields_are_compressed = True
 
     s.open(f"class {e.name}_{version}(unittest.IsolatedAsyncioTestCase):")
@@ -113,8 +112,8 @@ def print_tests_for_world_message(s: Writer, e: model.Container, version: str):
                 side = "server"
                 s.wln(f"r = await {version}.expect_server_opcode_unencrypted(reader, {version}.{e.name})")
                 header_length = 4
-            case s:
-                raise Exception(f"{s}")
+            case v:
+                raise Exception(f"{v}")
 
         s.wln("self.assertIsNotNone(r)")
         s.wln("self.assertTrue(reader.at_eof())")
