@@ -179,18 +179,18 @@ class ArrayTypeGUID(ArrayType):
 
 @dataclass
 class ArrayTypeInteger(ArrayType):
-    content: 'IntegerType'
+    integer_type: 'IntegerType'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'ArrayTypeInteger':
         return cls(
             "Integer",
-            _from_json_data(IntegerType, data.get("content")),
+            _from_json_data(IntegerType, data.get("integer_type")),
         )
 
     def to_json_data(self) -> Any:
         data = { "array_type_tag": "Integer" }
-        data["content"] = _to_json_data(self.content)
+        data["integer_type"] = _to_json_data(self.integer_type)
         return data
 
 @dataclass
@@ -220,34 +220,19 @@ class ArrayTypeSpell(ArrayType):
         return data
 
 @dataclass
-class ArrayTypeStructContent:
-    struct_data: 'Container'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'ArrayTypeStructContent':
-        return cls(
-            _from_json_data(Container, data.get("struct_data")),
-        )
-
-    def to_json_data(self) -> Any:
-        data: Dict[str, Any] = {}
-        data["struct_data"] = _to_json_data(self.struct_data)
-        return data
-
-@dataclass
 class ArrayTypeStruct(ArrayType):
-    content: 'ArrayTypeStructContent'
+    struct_data: 'Container'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'ArrayTypeStruct':
         return cls(
             "Struct",
-            _from_json_data(ArrayTypeStructContent, data.get("content")),
+            _from_json_data(Container, data.get("struct_data")),
         )
 
     def to_json_data(self) -> Any:
         data = { "array_type_tag": "Struct" }
-        data["content"] = _to_json_data(self.content)
+        data["struct_data"] = _to_json_data(self.struct_data)
         return data
 
 @dataclass

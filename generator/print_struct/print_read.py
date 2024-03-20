@@ -235,13 +235,13 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
                     raise Exception(f"{v}")
 
             match inner_type:
-                case model.ArrayTypeInteger(content=integer_type):
+                case model.ArrayTypeInteger(integer_type=integer_type):
                     size = integer_type_to_size(integer_type)
                     s.wln(
                         f"{d.name}.append(await read_int({reader}, {size}))"
                     )
 
-                case model.ArrayTypeStruct(content=model.ArrayTypeStructContent(struct_data=e)):
+                case model.ArrayTypeStruct(struct_data=e):
                     s.wln(f"{d.name}.append(await {e.name}.read({reader}))")
 
                 case model.ArrayTypeCstring():
@@ -270,10 +270,10 @@ def print_read_struct_member(s: Writer, d: model.Definition, needs_size: bool, c
             if needs_size or isinstance(size, model.ArraySizeEndless):
                 s.w("_size += ")
                 match inner_type:
-                    case model.ArrayTypeInteger(content=integer_type):
+                    case model.ArrayTypeInteger(integer_type=integer_type):
                         size = integer_type_to_size(integer_type)
                         s.wln_no_indent(str(size))
-                    case model.ArrayTypeStruct(content=model.ArrayTypeStructContent(struct_data=e)):
+                    case model.ArrayTypeStruct(struct_data=e):
                         if e.sizes.constant_sized:
                             s.wln_no_indent(str(e.sizes.maximum_size))
                         else:

@@ -71,7 +71,7 @@ def array_size_inner_values(
     match array.inner_type:
         case model.ArrayTypeGUID():
             size = 8
-        case model.ArrayTypeStruct(content=model.ArrayTypeStructContent(struct_data=e)):
+        case model.ArrayTypeStruct(struct_data=e):
             if e.sizes.constant_sized:
                 size = e.sizes.maximum_size
             else:
@@ -80,7 +80,7 @@ def array_size_inner_values(
             return f"sum([packed_guid_size(i) for i in {extra_self}{name}])"
         case model.ArrayTypeCstring():
             return f"sum([len(i) + 1 for i in {extra_self}{name}])"
-        case model.ArrayTypeInteger(content=integer_type):
+        case model.ArrayTypeInteger(integer_type=integer_type):
             size = integer_type_to_size(integer_type)
         case model.ArrayTypeSpell():
             size = 4

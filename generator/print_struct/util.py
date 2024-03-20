@@ -148,14 +148,14 @@ def array_type_to_wowm_str(ty: model.ArrayType):
             return "CString"
         case model.ArrayTypeGUID():
             return "Guid"
-        case model.ArrayTypeInteger(content=integer_type):
+        case model.ArrayTypeInteger(integer_type=integer_type):
             text = f"{integer_type}".replace("IntegerType.", "").lower()
             return text
         case model.ArrayTypeSpell():
             return "Spell"
         case model.ArrayTypePackedGUID():
             return "PackedGuid"
-        case model.ArrayTypeStruct(content=model.ArrayTypeStructContent(struct_data=e)):
+        case model.ArrayTypeStruct(struct_data=e):
             return e.name
         case v:
             raise Exception(f"{v}")
@@ -251,8 +251,8 @@ def array_type_to_python_str(ty: model.ArrayType):
             return "int"
         case model.ArrayTypePackedGUID():
             return "int"
-        case model.ArrayTypeStruct(content=model.ArrayTypeStructContent(struct_data=e)):
-            return e.name
+        case model.ArrayTypeStruct(struct_data=struct_data):
+            return struct_data.name
         case v:
             raise Exception(f"{v}")
 

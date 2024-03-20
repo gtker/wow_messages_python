@@ -93,7 +93,7 @@ def addable_write_values(
                 return None
 
             match inner_type:
-                case model.ArrayTypeInteger(content=integer_type):
+                case model.ArrayTypeInteger(integer_type=integer_type):
                     ty = integer_type_to_struct_pack(integer_type)
                     return f"{{len(self.{d.name})}}{ty}", f"*self.{d.name}"
 
@@ -193,7 +193,7 @@ def print_write_struct_member(s: Writer, d: model.Definition, prefix: str):
 
 def print_array_write_inner(s: Writer, d: model.Definition, inner_type: model.ArrayType, prefix: str, extra_self: str):
     match inner_type:
-        case model.ArrayTypeInteger(content=integer_type):
+        case model.ArrayTypeInteger(integer_type=integer_type):
             ty = integer_type_to_struct_pack(integer_type)
             s.wln(f"{prefix}fmt += f'{{len({extra_self}{d.name})}}{ty}'")
             s.wln(f"{prefix}data.extend({extra_self}{d.name})")
