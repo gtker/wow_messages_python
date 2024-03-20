@@ -1159,96 +1159,51 @@ class IfStatementEquations:
         pass
 
 @dataclass
-class IfStatementEquationsBitwiseAndValues:
-    value: 'List[str]'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'IfStatementEquationsBitwiseAndValues':
-        return cls(
-            _from_json_data(List[str], data.get("value")),
-        )
-
-    def to_json_data(self) -> Any:
-        data: Dict[str, Any] = {}
-        data["value"] = _to_json_data(self.value)
-        return data
-
-@dataclass
 class IfStatementEquationsBitwiseAnd(IfStatementEquations):
-    values: 'IfStatementEquationsBitwiseAndValues'
+    value: 'List[str]'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'IfStatementEquationsBitwiseAnd':
         return cls(
             "BitwiseAnd",
-            _from_json_data(IfStatementEquationsBitwiseAndValues, data.get("values")),
-        )
-
-    def to_json_data(self) -> Any:
-        data = { "equation_tag": "BitwiseAnd" }
-        data["values"] = _to_json_data(self.values)
-        return data
-
-@dataclass
-class IfStatementEquationsEqualsValues:
-    value: 'List[str]'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'IfStatementEquationsEqualsValues':
-        return cls(
             _from_json_data(List[str], data.get("value")),
         )
 
     def to_json_data(self) -> Any:
-        data: Dict[str, Any] = {}
+        data = { "equation_tag": "BitwiseAnd" }
         data["value"] = _to_json_data(self.value)
         return data
 
 @dataclass
 class IfStatementEquationsEquals(IfStatementEquations):
-    values: 'IfStatementEquationsEqualsValues'
+    value: 'List[str]'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'IfStatementEquationsEquals':
         return cls(
             "Equals",
-            _from_json_data(IfStatementEquationsEqualsValues, data.get("values")),
+            _from_json_data(List[str], data.get("value")),
         )
 
     def to_json_data(self) -> Any:
         data = { "equation_tag": "Equals" }
-        data["values"] = _to_json_data(self.values)
-        return data
-
-@dataclass
-class IfStatementEquationsNotEqualsValues:
-    value: 'str'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'IfStatementEquationsNotEqualsValues':
-        return cls(
-            _from_json_data(str, data.get("value")),
-        )
-
-    def to_json_data(self) -> Any:
-        data: Dict[str, Any] = {}
         data["value"] = _to_json_data(self.value)
         return data
 
 @dataclass
 class IfStatementEquationsNotEquals(IfStatementEquations):
-    values: 'IfStatementEquationsNotEqualsValues'
+    value: 'str'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'IfStatementEquationsNotEquals':
         return cls(
             "NotEquals",
-            _from_json_data(IfStatementEquationsNotEqualsValues, data.get("values")),
+            _from_json_data(str, data.get("value")),
         )
 
     def to_json_data(self) -> Any:
         data = { "equation_tag": "NotEquals" }
-        data["values"] = _to_json_data(self.values)
+        data["value"] = _to_json_data(self.value)
         return data
 
 @dataclass
