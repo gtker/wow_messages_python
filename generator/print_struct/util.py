@@ -335,11 +335,11 @@ def print_if_statement_header(
         extra_self: str,
 ):
     original_type = type_to_python_str(statement.original_type)
-    var_name = statement.conditional.variable_name
+    var_name = statement.variable_name
 
-    match statement.conditional.equations:
-        case model.ConditionalEquationsEquals(
-            _tag, model.ConditionalEquationsEqualsValues(value=value)
+    match statement.equations:
+        case model.IfStatementEquationsEquals(
+            _tag, model.IfStatementEquationsEqualsValues(value=value)
         ):
             if len(value) == 1:
                 s.wln(
@@ -353,8 +353,8 @@ def print_if_statement_header(
                     s.w_no_indent(f"{original_type}.{val}")
                 s.wln_no_indent("}:")
 
-        case model.ConditionalEquationsBitwiseAnd(
-            values=model.ConditionalEquationsBitwiseAndValues(value=value)
+        case model.IfStatementEquationsBitwiseAnd(
+            values=model.IfStatementEquationsBitwiseAndValues(value=value)
         ):
             s.w(f"{extra_elseif}if ")
             for i, val in enumerate(value):
@@ -363,7 +363,7 @@ def print_if_statement_header(
                 s.w_no_indent(f"{original_type}.{val} in {extra_self}{var_name}")
             s.wln_no_indent(":")
 
-        case model.ConditionalEquationsNotEquals(values=values):
+        case model.IfStatementEquationsNotEquals(values=values):
             s.wln(
                 f"{extra_elseif}if {extra_self}{var_name} != {original_type}.{values.value}:"
             )
