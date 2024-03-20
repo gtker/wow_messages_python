@@ -9,13 +9,13 @@ then
     exit 1
 fi
 
-if ! command -v /usr/local/bin/jtd-validate &> /dev/null
+if ! command -v jtd-validate &> /dev/null
 then
     echo "Unable to find 'jtd-validate' command."
     exit 1
 fi
 
-if ! command -v /usr/local/bin/jtd-codegen &> /dev/null
+if ! command -v jtd-codegen &> /dev/null
 then
     echo "Unable to find 'jtd-codegen' command."
     exit 1
@@ -40,6 +40,6 @@ if [[ $(git status --porcelain | grep -v generator/wow_messages | wc -l) -ne "0"
     git commit --all --message "Auto update wow_messages version"
     git push
 
-    /usr/local/bin/send-email "wow_messages_python auto updated" "The wow_messages_python repo has been updated.\n\n${DIFF}"
+    send-email "wow_messages_python auto updated" "The wow_messages_python repo has been updated.\n\n${DIFF}"
 fi
 
