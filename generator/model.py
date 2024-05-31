@@ -1016,17 +1016,6 @@ class Enumerator:
         return data
 
 @dataclass
-class Enums:
-    value: 'List[Definer]'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'Enums':
-        return cls(_from_json_data(List[Definer], data))
-
-    def to_json_data(self) -> Any:
-        return _to_json_data(self.value)
-
-@dataclass
 class FileInfo:
     end_position: 'int'
     file_name: 'str'
@@ -1046,17 +1035,6 @@ class FileInfo:
         data["file_name"] = _to_json_data(self.file_name)
         data["start_position"] = _to_json_data(self.start_position)
         return data
-
-@dataclass
-class Flags:
-    value: 'List[Definer]'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'Flags':
-        return cls(_from_json_data(List[Definer], data))
-
-    def to_json_data(self) -> Any:
-        return _to_json_data(self.value)
 
 @dataclass
 class FloatingPointValue:
@@ -1144,18 +1122,18 @@ class IntegerType(Enum):
 
 @dataclass
 class LoginObjects:
-    enums: 'Enums'
-    flags: 'Flags'
-    messages: 'Messages'
-    structs: 'Structs'
+    enums: 'List[Definer]'
+    flags: 'List[Definer]'
+    messages: 'List[Container]'
+    structs: 'List[Container]'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'LoginObjects':
         return cls(
-            _from_json_data(Enums, data.get("enums")),
-            _from_json_data(Flags, data.get("flags")),
-            _from_json_data(Messages, data.get("messages")),
-            _from_json_data(Structs, data.get("structs")),
+            _from_json_data(List[Definer], data.get("enums")),
+            _from_json_data(List[Definer], data.get("flags")),
+            _from_json_data(List[Container], data.get("messages")),
+            _from_json_data(List[Container], data.get("structs")),
         )
 
     def to_json_data(self) -> Any:
@@ -1271,17 +1249,6 @@ class MemberTags:
         if self.valid_range is not None:
              data["valid_range"] = _to_json_data(self.valid_range)
         return data
-
-@dataclass
-class Messages:
-    value: 'List[Container]'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'Messages':
-        return cls(_from_json_data(List[Container], data))
-
-    def to_json_data(self) -> Any:
-        return _to_json_data(self.value)
 
 @dataclass
 class ObjectTags:
@@ -1636,17 +1603,6 @@ class StructMemberOptional(StructMember):
         data = { "struct_member_tag": "Optional" }
         data["struct_member_content"] = _to_json_data(self.struct_member_content)
         return data
-
-@dataclass
-class Structs:
-    value: 'List[Container]'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'Structs':
-        return cls(_from_json_data(List[Container], data))
-
-    def to_json_data(self) -> Any:
-        return _to_json_data(self.value)
 
 @dataclass
 class TestCase:
@@ -2532,18 +2488,18 @@ class Value:
 
 @dataclass
 class WorldObjects:
-    enums: 'Enums'
-    flags: 'Flags'
-    messages: 'Messages'
-    structs: 'Structs'
+    enums: 'List[Definer]'
+    flags: 'List[Definer]'
+    messages: 'List[Container]'
+    structs: 'List[Container]'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'WorldObjects':
         return cls(
-            _from_json_data(Enums, data.get("enums")),
-            _from_json_data(Flags, data.get("flags")),
-            _from_json_data(Messages, data.get("messages")),
-            _from_json_data(Structs, data.get("structs")),
+            _from_json_data(List[Definer], data.get("enums")),
+            _from_json_data(List[Definer], data.get("flags")),
+            _from_json_data(List[Container], data.get("messages")),
+            _from_json_data(List[Container], data.get("structs")),
         )
 
     def to_json_data(self) -> Any:

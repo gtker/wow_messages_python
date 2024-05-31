@@ -60,7 +60,7 @@ def print_login_tests(s: Writer, m: model.LoginObjects):
     s.newline()
     versions = {}
 
-    for e in m.messages.value:
+    for e in m.messages:
         version = first_login_version(e.tags)
         versions[login_version_to_module_name(version)] = ""
 
@@ -69,7 +69,7 @@ def print_login_tests(s: Writer, m: model.LoginObjects):
 
     s.double_newline()
 
-    for i, e in enumerate(m.messages.value):
+    for i, e in enumerate(m.messages):
         if len(e.tests) != 0:
             print_tests_for_login_message(s, e, i)
 
@@ -166,7 +166,7 @@ def print_world_tests(s: Writer, m: model.WorldObjects):
     write_null_header_crypto(s)
 
     for v in VERSIONS:
-        for i, e in enumerate(m.messages.value):
+        for i, e in enumerate(m.messages):
             if not should_print_container(e, v):
                 continue
 

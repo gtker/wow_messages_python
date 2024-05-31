@@ -105,10 +105,10 @@ def sanitize_model(
 
         return container
 
-    for e in m.world.structs.value:
+    for e in m.world.structs:
         e = containers(e)
 
-    for e in m.world.messages.value:
+    for e in m.world.messages:
         e = containers(e)
 
     return m
@@ -158,7 +158,7 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
     print_update_mask(s, update_mask)
     all_types.wln('"UpdateMask",')
 
-    for d in m.enums.value:
+    for d in m.enums:
         if not world_version_matches(d.tags, v):
             continue
 
@@ -166,7 +166,7 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
 
         all_types.wln(f'"{d.name}",')
 
-    for d in m.flags.value:
+    for d in m.flags:
         if not world_version_matches(d.tags, v):
             continue
 
@@ -174,7 +174,7 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
 
         all_types.wln(f'"{d.name}",')
 
-    for e in m.structs.value:
+    for e in m.structs:
         if not should_print_container(e, v):
             continue
 
@@ -189,7 +189,7 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
             # Vanilla doesn't have an Aura type
             print_aura_mask(s, v)
 
-    for e in m.messages.value:
+    for e in m.messages:
         if not should_print_container(e, v):
             continue
 
@@ -207,7 +207,7 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
 
     s.prepend(all_types)
 
-    print_world_utils(s, m.messages.value, v)
+    print_world_utils(s, m.messages, v)
 
     file_path = f"{WORLD_MESSAGE_DIR}/{world_version_to_module_name(v)}.py"
     with open(file_path, "w") as f:
@@ -229,7 +229,7 @@ def print_login(m: model.LoginObjects, v: int):
     print_includes(includes, world=None)
 
     s = Writer()
-    for d in m.enums.value:
+    for d in m.enums:
         if not login_version_matches(d.tags, v):
             continue
 
@@ -241,7 +241,7 @@ def print_login(m: model.LoginObjects, v: int):
 
         all_types.wln(f'"{d.name}",')
 
-    for d in m.flags.value:
+    for d in m.flags:
         if not login_version_matches(d.tags, v):
             continue
 
@@ -253,7 +253,7 @@ def print_login(m: model.LoginObjects, v: int):
 
         all_types.wln(f'"{d.name}",')
 
-    for e in m.structs.value:
+    for e in m.structs:
         if not login_version_matches(e.tags, v):
             continue
 
@@ -265,7 +265,7 @@ def print_login(m: model.LoginObjects, v: int):
 
         all_types.wln(f'"{e.name}",')
 
-    for e in m.messages.value:
+    for e in m.messages:
         if not login_version_matches(e.tags, v):
             continue
 
@@ -287,7 +287,7 @@ def print_login(m: model.LoginObjects, v: int):
 
     s.prepend(all_types)
 
-    print_login_utils(s, m.messages.value, v)
+    print_login_utils(s, m.messages, v)
 
     file_path = f"{LOGIN_MESSAGE_DIR}/{login_version_to_module_name(v)}.py"
     with open(file_path, "w") as f:
