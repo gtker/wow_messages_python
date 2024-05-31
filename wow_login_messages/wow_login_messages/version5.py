@@ -462,8 +462,8 @@ class CMD_REALM_LIST_Server:
         # header_padding: u32
         _header_padding = await read_int(reader, 4)
 
-        # number_of_realms: u16
-        number_of_realms = await read_int(reader, 2)
+        # number_of_realms: u8
+        number_of_realms = await read_int(reader, 1)
 
         # realms: Realm[number_of_realms]
         realms = []
@@ -481,7 +481,7 @@ class CMD_REALM_LIST_Server:
         _fmt = '<B' # opcode
         _data = [16]
 
-        _fmt += 'HIH'
+        _fmt += 'HIB'
         _data.extend([self.size(), 0, len(self.realms)])
         # realms: Realm[number_of_realms]
         for i in self.realms:
@@ -499,7 +499,7 @@ class CMD_REALM_LIST_Server:
         writer.write(_data)
 
     def size(self) -> int:
-        return 8 + sum([i.size() for i in self.realms])
+        return 7 + sum([i.size() for i in self.realms])
 
 
 ClientOpcode = typing.Union[

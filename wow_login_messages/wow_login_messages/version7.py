@@ -32,7 +32,7 @@ from .all import CMD_AUTH_RECONNECT_CHALLENGE_Client
 from .version2 import CMD_AUTH_RECONNECT_PROOF_Client
 from .version5 import CMD_AUTH_RECONNECT_PROOF_Server
 from .version2 import CMD_REALM_LIST_Client
-from .version5 import CMD_REALM_LIST_Server
+from .version6 import CMD_REALM_LIST_Server
 from .version2 import CMD_XFER_INITIATE
 from .version2 import CMD_XFER_DATA
 from .version2 import CMD_XFER_ACCEPT

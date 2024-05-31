@@ -5975,7 +5975,7 @@ class BuyBankSlotResult(enum.Enum):
 class BuyResult(enum.Enum):
     CANT_FIND_ITEM = 0
     ITEM_ALREADY_SOLD = 1
-    NOT_ENOUGHT_MONEY = 2
+    NOT_ENOUGH_MONEY = 2
     SELLER_DONT_LIKE_YOU = 4
     DISTANCE_TOO_FAR = 5
     ITEM_SOLD_OUT = 7
@@ -8778,7 +8778,7 @@ class Skill(enum.Enum):
     RIDING_WOLF = 149
     RIDING_TIGER = 150
     RIDING_RAM = 152
-    SWIMING = 155
+    SWIMMING = 155
     TWO_HANDED_MACES = 160
     UNARMED = 162
     MARKSMANSHIP = 163
@@ -27590,7 +27590,7 @@ class SMSG_INVENTORY_CHANGE_FAILURE:
         # result: InventoryResult
         result = InventoryResult(await read_int(reader, 1))
 
-        if result != InventoryResult.OK:
+        if result in {InventoryResult.CANT_EQUIP_LEVEL_I, InventoryResult.CANT_EQUIP_SKILL, InventoryResult.ITEM_DOESNT_GO_TO_SLOT, InventoryResult.BAG_FULL, InventoryResult.NONEMPTY_BAG_OVER_OTHER_BAG, InventoryResult.CANT_TRADE_EQUIP_BAGS, InventoryResult.ONLY_AMMO_CAN_GO_HERE, InventoryResult.NO_REQUIRED_PROFICIENCY, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE, InventoryResult.YOU_CAN_NEVER_USE_THAT_ITEM, InventoryResult.YOU_CAN_NEVER_USE_THAT_ITEM2, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE2, InventoryResult.CANT_EQUIP_WITH_TWOHANDED, InventoryResult.CANT_DUAL_WIELD, InventoryResult.ITEM_DOESNT_GO_INTO_BAG, InventoryResult.ITEM_DOESNT_GO_INTO_BAG2, InventoryResult.CANT_CARRY_MORE_OF_THIS, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE3, InventoryResult.ITEM_CANT_STACK, InventoryResult.ITEM_CANT_BE_EQUIPPED, InventoryResult.ITEMS_CANT_BE_SWAPPED, InventoryResult.SLOT_IS_EMPTY, InventoryResult.ITEM_NOT_FOUND, InventoryResult.CANT_DROP_SOULBOUND, InventoryResult.OUT_OF_RANGE, InventoryResult.TRIED_TO_SPLIT_MORE_THAN_COUNT, InventoryResult.COULDNT_SPLIT_ITEMS, InventoryResult.MISSING_REAGENT, InventoryResult.NOT_ENOUGH_MONEY, InventoryResult.NOT_A_BAG, InventoryResult.CAN_ONLY_DO_WITH_EMPTY_BAGS, InventoryResult.DONT_OWN_THAT_ITEM, InventoryResult.CAN_EQUIP_ONLY1_QUIVER, InventoryResult.MUST_PURCHASE_THAT_BAG_SLOT, InventoryResult.TOO_FAR_AWAY_FROM_BANK, InventoryResult.ITEM_LOCKED, InventoryResult.YOU_ARE_STUNNED, InventoryResult.YOU_ARE_DEAD, InventoryResult.CANT_DO_RIGHT_NOW, InventoryResult.INT_BAG_ERROR, InventoryResult.CAN_EQUIP_ONLY1_BOLT, InventoryResult.CAN_EQUIP_ONLY1_AMMOPOUCH, InventoryResult.STACKABLE_CANT_BE_WRAPPED, InventoryResult.EQUIPPED_CANT_BE_WRAPPED, InventoryResult.WRAPPED_CANT_BE_WRAPPED, InventoryResult.BOUND_CANT_BE_WRAPPED, InventoryResult.UNIQUE_CANT_BE_WRAPPED, InventoryResult.BAGS_CANT_BE_WRAPPED, InventoryResult.ALREADY_LOOTED, InventoryResult.INVENTORY_FULL, InventoryResult.BANK_FULL, InventoryResult.ITEM_IS_CURRENTLY_SOLD_OUT, InventoryResult.BAG_FULL3, InventoryResult.ITEM_NOT_FOUND2, InventoryResult.ITEM_CANT_STACK2, InventoryResult.BAG_FULL4, InventoryResult.ITEM_SOLD_OUT, InventoryResult.OBJECT_IS_BUSY, InventoryResult.NONE, InventoryResult.NOT_IN_COMBAT, InventoryResult.NOT_WHILE_DISARMED, InventoryResult.BAG_FULL6, InventoryResult.CANT_EQUIP_RANK, InventoryResult.CANT_EQUIP_REPUTATION, InventoryResult.TOO_MANY_SPECIAL_BAGS, InventoryResult.LOOT_CANT_LOOT_THAT_NOW, InventoryResult.ITEM_UNIQUE_EQUIPABLE, InventoryResult.VENDOR_MISSING_TURNINS, InventoryResult.NOT_ENOUGH_HONOR_POINTS, InventoryResult.NOT_ENOUGH_ARENA_POINTS, InventoryResult.ITEM_MAX_COUNT_SOCKETED, InventoryResult.MAIL_BOUND_ITEM, InventoryResult.NO_SPLIT_WHILE_PROSPECTING, InventoryResult.ITEM_MAX_COUNT_EQUIPPED_SOCKETED, InventoryResult.ITEM_UNIQUE_EQUIPPABLE_SOCKETED, InventoryResult.TOO_MUCH_GOLD, InventoryResult.NOT_DURING_ARENA_MATCH, InventoryResult.CANNOT_TRADE_THAT, InventoryResult.PERSONAL_ARENA_RATING_TOO_LOW, InventoryResult.EVENT_AUTOEQUIP_BIND_CONFIRM, InventoryResult.ARTEFACTS_ONLY_FOR_OWN_CHARACTERS, InventoryResult.ITEM_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED, InventoryResult.ITEM_MAX_LIMIT_CATEGORY_SOCKETED_EXCEEDED, InventoryResult.SCALING_STAT_ITEM_LEVEL_EXCEEDED, InventoryResult.PURCHASE_LEVEL_TOO_LOW, InventoryResult.CANT_EQUIP_NEED_TALENT, InventoryResult.ITEM_MAX_LIMIT_CATEGORY_EQUIPPED_EXCEEDED}:
             # item1: Guid
             item1 = await read_int(reader, 8)
 
@@ -27623,7 +27623,7 @@ class SMSG_INVENTORY_CHANGE_FAILURE:
 
         _fmt += 'B'
         _data.append(self.result.value)
-        if self.result != InventoryResult.OK:
+        if self.result in {InventoryResult.CANT_EQUIP_LEVEL_I, InventoryResult.CANT_EQUIP_SKILL, InventoryResult.ITEM_DOESNT_GO_TO_SLOT, InventoryResult.BAG_FULL, InventoryResult.NONEMPTY_BAG_OVER_OTHER_BAG, InventoryResult.CANT_TRADE_EQUIP_BAGS, InventoryResult.ONLY_AMMO_CAN_GO_HERE, InventoryResult.NO_REQUIRED_PROFICIENCY, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE, InventoryResult.YOU_CAN_NEVER_USE_THAT_ITEM, InventoryResult.YOU_CAN_NEVER_USE_THAT_ITEM2, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE2, InventoryResult.CANT_EQUIP_WITH_TWOHANDED, InventoryResult.CANT_DUAL_WIELD, InventoryResult.ITEM_DOESNT_GO_INTO_BAG, InventoryResult.ITEM_DOESNT_GO_INTO_BAG2, InventoryResult.CANT_CARRY_MORE_OF_THIS, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE3, InventoryResult.ITEM_CANT_STACK, InventoryResult.ITEM_CANT_BE_EQUIPPED, InventoryResult.ITEMS_CANT_BE_SWAPPED, InventoryResult.SLOT_IS_EMPTY, InventoryResult.ITEM_NOT_FOUND, InventoryResult.CANT_DROP_SOULBOUND, InventoryResult.OUT_OF_RANGE, InventoryResult.TRIED_TO_SPLIT_MORE_THAN_COUNT, InventoryResult.COULDNT_SPLIT_ITEMS, InventoryResult.MISSING_REAGENT, InventoryResult.NOT_ENOUGH_MONEY, InventoryResult.NOT_A_BAG, InventoryResult.CAN_ONLY_DO_WITH_EMPTY_BAGS, InventoryResult.DONT_OWN_THAT_ITEM, InventoryResult.CAN_EQUIP_ONLY1_QUIVER, InventoryResult.MUST_PURCHASE_THAT_BAG_SLOT, InventoryResult.TOO_FAR_AWAY_FROM_BANK, InventoryResult.ITEM_LOCKED, InventoryResult.YOU_ARE_STUNNED, InventoryResult.YOU_ARE_DEAD, InventoryResult.CANT_DO_RIGHT_NOW, InventoryResult.INT_BAG_ERROR, InventoryResult.CAN_EQUIP_ONLY1_BOLT, InventoryResult.CAN_EQUIP_ONLY1_AMMOPOUCH, InventoryResult.STACKABLE_CANT_BE_WRAPPED, InventoryResult.EQUIPPED_CANT_BE_WRAPPED, InventoryResult.WRAPPED_CANT_BE_WRAPPED, InventoryResult.BOUND_CANT_BE_WRAPPED, InventoryResult.UNIQUE_CANT_BE_WRAPPED, InventoryResult.BAGS_CANT_BE_WRAPPED, InventoryResult.ALREADY_LOOTED, InventoryResult.INVENTORY_FULL, InventoryResult.BANK_FULL, InventoryResult.ITEM_IS_CURRENTLY_SOLD_OUT, InventoryResult.BAG_FULL3, InventoryResult.ITEM_NOT_FOUND2, InventoryResult.ITEM_CANT_STACK2, InventoryResult.BAG_FULL4, InventoryResult.ITEM_SOLD_OUT, InventoryResult.OBJECT_IS_BUSY, InventoryResult.NONE, InventoryResult.NOT_IN_COMBAT, InventoryResult.NOT_WHILE_DISARMED, InventoryResult.BAG_FULL6, InventoryResult.CANT_EQUIP_RANK, InventoryResult.CANT_EQUIP_REPUTATION, InventoryResult.TOO_MANY_SPECIAL_BAGS, InventoryResult.LOOT_CANT_LOOT_THAT_NOW, InventoryResult.ITEM_UNIQUE_EQUIPABLE, InventoryResult.VENDOR_MISSING_TURNINS, InventoryResult.NOT_ENOUGH_HONOR_POINTS, InventoryResult.NOT_ENOUGH_ARENA_POINTS, InventoryResult.ITEM_MAX_COUNT_SOCKETED, InventoryResult.MAIL_BOUND_ITEM, InventoryResult.NO_SPLIT_WHILE_PROSPECTING, InventoryResult.ITEM_MAX_COUNT_EQUIPPED_SOCKETED, InventoryResult.ITEM_UNIQUE_EQUIPPABLE_SOCKETED, InventoryResult.TOO_MUCH_GOLD, InventoryResult.NOT_DURING_ARENA_MATCH, InventoryResult.CANNOT_TRADE_THAT, InventoryResult.PERSONAL_ARENA_RATING_TOO_LOW, InventoryResult.EVENT_AUTOEQUIP_BIND_CONFIRM, InventoryResult.ARTEFACTS_ONLY_FOR_OWN_CHARACTERS, InventoryResult.ITEM_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED, InventoryResult.ITEM_MAX_LIMIT_CATEGORY_SOCKETED_EXCEEDED, InventoryResult.SCALING_STAT_ITEM_LEVEL_EXCEEDED, InventoryResult.PURCHASE_LEVEL_TOO_LOW, InventoryResult.CANT_EQUIP_NEED_TALENT, InventoryResult.ITEM_MAX_LIMIT_CATEGORY_EQUIPPED_EXCEEDED}:
             _fmt += 'QQB'
             _data.extend([self.item1, self.item2, self.bag_type_subclass])
         if self.result == InventoryResult.CANT_EQUIP_LEVEL_I:
@@ -27639,7 +27639,7 @@ class SMSG_INVENTORY_CHANGE_FAILURE:
     def size(self) -> int:
         _size = 1
 
-        if self.result != InventoryResult.OK:
+        if self.result in {InventoryResult.CANT_EQUIP_LEVEL_I, InventoryResult.CANT_EQUIP_SKILL, InventoryResult.ITEM_DOESNT_GO_TO_SLOT, InventoryResult.BAG_FULL, InventoryResult.NONEMPTY_BAG_OVER_OTHER_BAG, InventoryResult.CANT_TRADE_EQUIP_BAGS, InventoryResult.ONLY_AMMO_CAN_GO_HERE, InventoryResult.NO_REQUIRED_PROFICIENCY, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE, InventoryResult.YOU_CAN_NEVER_USE_THAT_ITEM, InventoryResult.YOU_CAN_NEVER_USE_THAT_ITEM2, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE2, InventoryResult.CANT_EQUIP_WITH_TWOHANDED, InventoryResult.CANT_DUAL_WIELD, InventoryResult.ITEM_DOESNT_GO_INTO_BAG, InventoryResult.ITEM_DOESNT_GO_INTO_BAG2, InventoryResult.CANT_CARRY_MORE_OF_THIS, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE3, InventoryResult.ITEM_CANT_STACK, InventoryResult.ITEM_CANT_BE_EQUIPPED, InventoryResult.ITEMS_CANT_BE_SWAPPED, InventoryResult.SLOT_IS_EMPTY, InventoryResult.ITEM_NOT_FOUND, InventoryResult.CANT_DROP_SOULBOUND, InventoryResult.OUT_OF_RANGE, InventoryResult.TRIED_TO_SPLIT_MORE_THAN_COUNT, InventoryResult.COULDNT_SPLIT_ITEMS, InventoryResult.MISSING_REAGENT, InventoryResult.NOT_ENOUGH_MONEY, InventoryResult.NOT_A_BAG, InventoryResult.CAN_ONLY_DO_WITH_EMPTY_BAGS, InventoryResult.DONT_OWN_THAT_ITEM, InventoryResult.CAN_EQUIP_ONLY1_QUIVER, InventoryResult.MUST_PURCHASE_THAT_BAG_SLOT, InventoryResult.TOO_FAR_AWAY_FROM_BANK, InventoryResult.ITEM_LOCKED, InventoryResult.YOU_ARE_STUNNED, InventoryResult.YOU_ARE_DEAD, InventoryResult.CANT_DO_RIGHT_NOW, InventoryResult.INT_BAG_ERROR, InventoryResult.CAN_EQUIP_ONLY1_BOLT, InventoryResult.CAN_EQUIP_ONLY1_AMMOPOUCH, InventoryResult.STACKABLE_CANT_BE_WRAPPED, InventoryResult.EQUIPPED_CANT_BE_WRAPPED, InventoryResult.WRAPPED_CANT_BE_WRAPPED, InventoryResult.BOUND_CANT_BE_WRAPPED, InventoryResult.UNIQUE_CANT_BE_WRAPPED, InventoryResult.BAGS_CANT_BE_WRAPPED, InventoryResult.ALREADY_LOOTED, InventoryResult.INVENTORY_FULL, InventoryResult.BANK_FULL, InventoryResult.ITEM_IS_CURRENTLY_SOLD_OUT, InventoryResult.BAG_FULL3, InventoryResult.ITEM_NOT_FOUND2, InventoryResult.ITEM_CANT_STACK2, InventoryResult.BAG_FULL4, InventoryResult.ITEM_SOLD_OUT, InventoryResult.OBJECT_IS_BUSY, InventoryResult.NONE, InventoryResult.NOT_IN_COMBAT, InventoryResult.NOT_WHILE_DISARMED, InventoryResult.BAG_FULL6, InventoryResult.CANT_EQUIP_RANK, InventoryResult.CANT_EQUIP_REPUTATION, InventoryResult.TOO_MANY_SPECIAL_BAGS, InventoryResult.LOOT_CANT_LOOT_THAT_NOW, InventoryResult.ITEM_UNIQUE_EQUIPABLE, InventoryResult.VENDOR_MISSING_TURNINS, InventoryResult.NOT_ENOUGH_HONOR_POINTS, InventoryResult.NOT_ENOUGH_ARENA_POINTS, InventoryResult.ITEM_MAX_COUNT_SOCKETED, InventoryResult.MAIL_BOUND_ITEM, InventoryResult.NO_SPLIT_WHILE_PROSPECTING, InventoryResult.ITEM_MAX_COUNT_EQUIPPED_SOCKETED, InventoryResult.ITEM_UNIQUE_EQUIPPABLE_SOCKETED, InventoryResult.TOO_MUCH_GOLD, InventoryResult.NOT_DURING_ARENA_MATCH, InventoryResult.CANNOT_TRADE_THAT, InventoryResult.PERSONAL_ARENA_RATING_TOO_LOW, InventoryResult.EVENT_AUTOEQUIP_BIND_CONFIRM, InventoryResult.ARTEFACTS_ONLY_FOR_OWN_CHARACTERS, InventoryResult.ITEM_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED, InventoryResult.ITEM_MAX_LIMIT_CATEGORY_SOCKETED_EXCEEDED, InventoryResult.SCALING_STAT_ITEM_LEVEL_EXCEEDED, InventoryResult.PURCHASE_LEVEL_TOO_LOW, InventoryResult.CANT_EQUIP_NEED_TALENT, InventoryResult.ITEM_MAX_LIMIT_CATEGORY_EQUIPPED_EXCEEDED}:
             _size += 17
 
         if self.result == InventoryResult.CANT_EQUIP_LEVEL_I:
@@ -28386,7 +28386,7 @@ class SMSG_ACTION_BUTTONS:
         # behavior: ActionBarBehavior
         behavior = ActionBarBehavior(await read_int(reader, 1))
 
-        if behavior != ActionBarBehavior.CLEAR:
+        if behavior in {ActionBarBehavior.INITIAL, ActionBarBehavior.SET}:
             # data: ActionButton[144]
             data = []
             for _ in range(0, 144):
@@ -28408,7 +28408,7 @@ class SMSG_ACTION_BUTTONS:
 
         _fmt += 'B'
         _data.append(self.behavior.value)
-        if self.behavior != ActionBarBehavior.CLEAR:
+        if self.behavior in {ActionBarBehavior.INITIAL, ActionBarBehavior.SET}:
             # data: ActionButton[144]
             for i in self.data:
                 _fmt, _data = i.write(_fmt, _data)
@@ -28423,7 +28423,7 @@ class SMSG_ACTION_BUTTONS:
     def size(self) -> int:
         _size = 1
 
-        if self.behavior != ActionBarBehavior.CLEAR:
+        if self.behavior in {ActionBarBehavior.INITIAL, ActionBarBehavior.SET}:
             _size += 576
 
         return _size
@@ -48301,7 +48301,7 @@ class MSG_RAID_TARGET_UPDATE_Client:
         # target_index: RaidTargetIndex
         target_index = RaidTargetIndex(await read_int(reader, 1))
 
-        if target_index != RaidTargetIndex.REQUEST_ICONS:
+        if target_index in {RaidTargetIndex.UNKNOWN0, RaidTargetIndex.UNKNOWN1, RaidTargetIndex.UNKNOWN2, RaidTargetIndex.UNKNOWN3, RaidTargetIndex.UNKNOWN4, RaidTargetIndex.UNKNOWN5, RaidTargetIndex.UNKNOWN6, RaidTargetIndex.UNKNOWN7, RaidTargetIndex.UNKNOWN8}:
             # target: Guid
             target = await read_int(reader, 8)
 
@@ -48321,7 +48321,7 @@ class MSG_RAID_TARGET_UPDATE_Client:
 
         _fmt += 'B'
         _data.append(self.target_index.value)
-        if self.target_index != RaidTargetIndex.REQUEST_ICONS:
+        if self.target_index in {RaidTargetIndex.UNKNOWN0, RaidTargetIndex.UNKNOWN1, RaidTargetIndex.UNKNOWN2, RaidTargetIndex.UNKNOWN3, RaidTargetIndex.UNKNOWN4, RaidTargetIndex.UNKNOWN5, RaidTargetIndex.UNKNOWN6, RaidTargetIndex.UNKNOWN7, RaidTargetIndex.UNKNOWN8}:
             _fmt += 'Q'
             _data.append(self.target)
         _data = struct.pack(_fmt, *_data)
@@ -48334,7 +48334,7 @@ class MSG_RAID_TARGET_UPDATE_Client:
     def size(self) -> int:
         _size = 1
 
-        if self.target_index != RaidTargetIndex.REQUEST_ICONS:
+        if self.target_index in {RaidTargetIndex.UNKNOWN0, RaidTargetIndex.UNKNOWN1, RaidTargetIndex.UNKNOWN2, RaidTargetIndex.UNKNOWN3, RaidTargetIndex.UNKNOWN4, RaidTargetIndex.UNKNOWN5, RaidTargetIndex.UNKNOWN6, RaidTargetIndex.UNKNOWN7, RaidTargetIndex.UNKNOWN8}:
             _size += 8
 
         return _size

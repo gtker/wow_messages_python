@@ -3844,7 +3844,7 @@ class BattlegroundBracket(enum.Enum):
     TENS = 0
     TWENTIES = 1
     THIRTIES = 2
-    FOURTIES = 3
+    FORTIES = 3
     FIFTIES = 4
     SIXTY = 5
 
@@ -3887,7 +3887,7 @@ class BuyBankSlotResult(enum.Enum):
 class BuyResult(enum.Enum):
     CANT_FIND_ITEM = 0
     ITEM_ALREADY_SOLD = 1
-    NOT_ENOUGHT_MONEY = 2
+    NOT_ENOUGH_MONEY = 2
     SELLER_DONT_LIKE_YOU = 4
     DISTANCE_TOO_FAR = 5
     ITEM_SOLD_OUT = 7
@@ -5881,7 +5881,7 @@ class Skill(enum.Enum):
     RIDING_WOLF = 149
     RIDING_TIGER = 150
     RIDING_RAM = 152
-    SWIMING = 155
+    SWIMMING = 155
     TWO_HANDED_MACES = 160
     UNARMED = 162
     MARKSMANSHIP = 163
@@ -7599,7 +7599,7 @@ class Addon:
             # key_version: KeyVersion
             key_version = KeyVersion(await read_int(reader, 1))
 
-            if key_version != KeyVersion.ZERO:
+            if key_version in {KeyVersion.ONE, KeyVersion.TWO, KeyVersion.THREE, KeyVersion.FOUR, KeyVersion.FIVE, KeyVersion.SIX, KeyVersion.SEVEN, KeyVersion.EIGHT, KeyVersion.NINE}:
                 # public_key: u8[256]
                 public_key = []
                 for _ in range(0, 256):
@@ -7631,7 +7631,7 @@ class Addon:
         if self.info_block == InfoBlock.AVAILABLE:
             _fmt += 'B'
             _data.append(self.key_version.value)
-            if self.key_version != KeyVersion.ZERO:
+            if self.key_version in {KeyVersion.ONE, KeyVersion.TWO, KeyVersion.THREE, KeyVersion.FOUR, KeyVersion.FIVE, KeyVersion.SIX, KeyVersion.SEVEN, KeyVersion.EIGHT, KeyVersion.NINE}:
                 _fmt += f'{len(self.public_key)}B'
                 _data.extend([*self.public_key])
             # update_available_flag: u32
@@ -7653,7 +7653,7 @@ class Addon:
         if self.info_block == InfoBlock.AVAILABLE:
             _size += 5
 
-            if self.key_version != KeyVersion.ZERO:
+            if self.key_version in {KeyVersion.ONE, KeyVersion.TWO, KeyVersion.THREE, KeyVersion.FOUR, KeyVersion.FIVE, KeyVersion.SIX, KeyVersion.SEVEN, KeyVersion.EIGHT, KeyVersion.NINE}:
                 _size += 256
 
 
@@ -8321,7 +8321,7 @@ class MonsterMove:
             # position: Vector3d
             position = await Vector3d.read(reader)
 
-        if move_type != MonsterMoveType.STOP:
+        if move_type in {MonsterMoveType.NORMAL, MonsterMoveType.FACING_SPOT, MonsterMoveType.FACING_TARGET, MonsterMoveType.FACING_ANGLE}:
             # spline_flags: SplineFlag
             spline_flags = SplineFlag(await read_int(reader, 4))
 
@@ -8365,7 +8365,7 @@ class MonsterMove:
             # position: Vector3d
             _fmt, _data = self.position.write(_fmt, _data)
 
-        if self.move_type != MonsterMoveType.STOP:
+        if self.move_type in {MonsterMoveType.NORMAL, MonsterMoveType.FACING_SPOT, MonsterMoveType.FACING_TARGET, MonsterMoveType.FACING_ANGLE}:
             _fmt += 'II'
             _data.extend([self.spline_flags.value, self.duration])
             # splines: MonsterMoveSpline
@@ -8383,7 +8383,7 @@ class MonsterMove:
         elif self.move_type == MonsterMoveType.FACING_SPOT:
             _size += 12
 
-        if self.move_type != MonsterMoveType.STOP:
+        if self.move_type in {MonsterMoveType.NORMAL, MonsterMoveType.FACING_SPOT, MonsterMoveType.FACING_TARGET, MonsterMoveType.FACING_ANGLE}:
             _size += 8 + self.splines.size()
 
         return _size
@@ -8641,7 +8641,7 @@ class Friend:
         # status: FriendStatus
         status = FriendStatus(await read_int(reader, 1))
 
-        if status != FriendStatus.OFFLINE:
+        if status in {FriendStatus.ONLINE, FriendStatus.AFK, FriendStatus.UNKNOWN3, FriendStatus.DND}:
             # area: Area
             area = Area(await read_int(reader, 4))
 
@@ -8662,7 +8662,7 @@ class Friend:
     def write(self, _fmt, _data):
         _fmt += 'QB'
         _data.extend([self.guid, self.status.value])
-        if self.status != FriendStatus.OFFLINE:
+        if self.status in {FriendStatus.ONLINE, FriendStatus.AFK, FriendStatus.UNKNOWN3, FriendStatus.DND}:
             _fmt += 'III'
             _data.extend([self.area.value, self.level, self.class_type.value])
         return _fmt, _data
@@ -8670,7 +8670,7 @@ class Friend:
     def size(self) -> int:
         _size = 9
 
-        if self.status != FriendStatus.OFFLINE:
+        if self.status in {FriendStatus.ONLINE, FriendStatus.AFK, FriendStatus.UNKNOWN3, FriendStatus.DND}:
             _size += 12
 
         return _size
@@ -20506,7 +20506,7 @@ class SMSG_INVENTORY_CHANGE_FAILURE:
             # required_level: Level32
             required_level = await read_int(reader, 4)
 
-        if result != InventoryResult.OK:
+        if result in {InventoryResult.CANT_EQUIP_LEVEL_I, InventoryResult.CANT_EQUIP_SKILL, InventoryResult.ITEM_DOESNT_GO_TO_SLOT, InventoryResult.BAG_FULL, InventoryResult.NONEMPTY_BAG_OVER_OTHER_BAG, InventoryResult.CANT_TRADE_EQUIP_BAGS, InventoryResult.ONLY_AMMO_CAN_GO_HERE, InventoryResult.NO_REQUIRED_PROFICIENCY, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE, InventoryResult.YOU_CAN_NEVER_USE_THAT_ITEM, InventoryResult.YOU_CAN_NEVER_USE_THAT_ITEM2, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE2, InventoryResult.CANT_EQUIP_WITH_TWOHANDED, InventoryResult.CANT_DUAL_WIELD, InventoryResult.ITEM_DOESNT_GO_INTO_BAG, InventoryResult.ITEM_DOESNT_GO_INTO_BAG2, InventoryResult.CANT_CARRY_MORE_OF_THIS, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE3, InventoryResult.ITEM_CANT_STACK, InventoryResult.ITEM_CANT_BE_EQUIPPED, InventoryResult.ITEMS_CANT_BE_SWAPPED, InventoryResult.SLOT_IS_EMPTY, InventoryResult.ITEM_NOT_FOUND, InventoryResult.CANT_DROP_SOULBOUND, InventoryResult.OUT_OF_RANGE, InventoryResult.TRIED_TO_SPLIT_MORE_THAN_COUNT, InventoryResult.COULDNT_SPLIT_ITEMS, InventoryResult.MISSING_REAGENT, InventoryResult.NOT_ENOUGH_MONEY, InventoryResult.NOT_A_BAG, InventoryResult.CAN_ONLY_DO_WITH_EMPTY_BAGS, InventoryResult.DONT_OWN_THAT_ITEM, InventoryResult.CAN_EQUIP_ONLY1_QUIVER, InventoryResult.MUST_PURCHASE_THAT_BAG_SLOT, InventoryResult.TOO_FAR_AWAY_FROM_BANK, InventoryResult.ITEM_LOCKED, InventoryResult.YOU_ARE_STUNNED, InventoryResult.YOU_ARE_DEAD, InventoryResult.CANT_DO_RIGHT_NOW, InventoryResult.INT_BAG_ERROR, InventoryResult.CAN_EQUIP_ONLY1_BOLT, InventoryResult.CAN_EQUIP_ONLY1_AMMOPOUCH, InventoryResult.STACKABLE_CANT_BE_WRAPPED, InventoryResult.EQUIPPED_CANT_BE_WRAPPED, InventoryResult.WRAPPED_CANT_BE_WRAPPED, InventoryResult.BOUND_CANT_BE_WRAPPED, InventoryResult.UNIQUE_CANT_BE_WRAPPED, InventoryResult.BAGS_CANT_BE_WRAPPED, InventoryResult.ALREADY_LOOTED, InventoryResult.INVENTORY_FULL, InventoryResult.BANK_FULL, InventoryResult.ITEM_IS_CURRENTLY_SOLD_OUT, InventoryResult.BAG_FULL3, InventoryResult.ITEM_NOT_FOUND2, InventoryResult.ITEM_CANT_STACK2, InventoryResult.BAG_FULL4, InventoryResult.ITEM_SOLD_OUT, InventoryResult.OBJECT_IS_BUSY, InventoryResult.NONE, InventoryResult.NOT_IN_COMBAT, InventoryResult.NOT_WHILE_DISARMED, InventoryResult.BAG_FULL6, InventoryResult.CANT_EQUIP_RANK, InventoryResult.CANT_EQUIP_REPUTATION, InventoryResult.TOO_MANY_SPECIAL_BAGS, InventoryResult.LOOT_CANT_LOOT_THAT_NOW}:
             # item1: Guid
             item1 = await read_int(reader, 8)
 
@@ -20538,7 +20538,7 @@ class SMSG_INVENTORY_CHANGE_FAILURE:
         if self.result == InventoryResult.CANT_EQUIP_LEVEL_I:
             _fmt += 'I'
             _data.append(self.required_level)
-        if self.result != InventoryResult.OK:
+        if self.result in {InventoryResult.CANT_EQUIP_LEVEL_I, InventoryResult.CANT_EQUIP_SKILL, InventoryResult.ITEM_DOESNT_GO_TO_SLOT, InventoryResult.BAG_FULL, InventoryResult.NONEMPTY_BAG_OVER_OTHER_BAG, InventoryResult.CANT_TRADE_EQUIP_BAGS, InventoryResult.ONLY_AMMO_CAN_GO_HERE, InventoryResult.NO_REQUIRED_PROFICIENCY, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE, InventoryResult.YOU_CAN_NEVER_USE_THAT_ITEM, InventoryResult.YOU_CAN_NEVER_USE_THAT_ITEM2, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE2, InventoryResult.CANT_EQUIP_WITH_TWOHANDED, InventoryResult.CANT_DUAL_WIELD, InventoryResult.ITEM_DOESNT_GO_INTO_BAG, InventoryResult.ITEM_DOESNT_GO_INTO_BAG2, InventoryResult.CANT_CARRY_MORE_OF_THIS, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE3, InventoryResult.ITEM_CANT_STACK, InventoryResult.ITEM_CANT_BE_EQUIPPED, InventoryResult.ITEMS_CANT_BE_SWAPPED, InventoryResult.SLOT_IS_EMPTY, InventoryResult.ITEM_NOT_FOUND, InventoryResult.CANT_DROP_SOULBOUND, InventoryResult.OUT_OF_RANGE, InventoryResult.TRIED_TO_SPLIT_MORE_THAN_COUNT, InventoryResult.COULDNT_SPLIT_ITEMS, InventoryResult.MISSING_REAGENT, InventoryResult.NOT_ENOUGH_MONEY, InventoryResult.NOT_A_BAG, InventoryResult.CAN_ONLY_DO_WITH_EMPTY_BAGS, InventoryResult.DONT_OWN_THAT_ITEM, InventoryResult.CAN_EQUIP_ONLY1_QUIVER, InventoryResult.MUST_PURCHASE_THAT_BAG_SLOT, InventoryResult.TOO_FAR_AWAY_FROM_BANK, InventoryResult.ITEM_LOCKED, InventoryResult.YOU_ARE_STUNNED, InventoryResult.YOU_ARE_DEAD, InventoryResult.CANT_DO_RIGHT_NOW, InventoryResult.INT_BAG_ERROR, InventoryResult.CAN_EQUIP_ONLY1_BOLT, InventoryResult.CAN_EQUIP_ONLY1_AMMOPOUCH, InventoryResult.STACKABLE_CANT_BE_WRAPPED, InventoryResult.EQUIPPED_CANT_BE_WRAPPED, InventoryResult.WRAPPED_CANT_BE_WRAPPED, InventoryResult.BOUND_CANT_BE_WRAPPED, InventoryResult.UNIQUE_CANT_BE_WRAPPED, InventoryResult.BAGS_CANT_BE_WRAPPED, InventoryResult.ALREADY_LOOTED, InventoryResult.INVENTORY_FULL, InventoryResult.BANK_FULL, InventoryResult.ITEM_IS_CURRENTLY_SOLD_OUT, InventoryResult.BAG_FULL3, InventoryResult.ITEM_NOT_FOUND2, InventoryResult.ITEM_CANT_STACK2, InventoryResult.BAG_FULL4, InventoryResult.ITEM_SOLD_OUT, InventoryResult.OBJECT_IS_BUSY, InventoryResult.NONE, InventoryResult.NOT_IN_COMBAT, InventoryResult.NOT_WHILE_DISARMED, InventoryResult.BAG_FULL6, InventoryResult.CANT_EQUIP_RANK, InventoryResult.CANT_EQUIP_REPUTATION, InventoryResult.TOO_MANY_SPECIAL_BAGS, InventoryResult.LOOT_CANT_LOOT_THAT_NOW}:
             _fmt += 'QQB'
             _data.extend([self.item1, self.item2, self.bag_type_subclass])
         _data = struct.pack(_fmt, *_data)
@@ -20554,7 +20554,7 @@ class SMSG_INVENTORY_CHANGE_FAILURE:
         if self.result == InventoryResult.CANT_EQUIP_LEVEL_I:
             _size += 4
 
-        if self.result != InventoryResult.OK:
+        if self.result in {InventoryResult.CANT_EQUIP_LEVEL_I, InventoryResult.CANT_EQUIP_SKILL, InventoryResult.ITEM_DOESNT_GO_TO_SLOT, InventoryResult.BAG_FULL, InventoryResult.NONEMPTY_BAG_OVER_OTHER_BAG, InventoryResult.CANT_TRADE_EQUIP_BAGS, InventoryResult.ONLY_AMMO_CAN_GO_HERE, InventoryResult.NO_REQUIRED_PROFICIENCY, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE, InventoryResult.YOU_CAN_NEVER_USE_THAT_ITEM, InventoryResult.YOU_CAN_NEVER_USE_THAT_ITEM2, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE2, InventoryResult.CANT_EQUIP_WITH_TWOHANDED, InventoryResult.CANT_DUAL_WIELD, InventoryResult.ITEM_DOESNT_GO_INTO_BAG, InventoryResult.ITEM_DOESNT_GO_INTO_BAG2, InventoryResult.CANT_CARRY_MORE_OF_THIS, InventoryResult.NO_EQUIPMENT_SLOT_AVAILABLE3, InventoryResult.ITEM_CANT_STACK, InventoryResult.ITEM_CANT_BE_EQUIPPED, InventoryResult.ITEMS_CANT_BE_SWAPPED, InventoryResult.SLOT_IS_EMPTY, InventoryResult.ITEM_NOT_FOUND, InventoryResult.CANT_DROP_SOULBOUND, InventoryResult.OUT_OF_RANGE, InventoryResult.TRIED_TO_SPLIT_MORE_THAN_COUNT, InventoryResult.COULDNT_SPLIT_ITEMS, InventoryResult.MISSING_REAGENT, InventoryResult.NOT_ENOUGH_MONEY, InventoryResult.NOT_A_BAG, InventoryResult.CAN_ONLY_DO_WITH_EMPTY_BAGS, InventoryResult.DONT_OWN_THAT_ITEM, InventoryResult.CAN_EQUIP_ONLY1_QUIVER, InventoryResult.MUST_PURCHASE_THAT_BAG_SLOT, InventoryResult.TOO_FAR_AWAY_FROM_BANK, InventoryResult.ITEM_LOCKED, InventoryResult.YOU_ARE_STUNNED, InventoryResult.YOU_ARE_DEAD, InventoryResult.CANT_DO_RIGHT_NOW, InventoryResult.INT_BAG_ERROR, InventoryResult.CAN_EQUIP_ONLY1_BOLT, InventoryResult.CAN_EQUIP_ONLY1_AMMOPOUCH, InventoryResult.STACKABLE_CANT_BE_WRAPPED, InventoryResult.EQUIPPED_CANT_BE_WRAPPED, InventoryResult.WRAPPED_CANT_BE_WRAPPED, InventoryResult.BOUND_CANT_BE_WRAPPED, InventoryResult.UNIQUE_CANT_BE_WRAPPED, InventoryResult.BAGS_CANT_BE_WRAPPED, InventoryResult.ALREADY_LOOTED, InventoryResult.INVENTORY_FULL, InventoryResult.BANK_FULL, InventoryResult.ITEM_IS_CURRENTLY_SOLD_OUT, InventoryResult.BAG_FULL3, InventoryResult.ITEM_NOT_FOUND2, InventoryResult.ITEM_CANT_STACK2, InventoryResult.BAG_FULL4, InventoryResult.ITEM_SOLD_OUT, InventoryResult.OBJECT_IS_BUSY, InventoryResult.NONE, InventoryResult.NOT_IN_COMBAT, InventoryResult.NOT_WHILE_DISARMED, InventoryResult.BAG_FULL6, InventoryResult.CANT_EQUIP_RANK, InventoryResult.CANT_EQUIP_REPUTATION, InventoryResult.TOO_MANY_SPECIAL_BAGS, InventoryResult.LOOT_CANT_LOOT_THAT_NOW}:
             _size += 17
 
         return _size
@@ -21606,7 +21606,7 @@ class SMSG_CAST_RESULT:
         # result: SimpleSpellCastResult
         result = SimpleSpellCastResult(await read_int(reader, 1))
 
-        if result != SimpleSpellCastResult.FAILURE:
+        if result == SimpleSpellCastResult.SUCCESS:
             # reason: CastFailureReason
             reason = CastFailureReason(await read_int(reader, 1))
 
@@ -21650,7 +21650,7 @@ class SMSG_CAST_RESULT:
 
         _fmt += 'IB'
         _data.extend([self.spell, self.result.value])
-        if self.result != SimpleSpellCastResult.FAILURE:
+        if self.result == SimpleSpellCastResult.SUCCESS:
             _fmt += 'B'
             _data.append(self.reason.value)
             if self.reason == CastFailureReason.REQUIRES_SPELL_FOCUS:
@@ -21672,7 +21672,7 @@ class SMSG_CAST_RESULT:
     def size(self) -> int:
         _size = 5
 
-        if self.result != SimpleSpellCastResult.FAILURE:
+        if self.result == SimpleSpellCastResult.SUCCESS:
             _size += 1
 
             if self.reason == CastFailureReason.REQUIRES_SPELL_FOCUS:
@@ -36538,7 +36538,7 @@ class SMSG_BATTLEFIELD_STATUS:
         # map: Map
         map = Map(await read_int(reader, 4))
 
-        if map != Map.EASTERN_KINGDOMS:
+        if map in {Map.KALIMDOR, Map.TESTING, Map.SCOTT_TEST, Map.CASH_TEST, Map.ALTERAC_VALLEY, Map.SHADOWFANG_KEEP, Map.STORMWIND_STOCKADE, Map.STORMWIND_PRISON, Map.DEADMINES, Map.AZSHARA_CRATER, Map.COLLINS_TEST, Map.WAILING_CAVERNS, Map.MONASTERY_UNUSED, Map.RAZORFEN_KRAUL, Map.BLACKFATHOM_DEEPS, Map.ULDAMAN, Map.GNOMEREGAN, Map.SUNKEN_TEMPLE, Map.RAZORFEN_DOWNS, Map.EMERALD_DREAM, Map.SCARLET_MONASTERY, Map.ZUL_FARRAK, Map.BLACKROCK_SPIRE, Map.BLACKROCK_DEPTHS, Map.ONYXIAS_LAIR, Map.OPENING_OF_THE_DARK_PORTAL, Map.SCHOLOMANCE, Map.ZUL_GURUB, Map.STRATHOLME, Map.MARAUDON, Map.DEEPRUN_TRAM, Map.RAGEFIRE_CHASM, Map.MOLTEN_CORE, Map.DIRE_MAUL, Map.ALLIANCE_PVP_BARRACKS, Map.HORDE_PVP_BARRACKS, Map.DEVELOPMENT_LAND, Map.BLACKWING_LAIR, Map.WARSONG_GULCH, Map.RUINS_OF_AHN_QIRAJ, Map.ARATHI_BASIN, Map.AHN_QIRAJ_TEMPLE, Map.NAXXRAMAS}:
             # bracket: BattlegroundBracket
             bracket = BattlegroundBracket(await read_int(reader, 1))
 
@@ -36590,7 +36590,7 @@ class SMSG_BATTLEFIELD_STATUS:
 
         _fmt += 'II'
         _data.extend([self.queue_slot, self.map.value])
-        if self.map != Map.EASTERN_KINGDOMS:
+        if self.map in {Map.KALIMDOR, Map.TESTING, Map.SCOTT_TEST, Map.CASH_TEST, Map.ALTERAC_VALLEY, Map.SHADOWFANG_KEEP, Map.STORMWIND_STOCKADE, Map.STORMWIND_PRISON, Map.DEADMINES, Map.AZSHARA_CRATER, Map.COLLINS_TEST, Map.WAILING_CAVERNS, Map.MONASTERY_UNUSED, Map.RAZORFEN_KRAUL, Map.BLACKFATHOM_DEEPS, Map.ULDAMAN, Map.GNOMEREGAN, Map.SUNKEN_TEMPLE, Map.RAZORFEN_DOWNS, Map.EMERALD_DREAM, Map.SCARLET_MONASTERY, Map.ZUL_FARRAK, Map.BLACKROCK_SPIRE, Map.BLACKROCK_DEPTHS, Map.ONYXIAS_LAIR, Map.OPENING_OF_THE_DARK_PORTAL, Map.SCHOLOMANCE, Map.ZUL_GURUB, Map.STRATHOLME, Map.MARAUDON, Map.DEEPRUN_TRAM, Map.RAGEFIRE_CHASM, Map.MOLTEN_CORE, Map.DIRE_MAUL, Map.ALLIANCE_PVP_BARRACKS, Map.HORDE_PVP_BARRACKS, Map.DEVELOPMENT_LAND, Map.BLACKWING_LAIR, Map.WARSONG_GULCH, Map.RUINS_OF_AHN_QIRAJ, Map.ARATHI_BASIN, Map.AHN_QIRAJ_TEMPLE, Map.NAXXRAMAS}:
             _fmt += 'BIB'
             _data.extend([self.bracket.value, self.client_instance_id, self.status_id.value])
             if self.status_id == StatusId.WAIT_QUEUE:
@@ -36612,7 +36612,7 @@ class SMSG_BATTLEFIELD_STATUS:
     def size(self) -> int:
         _size = 8
 
-        if self.map != Map.EASTERN_KINGDOMS:
+        if self.map in {Map.KALIMDOR, Map.TESTING, Map.SCOTT_TEST, Map.CASH_TEST, Map.ALTERAC_VALLEY, Map.SHADOWFANG_KEEP, Map.STORMWIND_STOCKADE, Map.STORMWIND_PRISON, Map.DEADMINES, Map.AZSHARA_CRATER, Map.COLLINS_TEST, Map.WAILING_CAVERNS, Map.MONASTERY_UNUSED, Map.RAZORFEN_KRAUL, Map.BLACKFATHOM_DEEPS, Map.ULDAMAN, Map.GNOMEREGAN, Map.SUNKEN_TEMPLE, Map.RAZORFEN_DOWNS, Map.EMERALD_DREAM, Map.SCARLET_MONASTERY, Map.ZUL_FARRAK, Map.BLACKROCK_SPIRE, Map.BLACKROCK_DEPTHS, Map.ONYXIAS_LAIR, Map.OPENING_OF_THE_DARK_PORTAL, Map.SCHOLOMANCE, Map.ZUL_GURUB, Map.STRATHOLME, Map.MARAUDON, Map.DEEPRUN_TRAM, Map.RAGEFIRE_CHASM, Map.MOLTEN_CORE, Map.DIRE_MAUL, Map.ALLIANCE_PVP_BARRACKS, Map.HORDE_PVP_BARRACKS, Map.DEVELOPMENT_LAND, Map.BLACKWING_LAIR, Map.WARSONG_GULCH, Map.RUINS_OF_AHN_QIRAJ, Map.ARATHI_BASIN, Map.AHN_QIRAJ_TEMPLE, Map.NAXXRAMAS}:
             _size += 6
 
             if self.status_id == StatusId.WAIT_QUEUE:
@@ -39469,7 +39469,7 @@ class MSG_RAID_TARGET_UPDATE_Client:
         # target_index: RaidTargetIndex
         target_index = RaidTargetIndex(await read_int(reader, 1))
 
-        if target_index != RaidTargetIndex.REQUEST_ICONS:
+        if target_index in {RaidTargetIndex.UNKNOWN0, RaidTargetIndex.UNKNOWN1, RaidTargetIndex.UNKNOWN2, RaidTargetIndex.UNKNOWN3, RaidTargetIndex.UNKNOWN4, RaidTargetIndex.UNKNOWN5, RaidTargetIndex.UNKNOWN6, RaidTargetIndex.UNKNOWN7, RaidTargetIndex.UNKNOWN8}:
             # target: Guid
             target = await read_int(reader, 8)
 
@@ -39489,7 +39489,7 @@ class MSG_RAID_TARGET_UPDATE_Client:
 
         _fmt += 'B'
         _data.append(self.target_index.value)
-        if self.target_index != RaidTargetIndex.REQUEST_ICONS:
+        if self.target_index in {RaidTargetIndex.UNKNOWN0, RaidTargetIndex.UNKNOWN1, RaidTargetIndex.UNKNOWN2, RaidTargetIndex.UNKNOWN3, RaidTargetIndex.UNKNOWN4, RaidTargetIndex.UNKNOWN5, RaidTargetIndex.UNKNOWN6, RaidTargetIndex.UNKNOWN7, RaidTargetIndex.UNKNOWN8}:
             _fmt += 'Q'
             _data.append(self.target)
         _data = struct.pack(_fmt, *_data)
@@ -39502,7 +39502,7 @@ class MSG_RAID_TARGET_UPDATE_Client:
     def size(self) -> int:
         _size = 1
 
-        if self.target_index != RaidTargetIndex.REQUEST_ICONS:
+        if self.target_index in {RaidTargetIndex.UNKNOWN0, RaidTargetIndex.UNKNOWN1, RaidTargetIndex.UNKNOWN2, RaidTargetIndex.UNKNOWN3, RaidTargetIndex.UNKNOWN4, RaidTargetIndex.UNKNOWN5, RaidTargetIndex.UNKNOWN6, RaidTargetIndex.UNKNOWN7, RaidTargetIndex.UNKNOWN8}:
             _size += 8
 
         return _size

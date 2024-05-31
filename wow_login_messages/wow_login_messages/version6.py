@@ -32,7 +32,6 @@ from .all import CMD_AUTH_RECONNECT_CHALLENGE_Client
 from .version2 import CMD_AUTH_RECONNECT_PROOF_Client
 from .version5 import CMD_AUTH_RECONNECT_PROOF_Server
 from .version2 import CMD_REALM_LIST_Client
-from .version5 import CMD_REALM_LIST_Server
 from .version2 import CMD_XFER_INITIATE
 from .version2 import CMD_XFER_DATA
 from .version2 import CMD_XFER_ACCEPT
@@ -69,6 +68,58 @@ __all__ = [
     "CMD_XFER_RESUME",
     "CMD_XFER_CANCEL",
     ]
+
+@dataclasses.dataclass
+class CMD_REALM_LIST_Server:
+    realms: typing.List[Realm]
+
+    @staticmethod
+    async def read(reader: asyncio.StreamReader) -> CMD_REALM_LIST_Server:
+        # size: u16
+        _size = await read_int(reader, 2)
+
+        # header_padding: u32
+        _header_padding = await read_int(reader, 4)
+
+        # number_of_realms: u16
+        number_of_realms = await read_int(reader, 2)
+
+        # realms: Realm[number_of_realms]
+        realms = []
+        for _ in range(0, number_of_realms):
+            realms.append(await Realm.read(reader))
+
+        # footer_padding: u16
+        _footer_padding = await read_int(reader, 2)
+
+        return CMD_REALM_LIST_Server(
+            realms=realms,
+        )
+
+    def write(self, writer: typing.Union[asyncio.StreamWriter, bytearray]):
+        _fmt = '<B' # opcode
+        _data = [16]
+
+        _fmt += 'HIH'
+        _data.extend([self.size(), 0, len(self.realms)])
+        # realms: Realm[number_of_realms]
+        for i in self.realms:
+            _fmt, _data = i.write(_fmt, _data)
+
+        # footer_padding: u16
+        _fmt += 'H'
+        _data.append(0)
+
+        _data = struct.pack(_fmt, *_data)
+        if isinstance(writer, bytearray):
+            for i in range(0, len(_data)):
+                writer[i] = _data[i]
+            return
+        writer.write(_data)
+
+    def size(self) -> int:
+        return 8 + sum([i.size() for i in self.realms])
+
 
 ClientOpcode = typing.Union[
     CMD_AUTH_LOGON_CHALLENGE_Client,

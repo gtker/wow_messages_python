@@ -307,6 +307,14 @@ class Container:
     name: 'str'
     object_type: 'ObjectType'
     only_has_io_error: 'bool'
+    prepared_objects: 'List[PreparedObject]'
+    """
+    Is a structured representation of the object where fields that are inside
+    if statements will be put inside the enumerators they are present in. This
+    is used for example when wanting to represent conditionally present fields
+    through e.g. discriminated unions or inheritance.
+    """
+
     sizes: 'Sizes'
     tags: 'ObjectTags'
     tests: 'List[TestCase]'
@@ -321,6 +329,7 @@ class Container:
             _from_json_data(str, data.get("name")),
             _from_json_data(ObjectType, data.get("object_type")),
             _from_json_data(bool, data.get("only_has_io_error")),
+            _from_json_data(List[PreparedObject], data.get("prepared_objects")),
             _from_json_data(Sizes, data.get("sizes")),
             _from_json_data(ObjectTags, data.get("tags")),
             _from_json_data(List[TestCase], data.get("tests")),
@@ -335,6 +344,7 @@ class Container:
         data["name"] = _to_json_data(self.name)
         data["object_type"] = _to_json_data(self.object_type)
         data["only_has_io_error"] = _to_json_data(self.only_has_io_error)
+        data["prepared_objects"] = _to_json_data(self.prepared_objects)
         data["sizes"] = _to_json_data(self.sizes)
         data["tags"] = _to_json_data(self.tags)
         data["tests"] = _to_json_data(self.tests)
@@ -1075,7 +1085,6 @@ class IfStatementEquations:
         variants: Dict[str, Type[IfStatementEquations]] = {
             "BitwiseAnd": IfStatementEquationsBitwiseAnd,
             "Equals": IfStatementEquationsEquals,
-            "NotEquals": IfStatementEquationsNotEquals,
         }
 
         return variants[data["equation_tag"]].from_json_data(data)
@@ -1112,22 +1121,6 @@ class IfStatementEquationsEquals(IfStatementEquations):
 
     def to_json_data(self) -> Any:
         data = { "equation_tag": "Equals" }
-        data["value"] = _to_json_data(self.value)
-        return data
-
-@dataclass
-class IfStatementEquationsNotEquals(IfStatementEquations):
-    value: 'str'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'IfStatementEquationsNotEquals':
-        return cls(
-            "NotEquals",
-            _from_json_data(str, data.get("value")),
-        )
-
-    def to_json_data(self) -> Any:
-        data = { "equation_tag": "NotEquals" }
         data["value"] = _to_json_data(self.value)
         return data
 
@@ -1537,6 +1530,39 @@ class OptionalMembers:
         data: Dict[str, Any] = {}
         data["members"] = _to_json_data(self.members)
         data["name"] = _to_json_data(self.name)
+        return data
+
+@dataclass
+class PreparedObject:
+    """
+    Represents a field in the object, and the fields for each enumerator if it's
+    an enum/flag.
+    """
+
+    name: 'str'
+    """
+    Name inside the object. Search through the original object to get type and
+    other information.
+    """
+
+    enumerators: 'Optional[Dict[str, List[PreparedObject]]]'
+    """
+    If this is present the field contains other fields.
+    """
+
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'PreparedObject':
+        return cls(
+            _from_json_data(str, data.get("name")),
+            _from_json_data(Optional[Dict[str, List[PreparedObject]]], data.get("enumerators")),
+        )
+
+    def to_json_data(self) -> Any:
+        data: Dict[str, Any] = {}
+        data["name"] = _to_json_data(self.name)
+        if self.enumerators is not None:
+             data["enumerators"] = _to_json_data(self.enumerators)
         return data
 
 @dataclass
