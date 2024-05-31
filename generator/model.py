@@ -1076,87 +1076,52 @@ class FloatingPointValue:
         data["value"] = _to_json_data(self.value)
         return data
 
-@dataclass
-class IfStatementEquations:
-    equation_tag: 'str'
-
+class IfStatementDefinerType(Enum):
+    ENUM = "Enum"
+    FLAG = "Flag"
     @classmethod
-    def from_json_data(cls, data: Any) -> 'IfStatementEquations':
-        variants: Dict[str, Type[IfStatementEquations]] = {
-            "BitwiseAnd": IfStatementEquationsBitwiseAnd,
-            "Equals": IfStatementEquationsEquals,
-        }
-
-        return variants[data["equation_tag"]].from_json_data(data)
+    def from_json_data(cls, data: Any) -> 'IfStatementDefinerType':
+        return cls(data)
 
     def to_json_data(self) -> Any:
-        pass
-
-@dataclass
-class IfStatementEquationsBitwiseAnd(IfStatementEquations):
-    value: 'List[str]'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'IfStatementEquationsBitwiseAnd':
-        return cls(
-            "BitwiseAnd",
-            _from_json_data(List[str], data.get("value")),
-        )
-
-    def to_json_data(self) -> Any:
-        data = { "equation_tag": "BitwiseAnd" }
-        data["value"] = _to_json_data(self.value)
-        return data
-
-@dataclass
-class IfStatementEquationsEquals(IfStatementEquations):
-    value: 'List[str]'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'IfStatementEquationsEquals':
-        return cls(
-            "Equals",
-            _from_json_data(List[str], data.get("value")),
-        )
-
-    def to_json_data(self) -> Any:
-        data = { "equation_tag": "Equals" }
-        data["value"] = _to_json_data(self.value)
-        return data
+        return self.value
 
 @dataclass
 class IfStatement:
+    definer_type: 'IfStatementDefinerType'
     else_if_statements: 'List[IfStatement]'
     else_members: 'List[StructMember]'
-    equations: 'IfStatementEquations'
     is_else_if_flag: 'bool'
     members: 'List[StructMember]'
     original_type: 'DataType'
     part_of_separate_if_statement: 'bool'
+    values: 'List[str]'
     variable_name: 'str'
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'IfStatement':
         return cls(
+            _from_json_data(IfStatementDefinerType, data.get("definer_type")),
             _from_json_data(List[IfStatement], data.get("else_if_statements")),
             _from_json_data(List[StructMember], data.get("else_members")),
-            _from_json_data(IfStatementEquations, data.get("equations")),
             _from_json_data(bool, data.get("is_else_if_flag")),
             _from_json_data(List[StructMember], data.get("members")),
             _from_json_data(DataType, data.get("original_type")),
             _from_json_data(bool, data.get("part_of_separate_if_statement")),
+            _from_json_data(List[str], data.get("values")),
             _from_json_data(str, data.get("variable_name")),
         )
 
     def to_json_data(self) -> Any:
         data: Dict[str, Any] = {}
+        data["definer_type"] = _to_json_data(self.definer_type)
         data["else_if_statements"] = _to_json_data(self.else_if_statements)
         data["else_members"] = _to_json_data(self.else_members)
-        data["equations"] = _to_json_data(self.equations)
         data["is_else_if_flag"] = _to_json_data(self.is_else_if_flag)
         data["members"] = _to_json_data(self.members)
         data["original_type"] = _to_json_data(self.original_type)
         data["part_of_separate_if_statement"] = _to_json_data(self.part_of_separate_if_statement)
+        data["values"] = _to_json_data(self.values)
         data["variable_name"] = _to_json_data(self.variable_name)
         return data
 

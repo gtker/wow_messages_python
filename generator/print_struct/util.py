@@ -332,29 +332,26 @@ def print_if_statement_header(
     original_type = type_to_python_str(statement.original_type)
     var_name = statement.variable_name
 
-    match statement.equations:
-        case model.IfStatementEquationsEquals(_tag, value=value):
-            if len(value) == 1:
+    match statement.definer_type:
+        case model.IfStatementDefinerType.ENUM:
+            if len(statement.values) == 1:
                 s.wln(
-                    f"{extra_elseif}if {extra_self}{var_name} == {original_type}.{value[0]}:"
+                    f"{extra_elseif}if {extra_self}{var_name} == {original_type}.{statement.values[0]}:"
                 )
             else:
                 s.w(f"{extra_elseif}if {extra_self}{var_name} in {{")
-                for i, val in enumerate(value):
+                for i, val in enumerate(statement.values):
                     if i != 0:
                         s.w_no_indent(", ")
                     s.w_no_indent(f"{original_type}.{val}")
                 s.wln_no_indent("}:")
 
-        case model.IfStatementEquationsBitwiseAnd(value=value):
+        case model.IfStatementDefinerType.FLAG:
             s.w(f"{extra_elseif}if ")
-            for i, val in enumerate(value):
+            for i, val in enumerate(statement.values):
                 if i != 0:
                     s.w_no_indent(" or ")
                 s.w_no_indent(f"{original_type}.{val} in {extra_self}{var_name}")
             s.wln_no_indent(":")
-
-        case model.IfStatementEquationsNotEquals(value=value):
-            s.wln(
-                f"{extra_elseif}if {extra_self}{var_name} != {original_type}.{value}:"
-            )
+        case _:
+            raise Exception()

@@ -72,6 +72,7 @@ def print_includes(s: Writer, world: typing.Optional[model.WorldVersion]):
 
 
 def main():
+    print("Generating python files")
     f = open(IR_FILE_PATH)
     data = json.load(f)
     m = model.IntermediateRepresentationSchema.from_json_data(data)
@@ -90,6 +91,8 @@ def main():
             print_world(m.world, m.wrath_update_mask, v)
         else:
             raise Exception(f"invalid update mask version {v}")
+
+    print("Finished generating files")
 
 
 def sanitize_model(
