@@ -436,11 +436,3 @@ def print_write_if_statement(s: Writer,
 
     for elseif in statement.else_if_statements:
         print_write_if_statement(s, elseif, True, prefix)
-
-    if len(statement.else_members) != 0:
-        s.wln("else:")
-        s.inc_indent()
-
-        print_write_members_addable(s, statement.else_members, prefix)
-
-        s.dec_indent()

@@ -347,15 +347,6 @@ def print_read_if_statement(
     for elseif in statement.else_if_statements:
         print_read_if_statement(s, elseif, container, True, needs_size)
 
-    if len(statement.else_members) != 0:
-        s.wln("else:")
-        s.inc_indent()
-
-        for m in statement.else_members:
-            print_read_member(s, m, container, needs_size)
-
-        s.dec_indent()
-
 
 def print_read(s: Writer, container: Container):
     s.wln("@staticmethod")
@@ -420,9 +411,6 @@ def print_optional_names(s: Writer, container: Container):
 
             for elseif in statement.else_if_statements:
                 traverse_if_statement(s, elseif)
-
-            for m in statement.else_members:
-                traverse(s, m, True)
 
         match m:
             case model.StructMemberDefinition(struct_member_content=d):

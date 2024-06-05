@@ -15596,7 +15596,7 @@ class SMSG_MESSAGECHAT:
             # player: Guid
             player = await read_int(reader, 8)
 
-        else:
+        elif chat_type in {ChatType.RAID, ChatType.GUILD, ChatType.OFFICER, ChatType.WHISPER, ChatType.WHISPER_INFORM, ChatType.EMOTE, ChatType.TEXT_EMOTE, ChatType.SYSTEM, ChatType.CHANNEL_JOIN, ChatType.CHANNEL_LEAVE, ChatType.CHANNEL_LIST, ChatType.CHANNEL_NOTICE, ChatType.CHANNEL_NOTICE_USER, ChatType.AFK, ChatType.DND, ChatType.IGNORED, ChatType.SKILL, ChatType.LOOT, ChatType.BG_SYSTEM_NEUTRAL, ChatType.BG_SYSTEM_ALLIANCE, ChatType.BG_SYSTEM_HORDE, ChatType.RAID_LEADER, ChatType.RAID_WARNING, ChatType.RAID_BOSS_WHISPER, ChatType.BATTLEGROUND, ChatType.BATTLEGROUND_LEADER}:
             # sender2: Guid
             sender2 = await read_int(reader, 8)
 
@@ -15647,7 +15647,7 @@ class SMSG_MESSAGECHAT:
         elif self.chat_type == ChatType.CHANNEL:
             _fmt += f'{len(self.channel_name)}sBIQ'
             _data.extend([self.channel_name.encode('utf-8'), 0, self.player_rank, self.player])
-        else:
+        elif self.chat_type in {ChatType.RAID, ChatType.GUILD, ChatType.OFFICER, ChatType.WHISPER, ChatType.WHISPER_INFORM, ChatType.EMOTE, ChatType.TEXT_EMOTE, ChatType.SYSTEM, ChatType.CHANNEL_JOIN, ChatType.CHANNEL_LEAVE, ChatType.CHANNEL_LIST, ChatType.CHANNEL_NOTICE, ChatType.CHANNEL_NOTICE_USER, ChatType.AFK, ChatType.DND, ChatType.IGNORED, ChatType.SKILL, ChatType.LOOT, ChatType.BG_SYSTEM_NEUTRAL, ChatType.BG_SYSTEM_ALLIANCE, ChatType.BG_SYSTEM_HORDE, ChatType.RAID_LEADER, ChatType.RAID_WARNING, ChatType.RAID_BOSS_WHISPER, ChatType.BATTLEGROUND, ChatType.BATTLEGROUND_LEADER}:
             _fmt += 'Q'
             _data.append(self.sender2)
         # message: SizedCString
@@ -15676,7 +15676,7 @@ class SMSG_MESSAGECHAT:
             _size += 21 + len(self.sender_name)
         elif self.chat_type == ChatType.CHANNEL:
             _size += 13 + len(self.channel_name)
-        else:
+        elif self.chat_type in {ChatType.RAID, ChatType.GUILD, ChatType.OFFICER, ChatType.WHISPER, ChatType.WHISPER_INFORM, ChatType.EMOTE, ChatType.TEXT_EMOTE, ChatType.SYSTEM, ChatType.CHANNEL_JOIN, ChatType.CHANNEL_LEAVE, ChatType.CHANNEL_LIST, ChatType.CHANNEL_NOTICE, ChatType.CHANNEL_NOTICE_USER, ChatType.AFK, ChatType.DND, ChatType.IGNORED, ChatType.SKILL, ChatType.LOOT, ChatType.BG_SYSTEM_NEUTRAL, ChatType.BG_SYSTEM_ALLIANCE, ChatType.BG_SYSTEM_HORDE, ChatType.RAID_LEADER, ChatType.RAID_WARNING, ChatType.RAID_BOSS_WHISPER, ChatType.BATTLEGROUND, ChatType.BATTLEGROUND_LEADER}:
             _size += 8
 
         return _size
@@ -30896,14 +30896,14 @@ class SMSG_SEND_MAIL_RESULT:
                 # equip_error: u32
                 equip_error = await read_int(reader, 4)
 
-            else:
+            elif result in {MailResult.OK, MailResult.ERR_CANNOT_SEND_TO_SELF, MailResult.ERR_NOT_ENOUGH_MONEY, MailResult.ERR_RECIPIENT_NOT_FOUND, MailResult.ERR_NOT_YOUR_TEAM, MailResult.ERR_INTERNAL_ERROR, MailResult.ERR_DISABLED_FOR_TRIAL_ACC, MailResult.ERR_RECIPIENT_CAP_REACHED, MailResult.ERR_CANT_SEND_WRAPPED_COD, MailResult.ERR_MAIL_AND_CHAT_SUSPENDED, MailResult.ERR_TOO_MANY_ATTACHMENTS, MailResult.ERR_MAIL_ATTACHMENT_INVALID}:
                 # item: Item
                 item = await read_int(reader, 4)
 
                 # item_count: u32
                 item_count = await read_int(reader, 4)
 
-        else:
+        elif action in {MailAction.SEND, MailAction.MONEY_TAKEN, MailAction.RETURNED_TO_SENDER, MailAction.DELETED, MailAction.MADE_PERMANENT}:
             # result2: MailResultTwo
             result2 = MailResultTwo(await read_int(reader, 4))
 
@@ -30939,10 +30939,10 @@ class SMSG_SEND_MAIL_RESULT:
             if self.result == MailResult.ERR_EQUIP_ERROR:
                 _fmt += 'I'
                 _data.append(self.equip_error)
-            else:
+            elif self.result in {MailResult.OK, MailResult.ERR_CANNOT_SEND_TO_SELF, MailResult.ERR_NOT_ENOUGH_MONEY, MailResult.ERR_RECIPIENT_NOT_FOUND, MailResult.ERR_NOT_YOUR_TEAM, MailResult.ERR_INTERNAL_ERROR, MailResult.ERR_DISABLED_FOR_TRIAL_ACC, MailResult.ERR_RECIPIENT_CAP_REACHED, MailResult.ERR_CANT_SEND_WRAPPED_COD, MailResult.ERR_MAIL_AND_CHAT_SUSPENDED, MailResult.ERR_TOO_MANY_ATTACHMENTS, MailResult.ERR_MAIL_ATTACHMENT_INVALID}:
                 _fmt += 'II'
                 _data.extend([self.item, self.item_count])
-        else:
+        elif self.action in {MailAction.SEND, MailAction.MONEY_TAKEN, MailAction.RETURNED_TO_SENDER, MailAction.DELETED, MailAction.MADE_PERMANENT}:
             _fmt += 'I'
             _data.append(self.result2.value)
             if self.result2 == MailResultTwo.ERR_EQUIP_ERROR:
@@ -30963,10 +30963,10 @@ class SMSG_SEND_MAIL_RESULT:
 
             if self.result == MailResult.ERR_EQUIP_ERROR:
                 _size += 4
-            else:
+            elif self.result in {MailResult.OK, MailResult.ERR_CANNOT_SEND_TO_SELF, MailResult.ERR_NOT_ENOUGH_MONEY, MailResult.ERR_RECIPIENT_NOT_FOUND, MailResult.ERR_NOT_YOUR_TEAM, MailResult.ERR_INTERNAL_ERROR, MailResult.ERR_DISABLED_FOR_TRIAL_ACC, MailResult.ERR_RECIPIENT_CAP_REACHED, MailResult.ERR_CANT_SEND_WRAPPED_COD, MailResult.ERR_MAIL_AND_CHAT_SUSPENDED, MailResult.ERR_TOO_MANY_ATTACHMENTS, MailResult.ERR_MAIL_ATTACHMENT_INVALID}:
                 _size += 8
 
-        else:
+        elif self.action in {MailAction.SEND, MailAction.MONEY_TAKEN, MailAction.RETURNED_TO_SENDER, MailAction.DELETED, MailAction.MADE_PERMANENT}:
             _size += 4
 
             if self.result2 == MailResultTwo.ERR_EQUIP_ERROR:
@@ -32346,7 +32346,7 @@ class SMSG_AUCTION_COMMAND_RESULT:
                 # auction_outbid2: u32
                 auction_outbid2 = await read_int(reader, 4)
 
-        else:
+        elif action in {AuctionCommandAction.STARTED, AuctionCommandAction.REMOVED}:
             # result2: AuctionCommandResultTwo
             result2 = AuctionCommandResultTwo(await read_int(reader, 4))
 
@@ -32403,7 +32403,7 @@ class SMSG_AUCTION_COMMAND_RESULT:
             elif self.result == AuctionCommandResult.ERR_HIGHER_BID:
                 _fmt += 'QII'
                 _data.extend([self.higher_bidder, self.new_bid, self.auction_outbid2])
-        else:
+        elif self.action in {AuctionCommandAction.STARTED, AuctionCommandAction.REMOVED}:
             _fmt += 'I'
             _data.append(self.result2.value)
             if self.result2 == AuctionCommandResultTwo.ERR_INVENTORY:
@@ -32432,7 +32432,7 @@ class SMSG_AUCTION_COMMAND_RESULT:
             elif self.result == AuctionCommandResult.ERR_HIGHER_BID:
                 _size += 16
 
-        else:
+        elif self.action in {AuctionCommandAction.STARTED, AuctionCommandAction.REMOVED}:
             _size += 4
 
             if self.result2 == AuctionCommandResultTwo.ERR_INVENTORY:

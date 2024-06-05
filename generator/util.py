@@ -183,10 +183,6 @@ def container_needs_size_in_read(container: model.Container) -> bool:
             if inner_if(elseif):
                 return True
 
-        for m in statement.else_members:
-            if inner(m):
-                return True
-
         return False
 
     def inner(m: model.StructMember) -> bool:

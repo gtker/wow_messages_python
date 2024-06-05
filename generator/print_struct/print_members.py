@@ -68,6 +68,3 @@ def print_member_if_statement(
 
     for elseif in statement.else_if_statements:
         print_member_if_statement(non_optional, optionals, elseif)
-
-    for member in statement.else_members:
-        print_member_definition(non_optional, optionals, member, True)

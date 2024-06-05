@@ -1068,7 +1068,6 @@ class IfStatementDefinerType(Enum):
 class IfStatement:
     definer_type: 'IfStatementDefinerType'
     else_if_statements: 'List[IfStatement]'
-    else_members: 'List[StructMember]'
     is_else_if_flag: 'bool'
     members: 'List[StructMember]'
     original_type: 'DataType'
@@ -1081,7 +1080,6 @@ class IfStatement:
         return cls(
             _from_json_data(IfStatementDefinerType, data.get("definer_type")),
             _from_json_data(List[IfStatement], data.get("else_if_statements")),
-            _from_json_data(List[StructMember], data.get("else_members")),
             _from_json_data(bool, data.get("is_else_if_flag")),
             _from_json_data(List[StructMember], data.get("members")),
             _from_json_data(DataType, data.get("original_type")),
@@ -1094,7 +1092,6 @@ class IfStatement:
         data: Dict[str, Any] = {}
         data["definer_type"] = _to_json_data(self.definer_type)
         data["else_if_statements"] = _to_json_data(self.else_if_statements)
-        data["else_members"] = _to_json_data(self.else_members)
         data["is_else_if_flag"] = _to_json_data(self.is_else_if_flag)
         data["members"] = _to_json_data(self.members)
         data["original_type"] = _to_json_data(self.original_type)

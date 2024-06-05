@@ -243,11 +243,3 @@ def print_size_if_statement(s: Writer, statement: model.IfStatement, is_else_if:
 
     for elseif in statement.else_if_statements:
         print_size_if_statement(s, elseif, True)
-
-    if len(statement.else_members) != 0:
-        s.wln("else:")
-        s.inc_indent()
-
-        print_size_until_inner_members(s, statement.else_members, None, False)
-
-        s.dec_indent()

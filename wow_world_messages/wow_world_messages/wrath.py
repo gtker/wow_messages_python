@@ -22423,7 +22423,7 @@ class SMSG_MESSAGECHAT:
             # target5: Guid
             target5 = await read_int(reader, 8)
 
-        else:
+        elif chat_type in {ChatType.SYSTEM, ChatType.SAY, ChatType.PARTY, ChatType.RAID, ChatType.GUILD, ChatType.OFFICER, ChatType.YELL, ChatType.WHISPER, ChatType.WHISPER_INFORM, ChatType.EMOTE, ChatType.TEXT_EMOTE, ChatType.CHANNEL_JOIN, ChatType.CHANNEL_LEAVE, ChatType.CHANNEL_LIST, ChatType.CHANNEL_NOTICE, ChatType.CHANNEL_NOTICE_USER, ChatType.AFK, ChatType.DND, ChatType.IGNORED, ChatType.SKILL, ChatType.LOOT, ChatType.MONEY, ChatType.OPENING, ChatType.TRADESKILLS, ChatType.PET_INFO, ChatType.COMBAT_MISC_INFO, ChatType.COMBAT_XP_GAIN, ChatType.COMBAT_HONOR_GAIN, ChatType.COMBAT_FACTION_CHANGE, ChatType.RAID_LEADER, ChatType.RAID_WARNING, ChatType.FILTERED, ChatType.BATTLEGROUND, ChatType.BATTLEGROUND_LEADER, ChatType.RESTRICTED, ChatType.ARENA_POINTS, ChatType.PARTY_LEADER}:
             # target6: Guid
             target6 = await read_int(reader, 8)
 
@@ -22486,7 +22486,7 @@ class SMSG_MESSAGECHAT:
         elif self.chat_type == ChatType.CHANNEL:
             _fmt += f'{len(self.channel_name)}sBQ'
             _data.extend([self.channel_name.encode('utf-8'), 0, self.target5])
-        else:
+        elif self.chat_type in {ChatType.SYSTEM, ChatType.SAY, ChatType.PARTY, ChatType.RAID, ChatType.GUILD, ChatType.OFFICER, ChatType.YELL, ChatType.WHISPER, ChatType.WHISPER_INFORM, ChatType.EMOTE, ChatType.TEXT_EMOTE, ChatType.CHANNEL_JOIN, ChatType.CHANNEL_LEAVE, ChatType.CHANNEL_LIST, ChatType.CHANNEL_NOTICE, ChatType.CHANNEL_NOTICE_USER, ChatType.AFK, ChatType.DND, ChatType.IGNORED, ChatType.SKILL, ChatType.LOOT, ChatType.MONEY, ChatType.OPENING, ChatType.TRADESKILLS, ChatType.PET_INFO, ChatType.COMBAT_MISC_INFO, ChatType.COMBAT_XP_GAIN, ChatType.COMBAT_HONOR_GAIN, ChatType.COMBAT_FACTION_CHANGE, ChatType.RAID_LEADER, ChatType.RAID_WARNING, ChatType.FILTERED, ChatType.BATTLEGROUND, ChatType.BATTLEGROUND_LEADER, ChatType.RESTRICTED, ChatType.ARENA_POINTS, ChatType.PARTY_LEADER}:
             _fmt += 'Q'
             _data.append(self.target6)
         # message: SizedCString
@@ -22520,7 +22520,7 @@ class SMSG_MESSAGECHAT:
             _size += 8
         elif self.chat_type == ChatType.CHANNEL:
             _size += 9 + len(self.channel_name)
-        else:
+        elif self.chat_type in {ChatType.SYSTEM, ChatType.SAY, ChatType.PARTY, ChatType.RAID, ChatType.GUILD, ChatType.OFFICER, ChatType.YELL, ChatType.WHISPER, ChatType.WHISPER_INFORM, ChatType.EMOTE, ChatType.TEXT_EMOTE, ChatType.CHANNEL_JOIN, ChatType.CHANNEL_LEAVE, ChatType.CHANNEL_LIST, ChatType.CHANNEL_NOTICE, ChatType.CHANNEL_NOTICE_USER, ChatType.AFK, ChatType.DND, ChatType.IGNORED, ChatType.SKILL, ChatType.LOOT, ChatType.MONEY, ChatType.OPENING, ChatType.TRADESKILLS, ChatType.PET_INFO, ChatType.COMBAT_MISC_INFO, ChatType.COMBAT_XP_GAIN, ChatType.COMBAT_HONOR_GAIN, ChatType.COMBAT_FACTION_CHANGE, ChatType.RAID_LEADER, ChatType.RAID_WARNING, ChatType.FILTERED, ChatType.BATTLEGROUND, ChatType.BATTLEGROUND_LEADER, ChatType.RESTRICTED, ChatType.ARENA_POINTS, ChatType.PARTY_LEADER}:
             _size += 8
 
         if self.chat_type in {ChatType.ACHIEVEMENT, ChatType.GUILD_ACHIEVEMENT}:
@@ -39570,14 +39570,14 @@ class SMSG_SEND_MAIL_RESULT:
                 # equip_error: u32
                 equip_error = await read_int(reader, 4)
 
-            else:
+            elif result in {MailResult.OK, MailResult.ERR_CANNOT_SEND_TO_SELF, MailResult.ERR_NOT_ENOUGH_MONEY, MailResult.ERR_RECIPIENT_NOT_FOUND, MailResult.ERR_NOT_YOUR_TEAM, MailResult.ERR_INTERNAL_ERROR, MailResult.ERR_DISABLED_FOR_TRIAL_ACC, MailResult.ERR_RECIPIENT_CAP_REACHED, MailResult.ERR_CANT_SEND_WRAPPED_COD, MailResult.ERR_MAIL_AND_CHAT_SUSPENDED, MailResult.ERR_TOO_MANY_ATTACHMENTS, MailResult.ERR_MAIL_ATTACHMENT_INVALID, MailResult.ERR_ITEM_HAS_EXPIRED}:
                 # item: Item
                 item = await read_int(reader, 4)
 
                 # item_count: u32
                 item_count = await read_int(reader, 4)
 
-        else:
+        elif action in {MailAction.SEND, MailAction.MONEY_TAKEN, MailAction.RETURNED_TO_SENDER, MailAction.DELETED, MailAction.MADE_PERMANENT}:
             # result2: MailResultTwo
             result2 = MailResultTwo(await read_int(reader, 4))
 
@@ -39613,10 +39613,10 @@ class SMSG_SEND_MAIL_RESULT:
             if self.result == MailResult.ERR_EQUIP_ERROR:
                 _fmt += 'I'
                 _data.append(self.equip_error)
-            else:
+            elif self.result in {MailResult.OK, MailResult.ERR_CANNOT_SEND_TO_SELF, MailResult.ERR_NOT_ENOUGH_MONEY, MailResult.ERR_RECIPIENT_NOT_FOUND, MailResult.ERR_NOT_YOUR_TEAM, MailResult.ERR_INTERNAL_ERROR, MailResult.ERR_DISABLED_FOR_TRIAL_ACC, MailResult.ERR_RECIPIENT_CAP_REACHED, MailResult.ERR_CANT_SEND_WRAPPED_COD, MailResult.ERR_MAIL_AND_CHAT_SUSPENDED, MailResult.ERR_TOO_MANY_ATTACHMENTS, MailResult.ERR_MAIL_ATTACHMENT_INVALID, MailResult.ERR_ITEM_HAS_EXPIRED}:
                 _fmt += 'II'
                 _data.extend([self.item, self.item_count])
-        else:
+        elif self.action in {MailAction.SEND, MailAction.MONEY_TAKEN, MailAction.RETURNED_TO_SENDER, MailAction.DELETED, MailAction.MADE_PERMANENT}:
             _fmt += 'I'
             _data.append(self.result2.value)
             if self.result2 == MailResultTwo.ERR_EQUIP_ERROR:
@@ -39637,10 +39637,10 @@ class SMSG_SEND_MAIL_RESULT:
 
             if self.result == MailResult.ERR_EQUIP_ERROR:
                 _size += 4
-            else:
+            elif self.result in {MailResult.OK, MailResult.ERR_CANNOT_SEND_TO_SELF, MailResult.ERR_NOT_ENOUGH_MONEY, MailResult.ERR_RECIPIENT_NOT_FOUND, MailResult.ERR_NOT_YOUR_TEAM, MailResult.ERR_INTERNAL_ERROR, MailResult.ERR_DISABLED_FOR_TRIAL_ACC, MailResult.ERR_RECIPIENT_CAP_REACHED, MailResult.ERR_CANT_SEND_WRAPPED_COD, MailResult.ERR_MAIL_AND_CHAT_SUSPENDED, MailResult.ERR_TOO_MANY_ATTACHMENTS, MailResult.ERR_MAIL_ATTACHMENT_INVALID, MailResult.ERR_ITEM_HAS_EXPIRED}:
                 _size += 8
 
-        else:
+        elif self.action in {MailAction.SEND, MailAction.MONEY_TAKEN, MailAction.RETURNED_TO_SENDER, MailAction.DELETED, MailAction.MADE_PERMANENT}:
             _size += 4
 
             if self.result2 == MailResultTwo.ERR_EQUIP_ERROR:
@@ -52941,7 +52941,7 @@ class SMSG_GM_MESSAGECHAT:
             # target5: Guid
             target5 = await read_int(reader, 8)
 
-        else:
+        elif chat_type in {ChatType.SYSTEM, ChatType.SAY, ChatType.PARTY, ChatType.RAID, ChatType.GUILD, ChatType.OFFICER, ChatType.YELL, ChatType.WHISPER, ChatType.WHISPER_INFORM, ChatType.EMOTE, ChatType.TEXT_EMOTE, ChatType.CHANNEL_JOIN, ChatType.CHANNEL_LEAVE, ChatType.CHANNEL_LIST, ChatType.CHANNEL_NOTICE, ChatType.CHANNEL_NOTICE_USER, ChatType.AFK, ChatType.DND, ChatType.IGNORED, ChatType.SKILL, ChatType.LOOT, ChatType.MONEY, ChatType.OPENING, ChatType.TRADESKILLS, ChatType.PET_INFO, ChatType.COMBAT_MISC_INFO, ChatType.COMBAT_XP_GAIN, ChatType.COMBAT_HONOR_GAIN, ChatType.COMBAT_FACTION_CHANGE, ChatType.RAID_LEADER, ChatType.RAID_WARNING, ChatType.FILTERED, ChatType.BATTLEGROUND, ChatType.BATTLEGROUND_LEADER, ChatType.RESTRICTED, ChatType.ARENA_POINTS, ChatType.PARTY_LEADER}:
             # sender_name: SizedCString
             sender_name = await read_sized_cstring(reader)
 
@@ -53008,7 +53008,7 @@ class SMSG_GM_MESSAGECHAT:
         elif self.chat_type == ChatType.CHANNEL:
             _fmt += f'{len(self.channel_name)}sBQ'
             _data.extend([self.channel_name.encode('utf-8'), 0, self.target5])
-        else:
+        elif self.chat_type in {ChatType.SYSTEM, ChatType.SAY, ChatType.PARTY, ChatType.RAID, ChatType.GUILD, ChatType.OFFICER, ChatType.YELL, ChatType.WHISPER, ChatType.WHISPER_INFORM, ChatType.EMOTE, ChatType.TEXT_EMOTE, ChatType.CHANNEL_JOIN, ChatType.CHANNEL_LEAVE, ChatType.CHANNEL_LIST, ChatType.CHANNEL_NOTICE, ChatType.CHANNEL_NOTICE_USER, ChatType.AFK, ChatType.DND, ChatType.IGNORED, ChatType.SKILL, ChatType.LOOT, ChatType.MONEY, ChatType.OPENING, ChatType.TRADESKILLS, ChatType.PET_INFO, ChatType.COMBAT_MISC_INFO, ChatType.COMBAT_XP_GAIN, ChatType.COMBAT_HONOR_GAIN, ChatType.COMBAT_FACTION_CHANGE, ChatType.RAID_LEADER, ChatType.RAID_WARNING, ChatType.FILTERED, ChatType.BATTLEGROUND, ChatType.BATTLEGROUND_LEADER, ChatType.RESTRICTED, ChatType.ARENA_POINTS, ChatType.PARTY_LEADER}:
             _fmt += f'I{len(self.sender_name)}sBQ'
             _data.extend([len(self.sender_name) + 1, self.sender_name.encode('utf-8'), 0, self.target6])
         # message: SizedCString
@@ -53042,7 +53042,7 @@ class SMSG_GM_MESSAGECHAT:
             _size += 8
         elif self.chat_type == ChatType.CHANNEL:
             _size += 9 + len(self.channel_name)
-        else:
+        elif self.chat_type in {ChatType.SYSTEM, ChatType.SAY, ChatType.PARTY, ChatType.RAID, ChatType.GUILD, ChatType.OFFICER, ChatType.YELL, ChatType.WHISPER, ChatType.WHISPER_INFORM, ChatType.EMOTE, ChatType.TEXT_EMOTE, ChatType.CHANNEL_JOIN, ChatType.CHANNEL_LEAVE, ChatType.CHANNEL_LIST, ChatType.CHANNEL_NOTICE, ChatType.CHANNEL_NOTICE_USER, ChatType.AFK, ChatType.DND, ChatType.IGNORED, ChatType.SKILL, ChatType.LOOT, ChatType.MONEY, ChatType.OPENING, ChatType.TRADESKILLS, ChatType.PET_INFO, ChatType.COMBAT_MISC_INFO, ChatType.COMBAT_XP_GAIN, ChatType.COMBAT_HONOR_GAIN, ChatType.COMBAT_FACTION_CHANGE, ChatType.RAID_LEADER, ChatType.RAID_WARNING, ChatType.FILTERED, ChatType.BATTLEGROUND, ChatType.BATTLEGROUND_LEADER, ChatType.RESTRICTED, ChatType.ARENA_POINTS, ChatType.PARTY_LEADER}:
             _size += 13 + len(self.sender_name)
 
         if self.chat_type in {ChatType.ACHIEVEMENT, ChatType.GUILD_ACHIEVEMENT}:
@@ -53884,7 +53884,7 @@ class CMSG_GUILD_BANK_SWAP_ITEMS:
             amount = await read_int(reader, 4)
             _size += 4
 
-        else:
+        elif source == BankSwapSource.INVENTORY:
             # bank_tab: u8
             bank_tab = await read_int(reader, 1)
             _size += 1
@@ -53914,7 +53914,7 @@ class CMSG_GUILD_BANK_SWAP_ITEMS:
                 unknown4 = await read_int(reader, 4)
                 _size += 4
 
-            else:
+            elif mode == BankSwapStoreMode.MANUAL:
                 # player_bag: u8
                 player_bag = await read_int(reader, 1)
                 _size += 1
@@ -53976,13 +53976,13 @@ class CMSG_GUILD_BANK_SWAP_ITEMS:
         if self.source == BankSwapSource.BANK:
             _fmt += 'BBIBBIBI'
             _data.extend([self.bank_destination_tab, self.bank_destination_slot, self.unknown1, self.bank_source_tab, self.bank_source_slot, self.item1, self.unknown2, self.amount])
-        else:
+        elif self.source == BankSwapSource.INVENTORY:
             _fmt += 'BBIB'
             _data.extend([self.bank_tab, self.bank_slot, self.item2, self.mode.value])
             if self.mode == BankSwapStoreMode.AUTOMATIC:
                 _fmt += 'IBI'
                 _data.extend([self.auto_count, self.unknown3, self.unknown4])
-            else:
+            elif self.mode == BankSwapStoreMode.MANUAL:
                 _fmt += 'BBBI'
                 _data.extend([self.player_bag, self.player_bag_slot, self.bank_to_character_transfer, self.split_amount])
         # unknown5: u8[-]
@@ -54001,12 +54001,12 @@ class CMSG_GUILD_BANK_SWAP_ITEMS:
 
         if self.source == BankSwapSource.BANK:
             _size += 17
-        else:
+        elif self.source == BankSwapSource.INVENTORY:
             _size += 7
 
             if self.mode == BankSwapStoreMode.AUTOMATIC:
                 _size += 9
-            else:
+            elif self.mode == BankSwapStoreMode.MANUAL:
                 _size += 7
 
 

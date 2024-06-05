@@ -473,7 +473,7 @@ class CMD_AUTH_LOGON_PROOF_Server:
             # unknown: u16
             unknown = await read_int(reader, 2)
 
-        else:
+        elif result in {LoginResult.FAIL_UNKNOWN0, LoginResult.FAIL_UNKNOWN1, LoginResult.FAIL_BANNED, LoginResult.FAIL_UNKNOWN_ACCOUNT, LoginResult.FAIL_INCORRECT_PASSWORD, LoginResult.FAIL_ALREADY_ONLINE, LoginResult.FAIL_NO_TIME, LoginResult.FAIL_DB_BUSY, LoginResult.FAIL_VERSION_INVALID, LoginResult.LOGIN_DOWNLOAD_FILE, LoginResult.FAIL_INVALID_SERVER, LoginResult.FAIL_SUSPENDED, LoginResult.FAIL_NO_ACCESS, LoginResult.SUCCESS_SURVEY, LoginResult.FAIL_PARENTALCONTROL, LoginResult.FAIL_LOCKED_ENFORCED}:
             # padding: u16
             _padding = await read_int(reader, 2)
 
@@ -494,7 +494,7 @@ class CMD_AUTH_LOGON_PROOF_Server:
         if self.result == LoginResult.SUCCESS:
             _fmt += f'{len(self.server_proof)}BIIH'
             _data.extend([*self.server_proof, self.account_flag.value, self.hardware_survey_id, self.unknown])
-        else:
+        elif self.result in {LoginResult.FAIL_UNKNOWN0, LoginResult.FAIL_UNKNOWN1, LoginResult.FAIL_BANNED, LoginResult.FAIL_UNKNOWN_ACCOUNT, LoginResult.FAIL_INCORRECT_PASSWORD, LoginResult.FAIL_ALREADY_ONLINE, LoginResult.FAIL_NO_TIME, LoginResult.FAIL_DB_BUSY, LoginResult.FAIL_VERSION_INVALID, LoginResult.LOGIN_DOWNLOAD_FILE, LoginResult.FAIL_INVALID_SERVER, LoginResult.FAIL_SUSPENDED, LoginResult.FAIL_NO_ACCESS, LoginResult.SUCCESS_SURVEY, LoginResult.FAIL_PARENTALCONTROL, LoginResult.FAIL_LOCKED_ENFORCED}:
             _fmt += 'H'
             _data.append(0)
         _data = struct.pack(_fmt, *_data)

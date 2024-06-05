@@ -272,9 +272,6 @@ def all_members_from_container(
             for elseif in statement.else_if_statements:
                 inner_if(elseif, out_members)
 
-            for member in statement.else_members:
-                inner(member, out_members)
-
         match m:
             case model.StructMemberDefinition(_tag, definition):
                 out_members.append(definition)
