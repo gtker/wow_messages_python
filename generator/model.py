@@ -29,12 +29,12 @@ class IntermediateRepresentationSchemaIntegerTypeInformation:
 class IntermediateRepresentationSchema:
     distinct_login_versions_other_than_all: 'List[int]'
     integer_type_information: 'Dict[str, IntermediateRepresentationSchemaIntegerTypeInformation]'
-    login: 'LoginObjects'
+    login: 'Objects'
     login_version_opcodes: 'Dict[str, int]'
     tbc_update_mask: 'List[UpdateMask]'
     vanilla_update_mask: 'List[UpdateMask]'
     version: 'SchemaVersion'
-    world: 'WorldObjects'
+    world: 'Objects'
     wrath_update_mask: 'List[UpdateMask]'
 
     @classmethod
@@ -42,12 +42,12 @@ class IntermediateRepresentationSchema:
         return cls(
             _from_json_data(List[int], data.get("distinct_login_versions_other_than_all")),
             _from_json_data(Dict[str, IntermediateRepresentationSchemaIntegerTypeInformation], data.get("integer_type_information")),
-            _from_json_data(LoginObjects, data.get("login")),
+            _from_json_data(Objects, data.get("login")),
             _from_json_data(Dict[str, int], data.get("login_version_opcodes")),
             _from_json_data(List[UpdateMask], data.get("tbc_update_mask")),
             _from_json_data(List[UpdateMask], data.get("vanilla_update_mask")),
             _from_json_data(SchemaVersion, data.get("version")),
-            _from_json_data(WorldObjects, data.get("world")),
+            _from_json_data(Objects, data.get("world")),
             _from_json_data(List[UpdateMask], data.get("wrath_update_mask")),
         )
 
@@ -1118,30 +1118,6 @@ class IntegerType(Enum):
         return self.value
 
 @dataclass
-class LoginObjects:
-    enums: 'List[Definer]'
-    flags: 'List[Definer]'
-    messages: 'List[Container]'
-    structs: 'List[Container]'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'LoginObjects':
-        return cls(
-            _from_json_data(List[Definer], data.get("enums")),
-            _from_json_data(List[Definer], data.get("flags")),
-            _from_json_data(List[Container], data.get("messages")),
-            _from_json_data(List[Container], data.get("structs")),
-        )
-
-    def to_json_data(self) -> Any:
-        data: Dict[str, Any] = {}
-        data["enums"] = _to_json_data(self.enums)
-        data["flags"] = _to_json_data(self.flags)
-        data["messages"] = _to_json_data(self.messages)
-        data["structs"] = _to_json_data(self.structs)
-        return data
-
-@dataclass
 class LoginVersions:
     login_version_tag: 'str'
 
@@ -1441,6 +1417,30 @@ class ObjectVersionsWorld(ObjectVersions):
     def to_json_data(self) -> Any:
         data = { "version_type_tag": "world" }
         data["version_type"] = _to_json_data(self.version_type)
+        return data
+
+@dataclass
+class Objects:
+    enums: 'List[Definer]'
+    flags: 'List[Definer]'
+    messages: 'List[Container]'
+    structs: 'List[Container]'
+
+    @classmethod
+    def from_json_data(cls, data: Any) -> 'Objects':
+        return cls(
+            _from_json_data(List[Definer], data.get("enums")),
+            _from_json_data(List[Definer], data.get("flags")),
+            _from_json_data(List[Container], data.get("messages")),
+            _from_json_data(List[Container], data.get("structs")),
+        )
+
+    def to_json_data(self) -> Any:
+        data: Dict[str, Any] = {}
+        data["enums"] = _to_json_data(self.enums)
+        data["flags"] = _to_json_data(self.flags)
+        data["messages"] = _to_json_data(self.messages)
+        data["structs"] = _to_json_data(self.structs)
         return data
 
 @dataclass
@@ -2481,30 +2481,6 @@ class Value:
         data: Dict[str, Any] = {}
         data["original_string"] = _to_json_data(self.original_string)
         data["value"] = _to_json_data(self.value)
-        return data
-
-@dataclass
-class WorldObjects:
-    enums: 'List[Definer]'
-    flags: 'List[Definer]'
-    messages: 'List[Container]'
-    structs: 'List[Container]'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'WorldObjects':
-        return cls(
-            _from_json_data(List[Definer], data.get("enums")),
-            _from_json_data(List[Definer], data.get("flags")),
-            _from_json_data(List[Container], data.get("messages")),
-            _from_json_data(List[Container], data.get("structs")),
-        )
-
-    def to_json_data(self) -> Any:
-        data: Dict[str, Any] = {}
-        data["enums"] = _to_json_data(self.enums)
-        data["flags"] = _to_json_data(self.flags)
-        data["messages"] = _to_json_data(self.messages)
-        data["structs"] = _to_json_data(self.structs)
         return data
 
 @dataclass

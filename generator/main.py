@@ -114,7 +114,7 @@ def sanitize_model(
     return m
 
 
-def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: model.WorldVersion):
+def print_world(m: model.Objects, update_mask: list[model.UpdateMask], v: model.WorldVersion):
     all_types = Writer()
     all_types.open("__all__ = [")
 
@@ -220,7 +220,7 @@ def print_world(m: model.WorldObjects, update_mask: list[model.UpdateMask], v: m
         f.write(tests.inner())
 
 
-def print_login(m: model.LoginObjects, v: int):
+def print_login(m: model.Objects, v: int):
     all_types = Writer()
     all_types.wln("__all__ = [")
     all_types.inc_indent()

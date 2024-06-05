@@ -54,7 +54,7 @@ def print_tests_for_login_message(s: Writer, e: model.Container, i: int):
     s.newline()
 
 
-def print_login_tests(s: Writer, m: model.LoginObjects):
+def print_login_tests(s: Writer, m: model.Objects):
     s.wln("import asyncio")
     s.wln("import unittest")
     s.newline()
@@ -151,7 +151,7 @@ def print_tests_for_world_message(s: Writer, e: model.Container, version: str):
     s.newline()
 
 
-def print_world_tests(s: Writer, m: model.WorldObjects):
+def print_world_tests(s: Writer, m: model.Objects):
     s.wln("import asyncio")
     s.wln("import unittest")
     s.wln("import struct")
