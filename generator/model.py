@@ -1450,18 +1450,28 @@ class Objects:
 class OptionalMembers:
     members: 'List[StructMember]'
     name: 'str'
+    prepared_objects: 'List[PreparedObject]'
+    """
+    Is a structured representation of the object where fields that are inside
+    if statements will be put inside the enumerators they are present in. This
+    is used for example when wanting to represent conditionally present fields
+    through e.g. discriminated unions or inheritance.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'OptionalMembers':
         return cls(
             _from_json_data(List[StructMember], data.get("members")),
             _from_json_data(str, data.get("name")),
+            _from_json_data(List[PreparedObject], data.get("prepared_objects")),
         )
 
     def to_json_data(self) -> Any:
         data: Dict[str, Any] = {}
         data["members"] = _to_json_data(self.members)
         data["name"] = _to_json_data(self.name)
+        data["prepared_objects"] = _to_json_data(self.prepared_objects)
         return data
 
 @dataclass
