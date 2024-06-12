@@ -200,10 +200,11 @@ def container_needs_size_in_read(container: model.Container) -> bool:
             case model.StructMemberIfStatement(struct_member_content=statement):
                 if inner_if(statement):
                     return True
-            case model.StructMemberOptional(struct_member_content=optional):
-                return True
 
         return False
+
+    if container.optional is not None:
+        return True
 
     for m in container.members:
         if inner(m):

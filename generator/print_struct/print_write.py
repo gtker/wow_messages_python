@@ -250,7 +250,7 @@ def get_write_and_remaining_members(
                 else:
                     return fmt, data, members[i:]
 
-            case model.StructMemberIfStatement() | model.StructMemberOptional():
+            case model.StructMemberIfStatement():
                 return fmt, data, members[i:]
             case v:
                 raise Exception(f"{v}")
@@ -343,6 +343,11 @@ def print_write(s: Writer, container: Container, object_type: model.ObjectType):
 
     print_write_members_addable(s, container.members, prefix)
 
+    if container.optional is not None:
+        print_optional_statement_header(s, container.optional)
+        print_write_members_addable(s, container.optional.members, prefix)
+        s.close()
+
     match object_type:
         case model.ObjectTypeStruct():
             s.wln("return _fmt, _data")
@@ -406,13 +411,6 @@ def print_write_member(s: Writer, m: model.StructMember, prefix: str):
 
         case model.StructMemberIfStatement(_tag, statement):
             print_write_if_statement(s, statement, False, prefix)
-
-        case model.StructMemberOptional(_tag, struct_member_content=optional):
-            print_optional_statement_header(s, optional)
-
-            print_write_members_addable(s, optional.members, prefix)
-
-            s.dec_indent()  # if optional
 
         case _:
             raise Exception("invalid struct member")

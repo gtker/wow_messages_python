@@ -4,8 +4,7 @@ import model
 from print_struct.print_write import print_array_write_inner, print_write_member
 from print_struct.util import (
     integer_type_to_size,
-    print_if_statement_header, type_to_wowm_str, container_should_have_size_function, print_optional_statement_header,
-)
+    print_if_statement_header, type_to_wowm_str, container_should_have_size_function, print_optional_statement_header, )
 from writer import Writer
 
 
@@ -18,14 +17,24 @@ def print_size(s: Writer, container: model.Container):
     if container.tags.compressed:
         print_size_for_compressed_container(s, container)
     else:
-        print_size_until_inner_members(s, container.members, container.manual_size_subtraction, True)
+        print_size_until_inner_members(s, container.members, container.manual_size_subtraction,
+                                       True, container.optional is not None)
+        if container.optional is not None:
+            print_optional_statement_header(s, container.optional)
+            print_size_until_inner_members(s, container.optional.members, container.manual_size_subtraction, False,
+                                           False)
+            s.close()
+            s.newline()
+
+            s.wln("return _size")
 
     s.dec_indent()
     s.newline()
 
 
 def print_size_until_inner_members(s: Writer, members: list[model.StructMember],
-                                   manual_size_subtraction: typing.Optional[int], return_early: bool):
+                                   manual_size_subtraction: typing.Optional[int], return_early: bool,
+                                   has_optional: bool):
     count, strings, uncounted_members = get_size_and_remaining_members(members)
 
     if manual_size_subtraction is not None:
@@ -35,7 +44,7 @@ def print_size_until_inner_members(s: Writer, members: list[model.StructMember],
     if len(strings) != 0:
         size += f" + {' + '.join(strings)}"
 
-    if len(uncounted_members) == 0 and return_early:
+    if len(uncounted_members) == 0 and return_early and not has_optional:
         s.wln(f"return {size}")
     else:
         if not return_early:
@@ -43,13 +52,13 @@ def print_size_until_inner_members(s: Writer, members: list[model.StructMember],
         else:
             s.wln(f"_size = {size}")
 
-        if len(uncounted_members) != 0:
+        if len(uncounted_members) != 0 or has_optional:
             s.newline()
 
         for m in uncounted_members:
             print_size_inner(s, m)
 
-        if return_early:
+        if return_early and not has_optional:
             s.wln(f"return _size")
 
 
@@ -172,7 +181,7 @@ def get_size_and_remaining_members(members: list[model.StructMember]) -> typing.
                         strings.append(addable_string)
                 else:
                     uncounted_members.append(m)
-            case model.StructMemberIfStatement() | model.StructMemberOptional():
+            case model.StructMemberIfStatement():
                 uncounted_members.append(m)
             case v:
                 raise Exception(f"{v}")
@@ -213,12 +222,6 @@ def print_size_inner(s: Writer, m: model.StructMember):
 
         case model.StructMemberIfStatement(struct_member_content=statement):
             print_size_if_statement(s, statement, False)
-        case model.StructMemberOptional(struct_member_content=optional):
-            print_optional_statement_header(s, optional)
-
-            print_size_until_inner_members(s, optional.members, None, False)
-
-            s.close()  # if optional
 
         case v:
             raise Exception(f"{v}")
@@ -237,7 +240,7 @@ def print_size_if_statement(s: Writer, statement: model.IfStatement, is_else_if:
 
     s.inc_indent()
 
-    print_size_until_inner_members(s, statement.members, None, False)
+    print_size_until_inner_members(s, statement.members, None, False, False)
 
     s.dec_indent()  # if
 

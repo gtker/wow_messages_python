@@ -311,15 +311,6 @@ def print_read_member(s: Writer, m: model.StructMember, container: model.Contain
         case model.StructMemberIfStatement(_tag, statement):
             print_read_if_statement(s, statement, container, False, needs_size)
 
-        case model.StructMemberOptional(_tag, model.OptionalMembers(name=name, members=members)):
-            s.wln(f"# {name}: optional")
-            s.open("if _size < body_size:")
-
-            for member in members:
-                print_read_member(s, member, container, needs_size)
-
-            s.close()
-
         case _:
             raise Exception("invalid struct member")
 
@@ -360,7 +351,7 @@ def print_read(s: Writer, container: Container):
 
     print_optional_names(s, container)
 
-    if len(container.members) == 0:
+    if len(container.members) == 0 and container.optional is None:
         s.wln(f"return {container.name}()")
         s.dec_indent()
         s.newline()
@@ -385,6 +376,15 @@ reader.feed_eof()
 
     for m in container.members:
         print_read_member(s, m, container, needs_size)
+
+    if container.optional is not None:
+        s.wln(f"# {container.optional.name}: optional")
+        s.open("if _size < body_size:")
+
+        for member in container.optional.members:
+            print_read_member(s, member, container, True)
+
+        s.close()
 
     s.wln(f"return {container.name}(")
     s.inc_indent()
@@ -418,9 +418,10 @@ def print_optional_names(s: Writer, container: Container):
                     s.wln(f"{d.name} = None")
             case model.StructMemberIfStatement(struct_member_content=statement):
                 traverse_if_statement(s, statement)
-            case model.StructMemberOptional(struct_member_content=optional):
-                for m in optional.members:
-                    traverse(s, m, True)
 
     for m in container.members:
         traverse(s, m, False)
+
+    if container.optional is not None:
+        for member in container.optional.members:
+            traverse(s, member, True)

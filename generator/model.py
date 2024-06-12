@@ -307,6 +307,7 @@ class Container:
     name: 'str'
     object_type: 'ObjectType'
     only_has_io_error: 'bool'
+    optional: 'Optional[OptionalMembers]'
     prepared_objects: 'List[PreparedObject]'
     """
     Is a structured representation of the object where fields that are inside
@@ -329,6 +330,7 @@ class Container:
             _from_json_data(str, data.get("name")),
             _from_json_data(ObjectType, data.get("object_type")),
             _from_json_data(bool, data.get("only_has_io_error")),
+            _from_json_data(Optional[OptionalMembers], data.get("optional")),
             _from_json_data(List[PreparedObject], data.get("prepared_objects")),
             _from_json_data(Sizes, data.get("sizes")),
             _from_json_data(ObjectTags, data.get("tags")),
@@ -344,6 +346,7 @@ class Container:
         data["name"] = _to_json_data(self.name)
         data["object_type"] = _to_json_data(self.object_type)
         data["only_has_io_error"] = _to_json_data(self.only_has_io_error)
+        data["optional"] = _to_json_data(self.optional)
         data["prepared_objects"] = _to_json_data(self.prepared_objects)
         data["sizes"] = _to_json_data(self.sizes)
         data["tags"] = _to_json_data(self.tags)
@@ -1545,7 +1548,6 @@ class StructMember:
         variants: Dict[str, Type[StructMember]] = {
             "Definition": StructMemberDefinition,
             "IfStatement": StructMemberIfStatement,
-            "Optional": StructMemberOptional,
         }
 
         return variants[data["struct_member_tag"]].from_json_data(data)
@@ -1582,22 +1584,6 @@ class StructMemberIfStatement(StructMember):
 
     def to_json_data(self) -> Any:
         data = { "struct_member_tag": "IfStatement" }
-        data["struct_member_content"] = _to_json_data(self.struct_member_content)
-        return data
-
-@dataclass
-class StructMemberOptional(StructMember):
-    struct_member_content: 'OptionalMembers'
-
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'StructMemberOptional':
-        return cls(
-            "Optional",
-            _from_json_data(OptionalMembers, data.get("struct_member_content")),
-        )
-
-    def to_json_data(self) -> Any:
-        data = { "struct_member_tag": "Optional" }
         data["struct_member_content"] = _to_json_data(self.struct_member_content)
         return data
 

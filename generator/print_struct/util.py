@@ -279,17 +279,15 @@ def all_members_from_container(
             case model.StructMemberIfStatement(_tag, struct_member_content=statement):
                 inner_if(statement, out_members)
 
-            case model.StructMemberOptional(
-                _tag, model.OptionalMembers(members=members)
-            ):
-                for member in members:
-                    inner(member, out_members)
-
             case v:
                 raise Exception(f"invalid struct member {v}")
 
     for m in container.members:
         inner(m, out_members)
+
+    if container.optional is not None:
+        for m in container.optional.members:
+            inner(m, out_members)
 
     return out_members
 

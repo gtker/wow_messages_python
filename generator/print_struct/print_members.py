@@ -14,6 +14,10 @@ def print_members_definitions(s: Writer, container: Container):
     for member in container.members:
         print_member_definition(non_optional, optionals, member, False)
 
+    if container.optional is not None:
+        for member in container.optional.members:
+            print_member_definition(non_optional, optionals, member, True)
+
     s.append(non_optional)
     s.append(optionals)
 
@@ -51,10 +55,6 @@ def print_member_definition(
 
         case model.StructMemberIfStatement(_tag, struct_member_content=statement):
             print_member_if_statement(non_optional, optionals, statement)
-
-        case model.StructMemberOptional(_tag, model.OptionalMembers(members=members)):
-            for member in members:
-                print_member_definition(non_optional, optionals, member, True)
 
         case _:
             raise Exception("invalid struct member")
