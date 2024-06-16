@@ -3005,6 +3005,24 @@ class CMSG_PET_NAME_QUERY_wrath(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data, written)
 
 
+class SMSG_UPDATE_OBJECT_wrath(unittest.IsolatedAsyncioTestCase):
+    async def test0(self):
+        reader = asyncio.StreamReader()
+
+        data = bytes([0, 115, 169, 0, 1, 0, 0, 0, 3, 1, 8, 4, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 205, 215, 11, 198, 53, 126, 4, 195, 249, 15, 167, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 140, 66, 0, 0, 144, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 208, 15, 73, 64, 0, 0, 0, 0, 3, 7, 0, 0, 0, 0, 0, 128, 0, 24, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 1, 0, 0, 0, 12, 77, 0, 0, 12, 77, 0, 0, ])
+
+        reader.feed_data(data)
+        reader.feed_eof()
+
+        r = await wrath.expect_server_opcode_unencrypted(reader, wrath.SMSG_UPDATE_OBJECT)
+        self.assertIsNotNone(r)
+        self.assertTrue(reader.at_eof())
+        self.assertEqual(len(data) - 4, r.size())
+        written = bytearray(len(data))
+        r.write_encrypted_server(written, NullHeaderCrypto())
+        self.assertEqual(data, written)
+
+
 class MSG_MOVE_TELEPORT_ACK_Client_wrath(unittest.IsolatedAsyncioTestCase):
     async def test0(self):
         reader = asyncio.StreamReader()

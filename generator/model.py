@@ -1057,19 +1057,9 @@ class FloatingPointValue:
         data["value"] = _to_json_data(self.value)
         return data
 
-class IfStatementDefinerType(Enum):
-    ENUM = "Enum"
-    FLAG = "Flag"
-    @classmethod
-    def from_json_data(cls, data: Any) -> 'IfStatementDefinerType':
-        return cls(data)
-
-    def to_json_data(self) -> Any:
-        return self.value
-
 @dataclass
 class IfStatement:
-    definer_type: 'IfStatementDefinerType'
+    definer_type: 'DefinerType'
     else_if_statements: 'List[IfStatement]'
     is_else_if_flag: 'bool'
     members: 'List[StructMember]'
@@ -1081,7 +1071,7 @@ class IfStatement:
     @classmethod
     def from_json_data(cls, data: Any) -> 'IfStatement':
         return cls(
-            _from_json_data(IfStatementDefinerType, data.get("definer_type")),
+            _from_json_data(DefinerType, data.get("definer_type")),
             _from_json_data(List[IfStatement], data.get("else_if_statements")),
             _from_json_data(bool, data.get("is_else_if_flag")),
             _from_json_data(List[StructMember], data.get("members")),
@@ -1481,12 +1471,15 @@ class PreparedObject:
     an enum/flag.
     """
 
+    enum_part_of_separate_statements: 'bool'
+    is_elseif_flag: 'bool'
     name: 'str'
     """
     Name inside the object. Search through the original object to get type and
     other information.
     """
 
+    definer_type: 'Optional[DefinerType]'
     enumerators: 'Optional[Dict[str, List[PreparedObject]]]'
     """
     If this is present the field contains other fields.
@@ -1496,13 +1489,20 @@ class PreparedObject:
     @classmethod
     def from_json_data(cls, data: Any) -> 'PreparedObject':
         return cls(
+            _from_json_data(bool, data.get("enum_part_of_separate_statements")),
+            _from_json_data(bool, data.get("is_elseif_flag")),
             _from_json_data(str, data.get("name")),
+            _from_json_data(Optional[DefinerType], data.get("definer_type")),
             _from_json_data(Optional[Dict[str, List[PreparedObject]]], data.get("enumerators")),
         )
 
     def to_json_data(self) -> Any:
         data: Dict[str, Any] = {}
+        data["enum_part_of_separate_statements"] = _to_json_data(self.enum_part_of_separate_statements)
+        data["is_elseif_flag"] = _to_json_data(self.is_elseif_flag)
         data["name"] = _to_json_data(self.name)
+        if self.definer_type is not None:
+             data["definer_type"] = _to_json_data(self.definer_type)
         if self.enumerators is not None:
              data["enumerators"] = _to_json_data(self.enumerators)
         return data

@@ -328,7 +328,7 @@ def print_if_statement_header(
     var_name = statement.variable_name
 
     match statement.definer_type:
-        case model.IfStatementDefinerType.ENUM:
+        case model.DefinerType.ENUM:
             if len(statement.values) == 1:
                 s.wln(
                     f"{extra_elseif}if {extra_self}{var_name} == {original_type}.{statement.values[0]}:"
@@ -341,7 +341,7 @@ def print_if_statement_header(
                     s.w_no_indent(f"{original_type}.{val}")
                 s.wln_no_indent("}:")
 
-        case model.IfStatementDefinerType.FLAG:
+        case model.DefinerType.FLAG:
             s.w(f"{extra_elseif}if ")
             for i, val in enumerate(statement.values):
                 if i != 0:
