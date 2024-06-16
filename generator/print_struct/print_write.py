@@ -49,6 +49,9 @@ def addable_write_values(
             return integer_type_to_struct_pack(integer_type), f"self.{d.name}"
 
         case model.DataTypeFlag(integer_type=integer_type):
+            if integer_type == model.IntegerType.U48:
+                return integer_type_to_struct_pack(
+                    integer_type), f"self.{d.name}.value & 0xFFFFFFFF, self.{d.name}.value >> 32"
             return integer_type_to_struct_pack(integer_type), f"self.{d.name}.value"
 
         case model.DataTypeEnum(integer_type=integer_type):

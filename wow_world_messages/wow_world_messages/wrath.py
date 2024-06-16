@@ -1498,7 +1498,7 @@ class UpdateMask:
         return UpdateMask(fields=fields)
 
     def write(self, fmt, data):
-        highest_key = max(self.fields)
+        highest_key = max(self.fields, default=0)
         amount_of_blocks = highest_key // 32
         if highest_key % 32 != 0:
             amount_of_blocks += 1
@@ -1526,7 +1526,7 @@ class UpdateMask:
         return fmt, data
 
     def size(self):
-        highest_key = max(self.fields)
+        highest_key = max(self.fields, default=0)
         amount_of_blocks = highest_key // 32
 
         extra = highest_key % 32
@@ -14704,7 +14704,7 @@ class MovementBlock:
 
         if UpdateFlag.LIVING in update_flag:
             # flags: MovementFlags
-            flags = MovementFlags(await read_int(reader, 5))
+            flags = MovementFlags(await read_int(reader, 6))
 
             # timestamp: u32
             timestamp = await read_int(reader, 4)
@@ -14924,7 +14924,7 @@ class MovementBlock:
         _data.append(self.update_flag.value)
         if UpdateFlag.LIVING in self.update_flag:
             _fmt += 'IHI'
-            _data.extend([self.flags.value, self.timestamp])
+            _data.extend([self.flags.value & 0xFFFFFFFF, self.flags.value >> 32, self.timestamp])
             # position: Vector3d
             _fmt, _data = self.position.write(_fmt, _data)
 
@@ -15083,7 +15083,7 @@ class MovementBlock:
         _size = 2
 
         if UpdateFlag.LIVING in self.update_flag:
-            _size += 65
+            _size += 66
 
             if MovementFlags.ON_TRANSPORT_AND_INTERPOLATED_MOVEMENT in self.flags:
                 _size += 4 + self.transport_info.size()
@@ -15173,7 +15173,7 @@ class MovementInfo:
         xy_speed = None
         spline_elevation = None
         # flags: MovementFlags
-        flags = MovementFlags(await read_int(reader, 5))
+        flags = MovementFlags(await read_int(reader, 6))
 
         # timestamp: u32
         timestamp = await read_int(reader, 4)
@@ -15248,7 +15248,7 @@ class MovementInfo:
 
     def write(self, _fmt, _data):
         _fmt += 'IHI'
-        _data.extend([self.flags.value, self.timestamp])
+        _data.extend([self.flags.value & 0xFFFFFFFF, self.flags.value >> 32, self.timestamp])
         # position: Vector3d
         _fmt, _data = self.position.write(_fmt, _data)
 
@@ -15290,7 +15290,7 @@ class MovementInfo:
         return _fmt, _data
 
     def size(self) -> int:
-        _size = 29
+        _size = 30
 
         if MovementFlags.ON_TRANSPORT_AND_INTERPOLATED_MOVEMENT in self.flags:
             _size += 4 + self.transport_info.size()

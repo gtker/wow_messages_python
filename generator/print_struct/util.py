@@ -31,7 +31,7 @@ def integer_type_to_size(ty: model.IntegerType) -> int:
         case model.IntegerType.U32:
             return 4
         case model.IntegerType.U48:
-            return 5
+            return 6
         case model.IntegerType.U64:
             return 8
         case model.IntegerType.U8:

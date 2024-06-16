@@ -27,7 +27,7 @@ class UpdateMask:
         return UpdateMask(fields=fields)
 
     def write(self, fmt, data):
-        highest_key = max(self.fields)
+        highest_key = max(self.fields, default=0)
         amount_of_blocks = highest_key // 32
         if highest_key % 32 != 0:
             amount_of_blocks += 1
@@ -55,7 +55,7 @@ class UpdateMask:
         return fmt, data
 
     def size(self):
-        highest_key = max(self.fields)
+        highest_key = max(self.fields, default=0)
         amount_of_blocks = highest_key // 32
 
         extra = highest_key % 32
