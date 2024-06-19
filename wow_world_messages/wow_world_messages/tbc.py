@@ -2583,7 +2583,7 @@ class UpdateMaskValue(enum.IntEnum):
     PLAYER_TODAY_CONTRIBUTION = 1515
     PLAYER_YESTERDAY_CONTRIBUTION = 1516
     PLAYER_LIFETIME_HONORABLE_KILLS = 1517
-    PLAYER_BYTES2 = 1518
+    PLAYER_BYTES2_GLOW = 1518
     PLAYER_WATCHED_FACTION_INDEX = 1519
     PLAYER_COMBAT_RATING_1 = 1520
     PLAYER_ARENA_TEAM_INFO_1_1 = 1544
@@ -10420,7 +10420,7 @@ class GuildLogEvent:
             # player2: Guid
             player2 = await read_int(reader, 8)
 
-        elif event in {GuildEvent.PROMOTE_PLAYER, GuildEvent.DEMOTE_PLAYER}:
+        elif event in {GuildEvent.PROMOTION, GuildEvent.DEMOTION}:
             # new_rank: u8
             new_rank = await read_int(reader, 1)
 
@@ -10441,7 +10441,7 @@ class GuildLogEvent:
         if self.event in {GuildEvent.JOINED, GuildEvent.LEFT}:
             _fmt += 'Q'
             _data.append(self.player2)
-        elif self.event in {GuildEvent.PROMOTE_PLAYER, GuildEvent.DEMOTE_PLAYER}:
+        elif self.event in {GuildEvent.PROMOTION, GuildEvent.DEMOTION}:
             _fmt += 'B'
             _data.append(self.new_rank)
         # unix_time: u32
@@ -10455,7 +10455,7 @@ class GuildLogEvent:
 
         if self.event in {GuildEvent.JOINED, GuildEvent.LEFT}:
             _size += 8
-        elif self.event in {GuildEvent.PROMOTE_PLAYER, GuildEvent.DEMOTE_PLAYER}:
+        elif self.event in {GuildEvent.PROMOTION, GuildEvent.DEMOTION}:
             _size += 1
 
         return _size

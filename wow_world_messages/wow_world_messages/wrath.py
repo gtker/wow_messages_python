@@ -9158,7 +9158,7 @@ class SpellEffect(enum.Enum):
     SUMMON_PET = 56
     LEARN_PET_SPELL = 57
     WEAPON_DAMAGE = 58
-    CREATE_RANDOM_ITEM = 59
+    OPEN_LOCK_ITEM = 59
     PROFICIENCY = 60
     SEND_EVENT = 61
     POWER_BURN = 62
@@ -9256,7 +9256,7 @@ class SpellEffect(enum.Enum):
     TEACH_TAXI_NODE = 154
     TITAN_GRIP = 155
     ENCHANT_ITEM_PRISMATIC = 156
-    CREATE_ITEM_2 = 157
+    CREATE_ITEM2 = 157
     MILLING = 158
     ALLOW_RENAME_PET = 159
     UNKNOWN160 = 160
@@ -11769,7 +11769,7 @@ class AuraLog:
             # critical2: Bool8
             critical2 = await read_bool(reader, 1)
 
-        elif aura_type in {AuraType.OBS_MOD_MANA, AuraType.PERIODIC_ENERGIZE}:
+        elif aura_type in {AuraType.OBS_MOD_POWER, AuraType.PERIODIC_ENERGIZE}:
             # misc_value1: u32
             misc_value1 = await read_int(reader, 4)
 
@@ -11814,7 +11814,7 @@ class AuraLog:
         elif self.aura_type in {AuraType.PERIODIC_HEAL, AuraType.OBS_MOD_HEALTH}:
             _fmt += 'IIIB'
             _data.extend([self.damage2, self.over_damage, self.absorb2, self.critical2])
-        elif self.aura_type in {AuraType.OBS_MOD_MANA, AuraType.PERIODIC_ENERGIZE}:
+        elif self.aura_type in {AuraType.OBS_MOD_POWER, AuraType.PERIODIC_ENERGIZE}:
             _fmt += 'II'
             _data.extend([self.misc_value1, self.damage3])
         elif self.aura_type == AuraType.PERIODIC_MANA_LEECH:
@@ -11829,7 +11829,7 @@ class AuraLog:
             _size += 18
         elif self.aura_type in {AuraType.PERIODIC_HEAL, AuraType.OBS_MOD_HEALTH}:
             _size += 13
-        elif self.aura_type in {AuraType.OBS_MOD_MANA, AuraType.PERIODIC_ENERGIZE}:
+        elif self.aura_type in {AuraType.OBS_MOD_POWER, AuraType.PERIODIC_ENERGIZE}:
             _size += 8
         elif self.aura_type == AuraType.PERIODIC_MANA_LEECH:
             _size += 12
@@ -12967,7 +12967,7 @@ class GuildLogEvent:
             # player2: Guid
             player2 = await read_int(reader, 8)
 
-        elif event in {GuildEvent.PROMOTE_PLAYER, GuildEvent.DEMOTE_PLAYER}:
+        elif event in {GuildEvent.PROMOTION, GuildEvent.DEMOTION}:
             # new_rank: u8
             new_rank = await read_int(reader, 1)
 
@@ -12988,7 +12988,7 @@ class GuildLogEvent:
         if self.event in {GuildEvent.JOINED, GuildEvent.LEFT}:
             _fmt += 'Q'
             _data.append(self.player2)
-        elif self.event in {GuildEvent.PROMOTE_PLAYER, GuildEvent.DEMOTE_PLAYER}:
+        elif self.event in {GuildEvent.PROMOTION, GuildEvent.DEMOTION}:
             _fmt += 'B'
             _data.append(self.new_rank)
         # unix_time: u32
@@ -13002,7 +13002,7 @@ class GuildLogEvent:
 
         if self.event in {GuildEvent.JOINED, GuildEvent.LEFT}:
             _size += 8
-        elif self.event in {GuildEvent.PROMOTE_PLAYER, GuildEvent.DEMOTE_PLAYER}:
+        elif self.event in {GuildEvent.PROMOTION, GuildEvent.DEMOTION}:
             _size += 1
 
         return _size
