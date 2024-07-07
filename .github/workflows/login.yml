@@ -34,7 +34,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    if: "startsWith(github.ref, 'refs/tags/wow_login_messages_v')"
+    if: "startsWith(github.ref, 'refs/tags/wow_login_messages-v')"
     needs: [build]
     steps:
       - uses: actions/download-artifact@v3
