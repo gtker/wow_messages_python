@@ -26,7 +26,7 @@ from util import (
     login_version_to_module_name,
     first_login_version,
     login_version_matches, VERSIONS, VANILLA, WRATH, TBC, world_version_is_wrath,
-    world_version_is_tbc, world_version_is_vanilla,
+    world_version_is_tbc, world_version_is_vanilla, LOGIN_VERSION_ALL,
 )
 from world_utils import print_world_utils
 from writer import Writer
@@ -78,7 +78,7 @@ def main():
     m = model.IntermediateRepresentationSchema.from_json_data(data)
     m = sanitize_model(m)
 
-    print_login(m.login, 0)
+    print_login(m.login, LOGIN_VERSION_ALL)
     for v in m.distinct_login_versions_other_than_all:
         print_login(m.login, v)
 

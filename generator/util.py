@@ -9,6 +9,8 @@ WRATH = model.WorldVersion(major=3, minor=3, patch=5, build=12340)
 
 VERSIONS = [VANILLA, TBC, WRATH]
 
+LOGIN_VERSION_ALL = 0xFFFF_FFFF
+
 
 def should_print_container(container: model.Container, v: model.WorldVersion) -> bool:
     if not world_version_matches(container.tags, v):
@@ -110,7 +112,7 @@ def world_version_to_title_name(v: model.WorldVersion) -> str:
 
 
 def login_version_to_module_name(v: int) -> str:
-    if v == 0:
+    if v == LOGIN_VERSION_ALL:
         return "all"
     else:
         return f"version{v}"
@@ -121,7 +123,7 @@ def first_login_version(tags: model.ObjectTags) -> int:
         case model.ObjectVersionsLogin(version_type=version_type):
             match version_type:
                 case model.LoginVersionsAll():
-                    return 0
+                    return LOGIN_VERSION_ALL
                 case model.LoginVersionsSpecific(versions=versions):
                     return versions[0]
                 case _:

@@ -1,5 +1,5 @@
 import model
-from util import login_version_matches
+from util import login_version_matches, LOGIN_VERSION_ALL
 from writer import Writer
 
 
@@ -52,7 +52,7 @@ def print_login_utils(s: Writer, messages: list[model.Container], v: int):
     s.close()
     s.double_newline()
 
-    if v == 0:
+    if v == LOGIN_VERSION_ALL:
         return
 
     s.open("ServerOpcode = typing.Union[")
