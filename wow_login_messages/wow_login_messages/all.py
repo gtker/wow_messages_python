@@ -127,7 +127,7 @@ class CMD_AUTH_LOGON_CHALLENGE_Client:
         # locale: Locale
         locale = Locale(await read_int(reader, 4))
 
-        # utc_timezone_offset: u32
+        # utc_timezone_offset: i32
         utc_timezone_offset = await read_int(reader, 4)
 
         # client_ip_address: IpAddress
@@ -168,8 +168,8 @@ class CMD_AUTH_LOGON_CHALLENGE_Client:
         _fmt += 'I'
         _data.append(self.locale.value)
 
-        # utc_timezone_offset: u32
-        _fmt += 'I'
+        # utc_timezone_offset: i32
+        _fmt += 'i'
         _data.append(self.utc_timezone_offset)
 
         # client_ip_address: IpAddress
@@ -225,7 +225,7 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Client:
         # locale: Locale
         locale = Locale(await read_int(reader, 4))
 
-        # utc_timezone_offset: u32
+        # utc_timezone_offset: i32
         utc_timezone_offset = await read_int(reader, 4)
 
         # client_ip_address: IpAddress
@@ -266,8 +266,8 @@ class CMD_AUTH_RECONNECT_CHALLENGE_Client:
         _fmt += 'I'
         _data.append(self.locale.value)
 
-        # utc_timezone_offset: u32
-        _fmt += 'I'
+        # utc_timezone_offset: i32
+        _fmt += 'i'
         _data.append(self.utc_timezone_offset)
 
         # client_ip_address: IpAddress

@@ -2780,7 +2780,7 @@ class UpdateMaskValue(enum.IntEnum):
     PLAYER_TODAY_CONTRIBUTION = 1226
     PLAYER_YESTERDAY_CONTRIBUTION = 1227
     PLAYER_LIFETIME_HONORBALE_KILLS = 1228
-    PLAYER_BYTES2 = 1229
+    PLAYER_BYTES2_GLOW = 1229
     PLAYER_WATCHED_FACTION_INDEX = 1230
     PLAYER_COMBAT_RATING_1 = 1231
     PLAYER_ARENA_TEAM_INFO_1_1 = 1256
@@ -11114,38 +11114,30 @@ class SpellCastTargetFlags(enum.Flag):
 
 class SplineFlag(enum.Flag):
     NONE = 0
-    DONE = 1
-    FALLING = 2
-    UNKNOWN3 = 4
-    UNKNOWN4 = 8
-    UNKNOWN5 = 16
-    UNKNOWN6 = 32
-    UNKNOWN7 = 64
-    UNKNOWN8 = 128
-    RUNMODE = 256
-    FLYING = 512
+    DONE = 256
+    FALLING = 512
     NO_SPLINE = 1024
     PARABOLIC = 2048
-    UNKNOWN13 = 4096
-    UNKNOWN14 = 8192
-    UNKNOWN15 = 16384
-    UNKNOWN16 = 32768
-    FINAL_POINT = 65536
-    FINAL_TARGET = 131072
-    FINAL_ANGLE = 262144
-    UNKNOWN19 = 524288
-    CYCLIC = 1048576
-    ENTER_CYCLE = 2097152
+    WALK_MODE = 4096
+    FLYING = 8192
+    ORIENTATION_FIXED = 16384
+    FINAL_POINT = 32768
+    FINAL_TARGET = 65536
+    FINAL_ANGLE = 131072
+    CATMULLROM = 262144
+    CYCLIC = 524288
+    ENTER_CYCLE = 1048576
+    ANIMATION = 2097152
     FROZEN = 4194304
-    UNKNOWN23 = 8388608
-    UNKNOWN24 = 16777216
-    UNKNOWN25 = 33554432
-    UNKNOWN26 = 67108864
-    UNKNOWN27 = 134217728
-    UNKNOWN28 = 268435456
-    UNKNOWN29 = 536870912
-    UNKNOWN30 = 1073741824
-    UNKNOWN31 = 2147483648
+    TRANSPORT_ENTER = 8388608
+    TRANSPORT_EXIT = 16777216
+    UNKNOWN7 = 33554432
+    UNKNOWN8 = 67108864
+    ORIENTATION_INVERSED = 134217728
+    UNKNOWN10 = 268435456
+    UNKNOWN11 = 536870912
+    UNKNOWN12 = 1073741824
+    UNKNOWN13 = 2147483648
 
 
 class UpdateFlag(enum.Flag):
@@ -14633,10 +14625,16 @@ class MovementBlock:
     time_passed: typing.Optional[int] = None
     duration: typing.Optional[int] = None
     id: typing.Optional[int] = None
+    duration_mod: typing.Optional[float] = None
+    duration_mod_next: typing.Optional[float] = None
+    vertical_acceleration: typing.Optional[float] = None
+    effect_start_time: typing.Optional[float] = None
     nodes: typing.Optional[typing.List[Vector3d]] = None
+    mode: typing.Optional[int] = None
     final_node: typing.Optional[Vector3d] = None
     transport_guid: typing.Optional[int] = None
     position1: typing.Optional[Vector3d] = None
+    transport_offset: typing.Optional[Vector3d] = None
     orientation1: typing.Optional[float] = None
     corpse_orientation: typing.Optional[float] = None
     position2: typing.Optional[Vector3d] = None
@@ -14683,11 +14681,17 @@ class MovementBlock:
         time_passed = None
         duration = None
         id = None
+        duration_mod = None
+        duration_mod_next = None
+        vertical_acceleration = None
+        effect_start_time = None
         amount_of_nodes = None
         nodes = None
+        mode = None
         final_node = None
         transport_guid = None
         position1 = None
+        transport_offset = None
         orientation1 = None
         corpse_orientation = None
         position2 = None
@@ -14810,6 +14814,18 @@ class MovementBlock:
                 # id: u32
                 id = await read_int(reader, 4)
 
+                # duration_mod: f32
+                duration_mod = await read_float(reader)
+
+                # duration_mod_next: f32
+                duration_mod_next = await read_float(reader)
+
+                # vertical_acceleration: f32
+                vertical_acceleration = await read_float(reader)
+
+                # effect_start_time: f32
+                effect_start_time = await read_float(reader)
+
                 # amount_of_nodes: u32
                 amount_of_nodes = await read_int(reader, 4)
 
@@ -14817,6 +14833,9 @@ class MovementBlock:
                 nodes = []
                 for _ in range(0, amount_of_nodes):
                     nodes.append(await Vector3d.read(reader))
+
+                # mode: u8
+                mode = await read_int(reader, 1)
 
                 # final_node: Vector3d
                 final_node = await Vector3d.read(reader)
@@ -14827,6 +14846,9 @@ class MovementBlock:
 
             # position1: Vector3d
             position1 = await Vector3d.read(reader)
+
+            # transport_offset: Vector3d
+            transport_offset = await Vector3d.read(reader)
 
             # orientation1: f32
             orientation1 = await read_float(reader)
@@ -14902,10 +14924,16 @@ class MovementBlock:
             time_passed=time_passed,
             duration=duration,
             id=id,
+            duration_mod=duration_mod,
+            duration_mod_next=duration_mod_next,
+            vertical_acceleration=vertical_acceleration,
+            effect_start_time=effect_start_time,
             nodes=nodes,
+            mode=mode,
             final_node=final_node,
             transport_guid=transport_guid,
             position1=position1,
+            transport_offset=transport_offset,
             orientation1=orientation1,
             corpse_orientation=corpse_orientation,
             position2=position2,
@@ -15024,6 +15052,22 @@ class MovementBlock:
                 _fmt += 'I'
                 _data.append(self.id)
 
+                # duration_mod: f32
+                _fmt += 'f'
+                _data.append(self.duration_mod)
+
+                # duration_mod_next: f32
+                _fmt += 'f'
+                _data.append(self.duration_mod_next)
+
+                # vertical_acceleration: f32
+                _fmt += 'f'
+                _data.append(self.vertical_acceleration)
+
+                # effect_start_time: f32
+                _fmt += 'f'
+                _data.append(self.effect_start_time)
+
                 # amount_of_nodes: u32
                 _fmt += 'I'
                 _data.append(len(self.nodes))
@@ -15031,6 +15075,10 @@ class MovementBlock:
                 # nodes: Vector3d[amount_of_nodes]
                 for i in self.nodes:
                     _fmt, _data = i.write(_fmt, _data)
+
+                # mode: u8
+                _fmt += 'B'
+                _data.append(self.mode)
 
                 # final_node: Vector3d
                 _fmt, _data = self.final_node.write(_fmt, _data)
@@ -15041,6 +15089,9 @@ class MovementBlock:
 
             # position1: Vector3d
             _fmt, _data = self.position1.write(_fmt, _data)
+
+            # transport_offset: Vector3d
+            _fmt, _data = self.transport_offset.write(_fmt, _data)
 
             # orientation1: f32
             _fmt += 'f'
@@ -15104,7 +15155,7 @@ class MovementBlock:
                 _size += 4
 
             if MovementFlags.SPLINE_ENABLED in self.flags:
-                _size += 32 + 12 * len(self.nodes)
+                _size += 49 + 12 * len(self.nodes)
 
                 if SplineFlag.FINAL_ANGLE in self.spline_flags:
                     _size += 4
@@ -15115,7 +15166,7 @@ class MovementBlock:
 
 
         elif UpdateFlag.POSITION in self.update_flag:
-            _size += 20 + packed_guid_size(self.transport_guid)
+            _size += 32 + packed_guid_size(self.transport_guid)
         elif UpdateFlag.HAS_POSITION in self.update_flag:
             _size += 16
 
