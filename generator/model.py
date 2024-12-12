@@ -547,6 +547,7 @@ class DataTypeEnchantMask(DataType):
 @dataclass
 class DataTypeEnum(DataType):
     integer_type: 'IntegerType'
+    tags: 'ObjectTags'
     type_name: 'str'
     upcast: 'bool'
 
@@ -555,6 +556,7 @@ class DataTypeEnum(DataType):
         return cls(
             "Enum",
             _from_json_data(IntegerType, data.get("integer_type")),
+            _from_json_data(ObjectTags, data.get("tags")),
             _from_json_data(str, data.get("type_name")),
             _from_json_data(bool, data.get("upcast")),
         )
@@ -562,6 +564,7 @@ class DataTypeEnum(DataType):
     def to_json_data(self) -> Any:
         data = { "data_type_tag": "Enum" }
         data["integer_type"] = _to_json_data(self.integer_type)
+        data["tags"] = _to_json_data(self.tags)
         data["type_name"] = _to_json_data(self.type_name)
         data["upcast"] = _to_json_data(self.upcast)
         return data
@@ -569,6 +572,7 @@ class DataTypeEnum(DataType):
 @dataclass
 class DataTypeFlag(DataType):
     integer_type: 'IntegerType'
+    tags: 'ObjectTags'
     type_name: 'str'
     upcast: 'bool'
 
@@ -577,6 +581,7 @@ class DataTypeFlag(DataType):
         return cls(
             "Flag",
             _from_json_data(IntegerType, data.get("integer_type")),
+            _from_json_data(ObjectTags, data.get("tags")),
             _from_json_data(str, data.get("type_name")),
             _from_json_data(bool, data.get("upcast")),
         )
@@ -584,6 +589,7 @@ class DataTypeFlag(DataType):
     def to_json_data(self) -> Any:
         data = { "data_type_tag": "Flag" }
         data["integer_type"] = _to_json_data(self.integer_type)
+        data["tags"] = _to_json_data(self.tags)
         data["type_name"] = _to_json_data(self.type_name)
         data["upcast"] = _to_json_data(self.upcast)
         return data
