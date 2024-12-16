@@ -230,7 +230,6 @@ __all__ = [
     "AchievementInProgress",
     "ActionButton",
     "Addon",
-    "AddonInfo",
     "ArenaTeamMember",
     "AuctionEnchantment",
     "AuctionListItem",
@@ -11333,43 +11332,6 @@ class Addon:
 
 
 @dataclasses.dataclass
-class AddonInfo:
-    addon_name: str
-    addon_has_signature: int
-    addon_crc: int
-    addon_extra_crc: int
-
-    @staticmethod
-    async def read(reader: asyncio.StreamReader) -> AddonInfo:
-        # addon_name: CString
-        addon_name = await read_cstring(reader)
-
-        # addon_has_signature: u8
-        addon_has_signature = await read_int(reader, 1)
-
-        # addon_crc: u32
-        addon_crc = await read_int(reader, 4)
-
-        # addon_extra_crc: u32
-        addon_extra_crc = await read_int(reader, 4)
-
-        return AddonInfo(
-            addon_name=addon_name,
-            addon_has_signature=addon_has_signature,
-            addon_crc=addon_crc,
-            addon_extra_crc=addon_extra_crc,
-        )
-
-    def write(self, _fmt, _data):
-        _fmt += f'{len(self.addon_name)}sBBII'
-        _data.extend([self.addon_name.encode('utf-8'), 0, self.addon_has_signature, self.addon_crc, self.addon_extra_crc])
-        return _fmt, _data
-
-    def size(self) -> int:
-        return 10 + len(self.addon_name)
-
-
-@dataclasses.dataclass
 class ArenaTeamMember:
     guid: int
     online: bool
@@ -16047,7 +16009,7 @@ class QuestPoi:
 @dataclasses.dataclass
 class QuestPoiList:
     quest_id: int
-    amount_of_pois: int
+    pois: typing.List[QuestPoi]
 
     @staticmethod
     async def read(reader: asyncio.StreamReader) -> QuestPoiList:
@@ -16057,15 +16019,27 @@ class QuestPoiList:
         # amount_of_pois: u32
         amount_of_pois = await read_int(reader, 4)
 
+        # pois: QuestPoi[amount_of_pois]
+        pois = []
+        for _ in range(0, amount_of_pois):
+            pois.append(await QuestPoi.read(reader))
+
         return QuestPoiList(
             quest_id=quest_id,
-            amount_of_pois=amount_of_pois,
+            pois=pois,
         )
 
     def write(self, _fmt, _data):
         _fmt += 'II'
-        _data.extend([self.quest_id, self.amount_of_pois])
+        _data.extend([self.quest_id, len(self.pois)])
+        # pois: QuestPoi[amount_of_pois]
+        for i in self.pois:
+            _fmt, _data = i.write(_fmt, _data)
+
         return _fmt, _data
+
+    def size(self) -> int:
+        return 8 + sum([i.size() for i in self.pois])
 
 
 @dataclasses.dataclass
@@ -36846,7 +36820,7 @@ class SMSG_QUEST_POI_QUERY_RESPONSE:
         writer.write(_data)
 
     def size(self) -> int:
-        return 4 + 8 * len(self.quests)
+        return 4 + sum([i.size() for i in self.quests])
 
 
 @dataclasses.dataclass
@@ -56498,7 +56472,7 @@ class SMSG_CALENDAR_SEND_CALENDAR:
     instances: typing.List[SendCalendarInstance]
     relative_time: int
     reset_times: typing.List[SendCalendarResetTime]
-    amount_of_holidays: int
+    holidays: typing.List[SendCalendarHoliday]
 
     @staticmethod
     async def read(reader: asyncio.StreamReader, body_size: int) -> SMSG_CALENDAR_SEND_CALENDAR:
@@ -56546,6 +56520,11 @@ class SMSG_CALENDAR_SEND_CALENDAR:
         # amount_of_holidays: u32
         amount_of_holidays = await read_int(reader, 4)
 
+        # holidays: SendCalendarHoliday[amount_of_holidays]
+        holidays = []
+        for _ in range(0, amount_of_holidays):
+            holidays.append(await SendCalendarHoliday.read(reader))
+
         return SMSG_CALENDAR_SEND_CALENDAR(
             invites=invites,
             events=events,
@@ -56554,7 +56533,7 @@ class SMSG_CALENDAR_SEND_CALENDAR:
             instances=instances,
             relative_time=relative_time,
             reset_times=reset_times,
-            amount_of_holidays=amount_of_holidays,
+            holidays=holidays,
         )
 
     def write_encrypted_server(
@@ -56610,7 +56589,11 @@ class SMSG_CALENDAR_SEND_CALENDAR:
 
         # amount_of_holidays: u32
         _fmt += 'I'
-        _data.append(self.amount_of_holidays)
+        _data.append(len(self.holidays))
+
+        # holidays: SendCalendarHoliday[amount_of_holidays]
+        for i in self.holidays:
+            _fmt, _data = i.write(_fmt, _data)
 
         _data = struct.pack(_fmt, *_data)
         if isinstance(writer, bytearray):
@@ -56620,7 +56603,7 @@ class SMSG_CALENDAR_SEND_CALENDAR:
         writer.write(_data)
 
     def size(self) -> int:
-        return 32 + sum([i.size() for i in self.invites]) + sum([i.size() for i in self.events]) + 20 * len(self.instances) + 12 * len(self.reset_times)
+        return 32 + sum([i.size() for i in self.invites]) + sum([i.size() for i in self.events]) + 20 * len(self.instances) + 12 * len(self.reset_times) + sum([i.size() for i in self.holidays])
 
 
 @dataclasses.dataclass
