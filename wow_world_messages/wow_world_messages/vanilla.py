@@ -11037,7 +11037,6 @@ class WhoPlayer:
     class_type: Class
     race: Race
     area: Area
-    party_status: int
 
     @staticmethod
     async def read(reader: asyncio.StreamReader) -> WhoPlayer:
@@ -11051,16 +11050,13 @@ class WhoPlayer:
         level = await read_int(reader, 4)
 
         # class_type: Class
-        class_type = Class(await read_int(reader, 1))
+        class_type = Class(await read_int(reader, 4))
 
         # race: Race
-        race = Race(await read_int(reader, 1))
+        race = Race(await read_int(reader, 4))
 
         # area: Area
         area = Area(await read_int(reader, 4))
-
-        # party_status: u32
-        party_status = await read_int(reader, 4)
 
         return WhoPlayer(
             name=name,
@@ -11069,16 +11065,15 @@ class WhoPlayer:
             class_type=class_type,
             race=race,
             area=area,
-            party_status=party_status,
         )
 
     def write(self, _fmt, _data):
-        _fmt += f'{len(self.name)}sB{len(self.guild)}sBIBBII'
-        _data.extend([self.name.encode('utf-8'), 0, self.guild.encode('utf-8'), 0, self.level, self.class_type.value, self.race.value, self.area.value, self.party_status])
+        _fmt += f'{len(self.name)}sB{len(self.guild)}sBIIII'
+        _data.extend([self.name.encode('utf-8'), 0, self.guild.encode('utf-8'), 0, self.level, self.class_type.value, self.race.value, self.area.value])
         return _fmt, _data
 
     def size(self) -> int:
-        return 16 + len(self.name) + len(self.guild)
+        return 18 + len(self.name) + len(self.guild)
 
 
 @dataclasses.dataclass
