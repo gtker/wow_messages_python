@@ -28,14 +28,51 @@ class IntermediateRepresentationSchemaIntegerTypeInformation:
 @dataclass
 class IntermediateRepresentationSchema:
     distinct_login_versions_other_than_all: 'List[int]'
+    """
+    List of login versions that have messages, except for all.
+    """
+
     integer_type_information: 'Dict[str, IntermediateRepresentationSchemaIntegerTypeInformation]'
+    """
+    List of integer sizes used and amount of bits. Will be removed in the
+    future.
+    """
+
     login: 'Objects'
+    """
+    Objects used for login messages.
+    """
+
     login_version_opcodes: 'Dict[str, int]'
+    """
+    Map of login opcodes and message names.
+    """
+
     tbc_update_mask: 'List[UpdateMask]'
+    """
+    UpdateMask type definitions for 2.4.3.
+    """
+
     vanilla_update_mask: 'List[UpdateMask]'
+    """
+    UpdateMask type definitions for 1.12.
+    """
+
     version: 'SchemaVersion'
+    """
+    Version of schema.
+    """
+
     world: 'Objects'
+    """
+    Objects used for world messages.
+    """
+
     wrath_update_mask: 'List[UpdateMask]'
+    """
+    UpdateMask type definitions for 3.3.5.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'IntermediateRepresentationSchema':
@@ -83,6 +120,11 @@ class ArraySize:
 
 @dataclass
 class ArraySizeEndless(ArraySize):
+    """
+    Arrays that have a variable amount of elements, determined by if there are
+    still unread bytes remaining.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'ArraySizeEndless':
@@ -96,10 +138,14 @@ class ArraySizeEndless(ArraySize):
 
 @dataclass
 class ArraySizeFixed(ArraySize):
+    """
+    Arrays that always have an exact amount of elements.
+    """
+
     size: 'str'
     """
-    JSON Typedef does not support integers larger than unsigned 32 bit, so this
-    is a string
+    Amount of elements in the array. JSON Typedef does not support integers
+    larger than unsigned 32 bit, so this is a string.
     """
 
 
@@ -117,6 +163,11 @@ class ArraySizeFixed(ArraySize):
 
 @dataclass
 class ArraySizeVariable(ArraySize):
+    """
+    Arrays that have a variable amount of elements, determined by the value in a
+    previous variable.
+    """
+
     size: 'str'
 
     @classmethod
@@ -166,6 +217,10 @@ class ArrayTypeCstring(ArrayType):
 
 @dataclass
 class ArrayTypeGUID(ArrayType):
+    """
+    64-bit integer.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'ArrayTypeGUID':
@@ -208,6 +263,10 @@ class ArrayTypePackedGUID(ArrayType):
 
 @dataclass
 class ArrayTypeSpell(ArrayType):
+    """
+    32-bit integer.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'ArrayTypeSpell':
@@ -520,6 +579,10 @@ class DataTypeCacheMask(DataType):
 
 @dataclass
 class DataTypeDateTime(DataType):
+    """
+    32-bit integer.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeDateTime':
@@ -596,6 +659,10 @@ class DataTypeFlag(DataType):
 
 @dataclass
 class DataTypeFloatingPoint(DataType):
+    """
+    32-bit floating point.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeFloatingPoint':
@@ -609,6 +676,10 @@ class DataTypeFloatingPoint(DataType):
 
 @dataclass
 class DataTypeGold(DataType):
+    """
+    32-bit integer.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeGold':
@@ -622,6 +693,10 @@ class DataTypeGold(DataType):
 
 @dataclass
 class DataTypeGUID(DataType):
+    """
+    64-bit integer.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeGUID':
@@ -664,6 +739,10 @@ class DataTypeInteger(DataType):
 
 @dataclass
 class DataTypeIPAddress(DataType):
+    """
+    32-bit big endian integer.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeIPAddress':
@@ -677,6 +756,10 @@ class DataTypeIPAddress(DataType):
 
 @dataclass
 class DataTypeItem(DataType):
+    """
+    32-bit integer.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeItem':
@@ -690,6 +773,10 @@ class DataTypeItem(DataType):
 
 @dataclass
 class DataTypeLevel(DataType):
+    """
+    Level serialized as 8-bit value.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeLevel':
@@ -703,6 +790,10 @@ class DataTypeLevel(DataType):
 
 @dataclass
 class DataTypeLevel16(DataType):
+    """
+    Level serialized as 16-bit value.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeLevel16':
@@ -716,6 +807,10 @@ class DataTypeLevel16(DataType):
 
 @dataclass
 class DataTypeLevel32(DataType):
+    """
+    Level serialized as 32-bit value.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeLevel32':
@@ -729,6 +824,10 @@ class DataTypeLevel32(DataType):
 
 @dataclass
 class DataTypeMilliseconds(DataType):
+    """
+    32-bit integer.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeMilliseconds':
@@ -755,6 +854,10 @@ class DataTypeMonsterMoveSpline(DataType):
 
 @dataclass
 class DataTypeNamedGUID(DataType):
+    """
+    64-bit integer followed by a CString if the value isn't zero.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeNamedGUID':
@@ -781,6 +884,10 @@ class DataTypePackedGUID(DataType):
 
 @dataclass
 class DataTypePopulation(DataType):
+    """
+    32-bit floating point.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypePopulation':
@@ -794,6 +901,10 @@ class DataTypePopulation(DataType):
 
 @dataclass
 class DataTypeSeconds(DataType):
+    """
+    32-bit integer.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeSeconds':
@@ -820,6 +931,10 @@ class DataTypeSizedCstring(DataType):
 
 @dataclass
 class DataTypeSpell(DataType):
+    """
+    32-bit integer.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeSpell':
@@ -833,6 +948,10 @@ class DataTypeSpell(DataType):
 
 @dataclass
 class DataTypeSpell16(DataType):
+    """
+    16-bit integer.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'DataTypeSpell16':
@@ -973,12 +1092,25 @@ class DefinerUsage(Enum):
 @dataclass
 class Definition:
     constant_value: 'Optional[Value]'
+    """
+    This is set if the field is ignored by the client or can only have a single
+    value.
+    """
+
     data_type: 'DataType'
     name: 'str'
     size_of_fields_before_size: 'Optional[int]'
     tags: 'MemberTags'
     used_as_size_in: 'Optional[str]'
+    """
+    This is set if the variable is used as the size in an array variable.
+    """
+
     used_in_if: 'bool'
+    """
+    This is set if the variable is as the definer in an if statement.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'Definition':
@@ -1026,6 +1158,10 @@ class Enumerator:
 
 @dataclass
 class FileInfo:
+    """
+    File information about the original .wowm definition.
+    """
+
     end_position: 'int'
     file_name: 'str'
     start_position: 'int'
@@ -1066,12 +1202,37 @@ class FloatingPointValue:
 @dataclass
 class IfStatement:
     definer_type: 'DefinerType'
+    """
+    Flag or enum. Flag means that more values can be active at the same time.
+    Enum means that only a single can be active at the same time.
+    """
+
     else_if_statements: 'List[IfStatement]'
     is_else_if_flag: 'bool'
+    """
+    Is definer type flag and has else if statements. This is significant since
+    from a normal flag since it means that some bits should not be able to be
+    set at the same time.
+    """
+
     members: 'List[StructMember]'
     original_type: 'DataType'
+    """
+    Original type used in the if statement.
+    """
+
     part_of_separate_if_statement: 'bool'
+    """
+    The same definer has multiple disconnected if statements in the same body.
+    This is significant since it means that a definer can be more than just
+    one enumerator.
+    """
+
     values: 'List[str]'
+    """
+    Enumerators that apply to this if statement.
+    """
+
     variable_name: 'str'
 
     @classmethod
@@ -1187,7 +1348,15 @@ class MemberTagsValidRange:
 @dataclass
 class MemberTags:
     comment: 'Optional[str]'
+    """
+    Explanatory comment for member.
+    """
+
     display: 'Optional[str]'
+    """
+    Pretty printed string of definer enumerator.
+    """
+
     maximum_length: 'Optional[str]'
     """
     JSON Typedef does not support integers larger than unsigned 32 bit, so this
@@ -1226,10 +1395,32 @@ class MemberTags:
 class ObjectTags:
     version: 'ObjectVersions'
     comment: 'Optional[str]'
+    """
+    Explanatory comment for object.
+    """
+
     compressed: 'Optional[bool]'
+    """
+    Object body consists of uint32 with decompressed size followed by compressed
+    bytes of members.
+    """
+
     non_network_type: 'Optional[bool]'
+    """
+    Not sent in a network message but used in e.g. a DBC file or otherwise in
+    the client.
+    """
+
     unimplemented: 'Optional[bool]'
+    """
+    Object isn't implemented. Unused.
+    """
+
     used_in_update_mask: 'Optional[bool]'
+    """
+    Object is used by UpdateMask type.
+    """
+
 
     @classmethod
     def from_json_data(cls, data: Any) -> 'ObjectTags':
@@ -1279,6 +1470,10 @@ class ObjectType:
 
 @dataclass
 class ObjectTypeClogin(ObjectType):
+    """
+    Login message sent by the client.
+    """
+
     opcode: 'int'
 
     @classmethod
@@ -1295,6 +1490,10 @@ class ObjectTypeClogin(ObjectType):
 
 @dataclass
 class ObjectTypeCmsg(ObjectType):
+    """
+    World message sent by the client.
+    """
+
     opcode: 'int'
 
     @classmethod
@@ -1311,6 +1510,10 @@ class ObjectTypeCmsg(ObjectType):
 
 @dataclass
 class ObjectTypeMsg(ObjectType):
+    """
+    World message sent by either the server or the client.
+    """
+
     opcode: 'int'
 
     @classmethod
@@ -1327,6 +1530,10 @@ class ObjectTypeMsg(ObjectType):
 
 @dataclass
 class ObjectTypeSlogin(ObjectType):
+    """
+    Login message sent by the server.
+    """
+
     opcode: 'int'
 
     @classmethod
@@ -1343,6 +1550,10 @@ class ObjectTypeSlogin(ObjectType):
 
 @dataclass
 class ObjectTypeSmsg(ObjectType):
+    """
+    World message sent by the server.
+    """
+
     opcode: 'int'
 
     @classmethod
@@ -2464,6 +2675,10 @@ class UpdateMaskStruct:
 
 @dataclass
 class Value:
+    """
+    Literal integer value.
+    """
+
     original_string: 'str'
     value: 'str'
     """
